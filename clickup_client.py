@@ -86,11 +86,13 @@ if __name__ == "__main__":
         for task in task_list:
             task_name = f"{Effect.BOLD}{task.name}{Effect.BOLD_OFF}"
             task_url = f"{Color.BLUE}{Effect.UNDERLINE}{task.url}{Effect.UNDERLINE_OFF}{Color.OFF}"
+            task_assinees = ", ".join([f"{a.username}" for a in task.assignees])
+            task_assignees = f"{Color.BLACK}({task_assinees}){Color.OFF}" if task_assinees else ""
 
             task_priority = ""
             if task.priority is not None:
                 priority_color = ColorHex(task.priority["color"])
                 priority_label = task.priority["priority"].capitalize()
-                task_priority = f"({priority_color}{priority_label}{priority_color.OFF}) "
+                task_priority = f"[{priority_color}{priority_label}{priority_color.OFF}] "
 
-            print(f" ▫ {task_priority}{task_name}: {task_url}")
+            print(f" ▫ {task_priority}{task_name}: {task_url} {task_assignees}")
