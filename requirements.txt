@@ -1,3 +1,4 @@
 python-dotenv==1.0.1
 colorist==1.7.0
 pyclickup==0.1.4
+inquirer==3.2.4

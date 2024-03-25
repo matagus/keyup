@@ -3,66 +3,148 @@ import sys
 from collections import defaultdict
 
 import dotenv
+import inquirer
 
 from colorist import Effect, Color, ColorHex, BgColorHex
 from pyclickup import ClickUp
 
 
-if __name__ == "__main__":
+def  init_environ():
     dotenv.load_dotenv(".env")
-    environ = dotenv.dotenv_values()
+    return dotenv.dotenv_values()
 
-    clickup = ClickUp(environ["TOKEN"])
 
+class NoTeamFoundError(Exception):
+    def __init__(self):
+        super().__init__("No team found. Please create at least one team.")
+
+
+class NoSpaceFoundError(Exception):
+    def __init__(self):
+        super().__init__("No space found. Please create at least one space for this team.")
+
+
+class NoProjectFoundError(Exception):
+    def __init__(self):
+        super().__init__("No project found. Please create at least one project for this space.")
+
+
+class NoListFoundError(Exception):
+    def __init__(self):
+        super().__init__("No list found. Please create at least one list for this project.")
+
+
+def get_team(clickup, argv):
     try:
         team_id = sys.argv[sys.argv.index("--team") + 1]
-        team = clickup.get_team_by_id(team_id)
+        return clickup.get_team_by_id(team_id)
+
     except ValueError:
         if len(clickup.teams) > 1:
-            print("Multiple teams found, please specify which one to use:")
-            for team in clickup.teams:
-                print(f"  ▢ [{team.id}] {team.name}")
+            questions = [
+                inquirer.List(
+                    "team", message=f"Select a {Color.MAGENTA}Team{Color.OFF}",
+                    choices=[f"{team.name} [{team.id}]" for team in clickup.teams],
+                )
+            ]
 
-            print("Usage: python clickup_client.py [--team <team_id>] --list <list_id>")
-            sys.exit(1)
+            answers = inquirer.prompt(questions)
+
+            for team in clickup.teams:
+                if f"{team.name} [{team.id}]" == answers["team"]:
+                    return team
 
         elif len(clickup.teams) == 1:
-            team = clickup.teams[0]
+            return clickup.teams[0]
 
-        else:
-            print("No teams found, please create one first.")
-            sys.exit(1)
+    raise NoTeamFoundError()
 
+
+def get_list_for(space_obj, argv):
     try:
         index = sys.argv.index("--list")
         list_id = sys.argv[index + 1]
+        return space_obj.get_list_by_id(list_id)
+
     except ValueError:
-        for space in team.spaces:
-            print(f"Space: {space.name}")
+        if len(space_obj.lists) == 1:
+            return space_obj.lists[0]
+
+        questions = [
+            inquirer.List(
+                "list", message=f"Select a {Color.YELLOW}List{Color.OFF}",
+                choices=[f"{li.name} [{li.id}]" for li in space_obj.lists],
+            )
+        ]
+
+        answers = inquirer.prompt(questions)
+
+        for li in space_obj.lists:
+            if f"{li.name} [{li.id}]" == answers["list"]:
+                return li
+
+    raise NoListFoundError()
+
+
+def get_space_for(team, argv):
+    try:
+        space_id = sys.argv[sys.argv.index("--space") + 1]
+        return team.get_space_by_id(space_id)
+
+    except ValueError:
+        if len(team.spaces) > 1:
+            questions = [
+                inquirer.List(
+                    "space", message=f"Select a {Color.CYAN}Space{Color.OFF}",
+                    choices=[f"{space.name} [{space.id}]" for space in team.spaces],
+                )
+            ]
+
+            answers = inquirer.prompt(questions)
+
+            for space in team.spaces:
+                if f"{space.name} [{space.id}]" == answers["space"]:
+                    return space
+
+        elif len(team.spaces) == 1:
+            return team.spaces[0]
+
+    raise NoSpaceFoundError()
+
+
+def get_project_for(space, argv):
+    try:
+        project_id = sys.argv[sys.argv.index("--project") + 1]
+        return space.get_project_by_id(project_id)
+
+    except ValueError:
+        if len(space.projects) > 1:
+            questions = [
+                inquirer.List(
+                    "project", message=f"Select a {Color.GREEN}Project{Color.OFF}",
+                    choices=[f"{project.name} [{project.id}]" for project in space.projects],
+                )
+            ]
+
+            answers = inquirer.prompt(questions)
 
             for project in space.projects:
-                print(f"  ▢ Project: {project.name}")
+                if f"{project.name} [{project.id}]" == answers["project"]:
+                    return project
 
-                for li in project.lists:
-                    print(f"    ▫ [{li.id}] {li.name}")
+        elif len(space.projects) == 1:
+            return space.projects[0]
 
-        print("\n\nUsage: python clickup_client.py [--team <team_id>] --list <list_id>")
-        sys.exit(0)
+    raise NoProjectFoundError()
 
 
-    all_lists_by_id = {}
-    for space in team.spaces:
-        for project in space.projects:
-            for li in project.lists:
-                all_lists_by_id[li.id] = li.name
-
+def render_list(list_obj, team_obj):
     # Print a header with the list and team names
-    list_name = all_lists_by_id[list_id]
-    styled_list_name = f"{Color.YELLOW}{Effect.BOLD}{list_name}{Effect.BOLD_OFF}{Color.OFF}"
-    team_name = f"{Effect.BOLD}{Color.MAGENTA}{team.name}{Color.OFF}{Effect.BOLD_OFF}"
+    styled_list_name = f"{Color.YELLOW}{Effect.BOLD}{list_obj.name}{Effect.BOLD_OFF}{Color.OFF}"
+    team_name = f"{Effect.BOLD}{Color.MAGENTA}{team_obj.name}{Color.OFF}{Effect.BOLD_OFF}"
     print(f"{styled_list_name} :: Team: {team_name}")
 
-    task_list = team.get_all_tasks(subtasks=False, list_ids=[list_id])
+    task_list = team_obj.get_all_tasks(subtasks=False, list_ids=[list_obj.id])
 
     tasks_by_status = defaultdict(list)
     color_for_status = {}
@@ -96,3 +178,20 @@ if __name__ == "__main__":
                 task_priority = f"[{priority_color}{priority_label}{priority_color.OFF}] "
 
             print(f" ▫ {task_priority}{task_name}: {task_url} {task_assignees}")
+
+
+if __name__ == "__main__":
+    environ = init_environ()
+    clickup = ClickUp(environ["TOKEN"])
+
+    try:
+        team_obj = get_team(clickup, sys.argv)
+        space_obj = get_space_for(team_obj, sys.argv)
+        project_obj = get_project_for(space_obj, sys.argv)
+        list_obj = get_list_for(project_obj, sys.argv)
+        render_list(list_obj, team_obj)
+
+    except (NoTeamFoundError, NoSpaceFoundError, NoProjectFoundError, NoListFoundError) as e:
+        print(e)
+
+    sys.exit(1)
