@@ -1,0 +1,63 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "KeyUp"
+dynamic = ["version"]
+description = "A simple and beautiful console-based client for Clickup written in Python"
+readme = "README.md"
+authors = [
+    { name = "Matias Agustin Mendez", email = "matagus@gmail.com" },
+]
+keywords = [
+  "clickup", "console", "python", "cli", "command-line", "task-list", "task-manager", "task-list-manager",
+  "terminal-based", "clickup-api", "console-app", "inquirer", "clickup-client", "clickup-cli",
+]
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Natural Language :: English",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development",
+]
+dependencies = [
+  "python-dotenv", "colorist", "pyclickup", "inquirer"
+]
+
+[project.urls]
+Homepage = "https://github.com/matagus/keyup"
+Issues = "https://github.com/matagus/keyup/issues"
+Changelog = "https://github.com/matagus/keyup/releases"
+Repository = "https://github.com/matagus/keyup"
+
+[tool.hatch.version]
+path = "__about__.py"
+
+[tool.hatch.envs.default]
+dependencies = [
+    "ipython", "ipdb"
+]
+
+[tool.hatch.envs.default.scripts]
+app = "python keyup.py"
+
+[[tool.hatch.envs.test.matrix]]
+python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
+
+[tool.hatch.envs.test.scripts]
+app = "python keyup.py"
+
+[tool.ruff]
+line-length = 120
+
+[tool.black]
+line-length = 120
