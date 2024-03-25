@@ -193,5 +193,4 @@ if __name__ == "__main__":
 
     except (NoTeamFoundError, NoSpaceFoundError, NoProjectFoundError, NoListFoundError) as e:
         print(e)
-
-    sys.exit(1)
+        sys.exit(1)
