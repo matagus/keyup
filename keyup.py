@@ -9,7 +9,7 @@ from colorist import Effect, Color, ColorHex, BgColorHex
 from pyclickup import ClickUp
 
 
-def  init_environ():
+def init_environ():
     dotenv.load_dotenv(".env")
     return dotenv.dotenv_values()
 
@@ -43,7 +43,8 @@ def get_team(clickup, argv):
         if len(clickup.teams) > 1:
             questions = [
                 inquirer.List(
-                    "team", message=f"Select a {Color.MAGENTA}Team{Color.OFF}",
+                    "team",
+                    message=f"Select a {Color.MAGENTA}Team{Color.OFF}",
                     choices=[f"{team.name} [{team.id}]" for team in clickup.teams],
                 )
             ]
@@ -72,7 +73,8 @@ def get_list_for(space_obj, argv):
 
         questions = [
             inquirer.List(
-                "list", message=f"Select a {Color.YELLOW}List{Color.OFF}",
+                "list",
+                message=f"Select a {Color.YELLOW}List{Color.OFF}",
                 choices=[f"{li.name} [{li.id}]" for li in space_obj.lists],
             )
         ]
@@ -95,7 +97,8 @@ def get_space_for(team, argv):
         if len(team.spaces) > 1:
             questions = [
                 inquirer.List(
-                    "space", message=f"Select a {Color.CYAN}Space{Color.OFF}",
+                    "space",
+                    message=f"Select a {Color.CYAN}Space{Color.OFF}",
                     choices=[f"{space.name} [{space.id}]" for space in team.spaces],
                 )
             ]
@@ -121,7 +124,8 @@ def get_project_for(space, argv):
         if len(space.projects) > 1:
             questions = [
                 inquirer.List(
-                    "project", message=f"Select a {Color.GREEN}Project{Color.OFF}",
+                    "project",
+                    message=f"Select a {Color.GREEN}Project{Color.OFF}",
                     choices=[f"{project.name} [{project.id}]" for project in space.projects],
                 )
             ]
