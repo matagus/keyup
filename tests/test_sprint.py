@@ -11,7 +11,6 @@ class TestGetCurrentSprintList:
 
     def test_finds_sprint_list(self):
         """Test finding a sprint list."""
-        mock_team = Mock()
         mock_space = Mock(id="space-123")
 
         sprint_list = Mock()
@@ -24,14 +23,18 @@ class TestGetCurrentSprintList:
         other_list.id = "list-001"
         other_list.space_id = "space-123"
 
-        mock_team.lists = [sprint_list, other_list]
+        mock_project = Mock()
+        mock_project.lists = [sprint_list, other_list]
+
+        mock_space.projects = [mock_project]
+        mock_team = Mock()
+        mock_team.spaces = [mock_space]
 
         result = get_current_sprint_list(mock_team, mock_space)
         assert result == sprint_list
 
     def test_finds_iteration_list(self):
         """Test finding an iteration list."""
-        mock_team = Mock()
         mock_space = Mock(id="space-123")
 
         iteration_list = Mock()
@@ -39,14 +42,18 @@ class TestGetCurrentSprintList:
         iteration_list.id = "list-003"
         iteration_list.space_id = "space-123"
 
-        mock_team.lists = [iteration_list]
+        mock_project = Mock()
+        mock_project.lists = [iteration_list]
+
+        mock_space.projects = [mock_project]
+        mock_team = Mock()
+        mock_team.spaces = [mock_space]
 
         result = get_current_sprint_list(mock_team, mock_space)
         assert result == iteration_list
 
     def test_returns_most_recent_sprint(self):
         """Test returning the most recent sprint by ID."""
-        mock_team = Mock()
         mock_space = Mock(id="space-123")
 
         sprint_old = Mock()
@@ -59,15 +66,20 @@ class TestGetCurrentSprintList:
         sprint_new.id = "list-002"
         sprint_new.space_id = "space-123"
 
-        mock_team.lists = [sprint_old, sprint_new]
+        mock_project = Mock()
+        mock_project.lists = [sprint_old, sprint_new]
+
+        mock_space.projects = [mock_project]
+        mock_team = Mock()
+        mock_team.spaces = [mock_space]
 
         result = get_current_sprint_list(mock_team, mock_space)
         assert result == sprint_new
 
     def test_filters_by_space(self):
         """Test filtering lists by space."""
-        mock_team = Mock()
         mock_space = Mock(id="space-123")
+        mock_other_space = Mock(id="space-456")
 
         sprint_correct = Mock()
         sprint_correct.name = "Sprint"
@@ -79,14 +91,22 @@ class TestGetCurrentSprintList:
         sprint_other.id = "list-002"
         sprint_other.space_id = "space-456"
 
-        mock_team.lists = [sprint_correct, sprint_other]
+        mock_project1 = Mock()
+        mock_project1.lists = [sprint_correct]
+        mock_space.projects = [mock_project1]
+
+        mock_project2 = Mock()
+        mock_project2.lists = [sprint_other]
+        mock_other_space.projects = [mock_project2]
+
+        mock_team = Mock()
+        mock_team.spaces = [mock_space, mock_other_space]
 
         result = get_current_sprint_list(mock_team, mock_space)
         assert result == sprint_correct
 
     def test_no_sprint_lists_raises_error(self):
         """Test raising error when no sprint lists found."""
-        mock_team = Mock()
         mock_space = Mock(id="space-123")
 
         backlog = Mock()
@@ -94,14 +114,18 @@ class TestGetCurrentSprintList:
         backlog.id = "list-001"
         backlog.space_id = "space-123"
 
-        mock_team.lists = [backlog]
+        mock_project = Mock()
+        mock_project.lists = [backlog]
+
+        mock_space.projects = [mock_project]
+        mock_team = Mock()
+        mock_team.spaces = [mock_space]
 
         with pytest.raises(Exception):  # ListNotFoundError
             get_current_sprint_list(mock_team, mock_space)
 
     def test_case_insensitive_search(self):
         """Test case-insensitive sprint search."""
-        mock_team = Mock()
         mock_space = Mock(id="space-123")
 
         sprint_list = Mock()
@@ -109,7 +133,12 @@ class TestGetCurrentSprintList:
         sprint_list.id = "list-005"
         sprint_list.space_id = "space-123"
 
-        mock_team.lists = [sprint_list]
+        mock_project = Mock()
+        mock_project.lists = [sprint_list]
+
+        mock_space.projects = [mock_project]
+        mock_team = Mock()
+        mock_team.spaces = [mock_space]
 
         result = get_current_sprint_list(mock_team, mock_space)
         assert result == sprint_list

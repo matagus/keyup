@@ -217,12 +217,12 @@ def get_current_sprint_list(team, space):
     Raises:
         ListNotFoundError: If no sprint lists are found.
     """
-    # Get all lists for the team
-    all_lists = team.lists
-
-    # Filter by space if provided
-    if space:
-        all_lists = [li for li in all_lists if li.space_id == space.id]
+    # Get all lists for the team by iterating through spaces -> projects -> lists
+    all_lists = []
+    spaces = team.spaces if not space else [space]
+    for sp in spaces:
+        for proj in sp.projects:
+            all_lists.extend(proj.lists)
 
     # Find sprint/iteration lists
     sprint_lists = [li for li in all_lists if "sprint" in li.name.lower() or "iteration" in li.name.lower()]
