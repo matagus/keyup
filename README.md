@@ -4,18 +4,196 @@ A simple, lightweight, and beautiful console-based client for ClickUp.
 
 ![KeyUp! in action](https://github.com/matagus/keyup/blob/main/screenshots/one.png)
 
-## Rationale
+## Features
 
-ClickUp is a great tool for managing tasks and projects. However, the web interface can be slow and cumbersome to use.
-KeyUp! is a simple console-based client written in Python that allows you to quickly view any list of tasks without
-leaving the terminal.
+- **Task Listing**: View all tasks from a ClickUp list with color-coded status groups
+- **Filtering**: Filter tasks by assignee, priority, or due date
+- **Grouping**: Group tasks by status, assignee, or priority
+- **Task Details**: View detailed information about a specific task
+- **Task Updates**: Update task status with confirmation display
+- **Sprint Detection**: Auto-detect current sprint/iteration lists
+- **Interactive Mode**: Navigate through Team → Space → Project → List hierarchy with prompts
+- **Caching**: Disk-based caching for improved performance (24h for teams/lists, 5min for tasks)
 
-It makes use of [python-inquirer](https://github.com/magmax/python-inquirer) for interactive navigation of the ClickUp
-teams, spaces, and lists. And it also accepts command line arguments to quickly navigate to a specific list for a given
-team.
+## Installation
 
-## Roadmap
+```bash
+pip install keyup
+```
 
-* ~~Add interactive navigation of workspaces, spaces, and lists~~
-* Add task viewing, creation, editing, and deletion
-* Add tasks comments
+## Quick Start
+
+Set your ClickUp API token:
+
+```bash
+export CLICKUP_TOKEN=your_token_here
+```
+
+Or create a `.env` file in your project directory:
+
+```
+CLICKUP_TOKEN=your_token_here
+```
+
+List tasks from a specific list:
+
+```bash
+keyup --team <team_id> --list <list_id>
+```
+
+## Commands
+
+### `keyup` (default) - List Tasks
+
+List all tasks from a ClickUp list, grouped by status.
+
+```bash
+# Basic usage
+keyup --team <team_id> --list <list_id>
+
+# With filters
+keyup --team <team_id> --list <list_id> --assignee john --priority high
+
+# Group by assignee
+keyup --team <team_id> --list <list_id> --group-by assignee
+
+# Interactive mode
+keyup -i
+
+# Bypass cache
+keyup --team <team_id> --list <list_id> --no-cache
+```
+
+**Options:**
+- `--team`: Team ID
+- `--space`: Space ID
+- `--project`: Project ID
+- `--list`: List ID
+- `--assignee`: Filter by assignee username (case-insensitive)
+- `--priority`: Filter by priority (low, normal, high, urgent)
+- `--due-before`: Filter tasks due before date (YYYY-MM-DD)
+- `--group-by`: Group by status (default), assignee, or priority
+- `--no-cache`: Bypass cache and fetch from API
+- `-i, --interactive`: Enable interactive mode
+
+### `keyup sprint` - Current Sprint Tasks
+
+Auto-detects the current sprint list by searching for lists containing "sprint" or "iteration" in the name.
+
+```bash
+# List tasks from current sprint
+keyup sprint --team <team_id>
+
+# With filters
+keyup sprint --team <team_id> --assignee jane --group-by priority
+```
+
+**Options:**
+- `--team`: Team ID
+- `--space`: Space ID
+- `--project`: Project ID
+- `--assignee`: Filter by assignee username
+- `--priority`: Filter by priority
+- `--due-before`: Filter tasks due before date
+- `--group-by`: Group by status, assignee, or priority
+- `--no-cache`: Bypass cache
+- `-i, --interactive`: Enable interactive mode
+
+### `keyup task <task_id>` - Task Details
+
+Show detailed information about a specific task.
+
+```bash
+# Show task details
+keyup task <task_id>
+
+# With team specification
+keyup task <task_id> --team <team_id>
+```
+
+**Options:**
+- `task_id`: ClickUp task ID
+- `--team`: Team ID (required if multiple teams exist)
+- `-i, --interactive`: Enable interactive mode
+
+### `keyup update <task_id>` - Update Task Status
+
+Update the status of a specific task.
+
+```bash
+# Update task status
+keyup update <task_id> --status "In Progress"
+
+# With team specification
+keyup update <task_id> --status "Done" --team <team_id>
+```
+
+**Options:**
+- `task_id`: ClickUp task ID
+- `--status`: New status name (e.g., "To Do", "In Progress", "Done")
+- `--team`: Team ID (required if multiple teams exist)
+- `-i, --interactive`: Enable interactive mode
+
+## Interactive Mode
+
+When multiple teams, spaces, projects, or lists exist, use `-i` flag to enable interactive selection:
+
+```bash
+keyup -i
+```
+
+This will prompt you to select:
+1. Team (if multiple teams exist)
+2. Space (if multiple spaces exist)
+3. Project (if multiple projects exist)
+4. List (if multiple lists exist)
+
+## Output Format
+
+Tasks are displayed with:
+- **Bold** task name
+- Blue underlined URL
+- Priority badge (color-coded)
+- Assignee names in parentheses
+
+Status groups are displayed with color-coded headers matching the ClickUp status colors.
+
+## Caching
+
+KeyUp! uses disk-based caching to reduce API calls:
+- Teams: 24 hours TTL
+- Lists: 24 hours TTL
+- Tasks: 5 minutes TTL
+
+Cache location: `~/.keyup/cache/`
+
+Use `--no-cache` to bypass cache and fetch fresh data from the API.
+
+## Exit Codes
+
+| Code | Meaning |
+|------|---------|
+| 1 | Token error or general ClickUp error |
+| 2 | Team not found or ambiguous team |
+| 3 | List not found |
+| 4 | Network error |
+| 5 | API error |
+| 99 | Unexpected error |
+
+## Requirements
+
+- Python 3.10+
+- ClickUp API token
+
+## Dependencies
+
+- [cyclopts](https://github.com/BrianPugh/cyclopts) - CLI framework
+- [pyclickup](https://github.com/matagus/pyclickup) - ClickUp API wrapper
+- [colorist](https://github.com/TMDBC/colorist) - Terminal colors
+- [inquirer](https://github.com/magmax/python-inquirer) - Interactive prompts
+- [diskcache](https://github.com/kemche007/diskcache) - Caching layer
+- [python-dotenv](https://github.com/theskumar/python-dotenv) - Environment loading
+
+## License
+
+MIT
