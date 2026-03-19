@@ -165,7 +165,7 @@ def render_list(
     if group_by != "status":
         filters.append(f"group_by={group_by}")
 
-    filter_info = f" [{', '.join(filters)}]" if filters else ""
+    filter_info = f" {Color.BLACK}[{', '.join(filters)}]{Color.OFF}" if filters else ""
     print(f"{styled_list_name} :: Team: {team_name}{filter_info}")
 
     if no_cache:
