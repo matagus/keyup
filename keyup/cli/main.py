@@ -189,8 +189,13 @@ def show_task(
 
     get_team(clickup, argv, interactive=interactive)
 
-    # Get task by ID
-    task = clickup.get_task_by_id(task_id)  # type: ignore[attr-defined]
+    # Get task by ID - fetch all tasks and find the matching one
+    team_id = team.id if team else clickup.teams[0].id
+    all_tasks = clickup._get_all_tasks(team_id)
+    task = next((t for t in all_tasks if t.id == task_id), None)
+    if task is None:
+        from .exceptions import ClickupyError
+        raise ClickupyError(f"Task {task_id} not found")
 
     render_task_detail(task)
 
@@ -227,11 +232,16 @@ def update_task(
 
     get_team(clickup, argv, interactive=interactive)
 
-    # Get current task to find old status
-    task = clickup.get_task_by_id(task_id)  # type: ignore[attr-defined]
+    # Get current task to find old status - fetch all tasks and find the matching one
+    team_id = team.id if team else clickup.teams[0].id
+    all_tasks = clickup._get_all_tasks(team_id)
+    task = next((t for t in all_tasks if t.id == task_id), None)
+    if task is None:
+        from .exceptions import ClickupyError
+        raise ClickupyError(f"Task {task_id} not found")
     old_status = task.status.status
 
     # Update task status
-    clickup.update_task(task_id, status=status)  # type: ignore[attr-defined]
+    task.update(status=status)
 
     render_task_update(task_id, old_status, status)
