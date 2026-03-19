@@ -1,6 +1,6 @@
 """Main CLI entry point for KeyUp! using cyclopts."""
 
-from typing import Annotated
+from typing import Annotated, cast
 
 from pyclickup import ClickUp
 from cyclopts import App, Parameter
@@ -199,10 +199,12 @@ def show_task(
 
     # Fall back to first team if get_team returns None
     if team_obj is None:
-        team_obj = clickup.teams[0]
+        team_id = cast(str, clickup.teams[0].id)
+    else:
+        team_id = team_obj.id
 
     # Get task by ID - fetch all tasks and find the matching one
-    all_tasks = clickup._get_all_tasks(team_obj.id)
+    all_tasks = clickup._get_all_tasks(cast(str, team_id))
     task = next((t for t in all_tasks if t.id == task_id), None)
     if task is None:
         from .exceptions import ClickupyError
@@ -246,10 +248,12 @@ def update_task(
 
     # Fall back to first team if get_team returns None
     if team_obj is None:
-        team_obj = clickup.teams[0]
+        team_id = clickup.teams[0].id
+    else:
+        team_id = team_obj.id
 
     # Get current task to find old status - fetch all tasks and find the matching one
-    all_tasks = clickup._get_all_tasks(team_obj.id)
+    all_tasks = clickup._get_all_tasks(cast(str, team_id))
     task = next((t for t in all_tasks if t.id == task_id), None)
     if task is None:
         from .exceptions import ClickupyError
