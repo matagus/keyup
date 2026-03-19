@@ -15,7 +15,10 @@ class TestApp:
 
     def test_app_help(self, capsys):
         """Test that --help works."""
-        app(["--help"])
+        import pytest
+
+        with pytest.raises(SystemExit):
+            app(["--help"])
         captured = capsys.readouterr()
         assert "Team ID" in captured.out
         assert "Space ID" in captured.out
