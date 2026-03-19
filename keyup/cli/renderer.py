@@ -44,8 +44,102 @@ def _filter_tasks(task_list, assignee=None, priority=None, due_before=None):
     return filtered
 
 
-def render_list(list_obj, team_obj, no_cache: bool = False, assignee=None, priority=None, due_before=None):
-    """Render tasks from a list grouped by status.
+def _render_task(task):
+    """Render a single task line.
+
+    Args:
+        task: Task object.
+    """
+    task_name = f"{Effect.BOLD}{task.name}{Effect.BOLD_OFF}"
+    task_url = f"{Color.BLUE}{Effect.UNDERLINE}{task.url}{Effect.UNDERLINE_OFF}{Color.OFF}"
+    task_assignees = ", ".join([f"{a.username}" for a in task.assignees])
+    task_assignee_str = f"{Color.BLACK}({task_assignees}){Color.OFF}" if task_assignees else ""
+
+    task_priority = ""
+    if task.priority is not None:
+        priority_color = ColorHex(task.priority["color"])
+        priority_label = task.priority["priority"].capitalize()
+        task_priority = f"[{priority_color}{priority_label}{priority_color.OFF}] "
+
+    print(f" ▫ {task_priority}{task_name}: {task_url} {task_assignee_str}")
+
+
+def _group_by_status(task_list):
+    """Group tasks by status, ordered by color order.
+
+    Args:
+        task_list: List of task objects.
+
+    Returns:
+        Dict of status name -> tasks, ordered by status orderindex.
+    """
+    tasks_by_status = defaultdict(list)
+    color_for_status = {}
+    color_order = {}
+
+    for task in task_list:
+        if task.parent is None:
+            tasks_by_status[task.status.status].append(task)
+            color_for_status[task.status.status] = task.status.color
+            color_order[task.status.status] = task.status.orderindex
+
+    ordered_statuses = list(tasks_by_status.keys())
+    ordered_statuses.sort(key=lambda x: color_order[x])
+
+    return {s: tasks_by_status[s] for s in ordered_statuses}
+
+
+def _group_by_assignee(task_list):
+    """Group tasks by assignee, alphabetically sorted.
+
+    Args:
+        task_list: List of task objects.
+
+    Returns:
+        Dict of assignee name -> tasks, sorted alphabetically.
+    """
+    tasks_by_assignee = defaultdict(list)
+
+    for task in task_list:
+        if task.parent is None:
+            if task.assignees:
+                for assignee in task.assignees:
+                    tasks_by_assignee[assignee.username].append(task)
+            else:
+                tasks_by_assignee["Unassigned"].append(task)
+
+    sorted_assignees = sorted(tasks_by_assignee.keys())
+    return {a: tasks_by_assignee[a] for a in sorted_assignees}
+
+
+def _group_by_priority(task_list):
+    """Group tasks by priority, ordered urgent->high->normal->low->none.
+
+    Args:
+        task_list: List of task objects.
+
+    Returns:
+        Dict of priority name -> tasks, ordered by priority level.
+    """
+    priority_order = {"urgent": 0, "high": 1, "normal": 2, "low": 3, "none": 4}
+    tasks_by_priority = defaultdict(list)
+
+    for task in task_list:
+        if task.parent is None:
+            if task.priority and task.priority.get("priority"):
+                priority = task.priority.get("priority").lower()
+            else:
+                priority = "none"
+            tasks_by_priority[priority].append(task)
+
+    sorted_priorities = sorted(tasks_by_priority.keys(), key=lambda x: priority_order.get(x, 99))
+    return {p: tasks_by_priority[p] for p in sorted_priorities}
+
+
+def render_list(
+    list_obj, team_obj, no_cache: bool = False, assignee=None, priority=None, due_before=None, group_by="status"
+):
+    """Render tasks from a list grouped by status, assignee, or priority.
 
     Args:
         list_obj: List object from ClickUp.
@@ -54,6 +148,7 @@ def render_list(list_obj, team_obj, no_cache: bool = False, assignee=None, prior
         assignee: Filter by assignee username (case-insensitive).
         priority: Filter by priority level (low, normal, high, urgent).
         due_before: Filter tasks due before date (YYYY-MM-DD).
+        group_by: Group by "status" (default), "assignee", or "priority".
     """
     # Print a header with the list and team names
     styled_list_name = f"{Color.YELLOW}{Effect.BOLD}{list_obj.name}{Effect.BOLD_OFF}{Color.OFF}"
@@ -67,6 +162,8 @@ def render_list(list_obj, team_obj, no_cache: bool = False, assignee=None, prior
         filters.append(f"priority={priority}")
     if due_before:
         filters.append(f"due_before={due_before}")
+    if group_by != "status":
+        filters.append(f"group_by={group_by}")
 
     filter_info = f" [{', '.join(filters)}]" if filters else ""
     print(f"{styled_list_name} :: Team: {team_name}{filter_info}")
@@ -79,35 +176,32 @@ def render_list(list_obj, team_obj, no_cache: bool = False, assignee=None, prior
     # Apply filters
     task_list = _filter_tasks(task_list, assignee=assignee, priority=priority, due_before=due_before)
 
-    tasks_by_status = defaultdict(list)
-    color_for_status = {}
-    color_order = {}
+    # Group tasks
+    if group_by == "assignee":
+        grouped = _group_by_assignee(task_list)
+    elif group_by == "priority":
+        grouped = _group_by_priority(task_list)
+    else:
+        grouped = _group_by_status(task_list)
 
-    for task in task_list:
-        # ignore print subtasks...
-        if task.parent is None:
-            tasks_by_status[task.status.status].append(task)
-            color_for_status[task.status.status] = task.status.color
-            color_order[task.status.status] = task.status.orderindex
+    for group_name, tasks in grouped.items():
+        if group_by == "status":
+            # Find color for status
+            if tasks:
+                status_color = BgColorHex(tasks[0].status.color)
+                print(f"\n{status_color} {group_name.upper()} {status_color.OFF} \n")
+        elif group_by == "assignee":
+            print(f"\n{Effect.BOLD}{Color.YELLOW}{group_name}{Color.OFF}{Effect.BOLD_OFF}\n")
+        elif group_by == "priority":
+            priority_colors = {
+                "urgent": "#FF0000",
+                "high": "#FF8800",
+                "normal": "#0088FF",
+                "low": "#00AA00",
+                "none": "#888888",
+            }
+            color = priority_colors.get(group_name, "#888888")
+            print(f"\n{ColorHex(color)}{Effect.BOLD} {group_name.upper()} {Effect.BOLD_OFF}{Color.OFF}\n")
 
-    ordered_statuses = list(tasks_by_status.keys())
-    ordered_statuses.sort(key=lambda x: color_order[x])
-
-    for status_name in ordered_statuses:
-        task_list = tasks_by_status[status_name]
-        status_color = BgColorHex(color_for_status[status_name])
-        print(f"\n{status_color} {status_name.upper()} {status_color.OFF} \n")
-
-        for task in task_list:
-            task_name = f"{Effect.BOLD}{task.name}{Effect.BOLD_OFF}"
-            task_url = f"{Color.BLUE}{Effect.UNDERLINE}{task.url}{Effect.UNDERLINE_OFF}{Color.OFF}"
-            task_assinees = ", ".join([f"{a.username}" for a in task.assignees])
-            task_assignees = f"{Color.BLACK}({task_assinees}){Color.OFF}" if task_assinees else ""
-
-            task_priority = ""
-            if task.priority is not None:
-                priority_color = ColorHex(task.priority["color"])
-                priority_label = task.priority["priority"].capitalize()
-                task_priority = f"[{priority_color}{priority_label}{priority_color.OFF}] "
-
-            print(f" ▫ {task_priority}{task_name}: {task_url} {task_assignees}")
+        for task in tasks:
+            _render_task(task)

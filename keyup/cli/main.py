@@ -26,6 +26,9 @@ def list_tasks(
     due_before: Annotated[
         str | None, Parameter(name="--due-before", help="Filter tasks due before date (YYYY-MM-DD)")
     ] = None,
+    group_by: Annotated[
+        str, Parameter(name="--group-by", help="Group by: status (default), assignee, priority")
+    ] = "status",
     no_cache: Annotated[bool, Parameter(name="--no-cache", help="Bypass cache")] = False,
 ) -> None:
     """List tasks from a ClickUp list.
@@ -37,6 +40,9 @@ def list_tasks(
         --assignee: Filter by assignee username (case-insensitive)
         --priority: Filter by priority level (low, normal, high, urgent)
         --due-before: Filter tasks due before date (YYYY-MM-DD)
+
+    Grouping:
+        --group-by: Group by status (default), assignee, or priority
     """
     environ = init_environ()
     token = environ.get("TOKEN")
@@ -60,7 +66,15 @@ def list_tasks(
     space_obj = get_space_for(team_obj, argv)
     project_obj = get_project_for(space_obj, argv)
     list_obj = get_list_for(project_obj, argv)
-    render_list(list_obj, team_obj, no_cache=no_cache, assignee=assignee, priority=priority, due_before=due_before)
+    render_list(
+        list_obj,
+        team_obj,
+        no_cache=no_cache,
+        assignee=assignee,
+        priority=priority,
+        due_before=due_before,
+        group_by=group_by,
+    )
 
 
 def run_app():

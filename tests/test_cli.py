@@ -66,5 +66,5 @@ class TestListTasks:
         mock_get_project_for.assert_called()
         mock_get_list_for.assert_called()
         mock_render_list.assert_called_once_with(
-            mock_list, mock_team, no_cache=False, assignee=None, priority=None, due_before=None
+            mock_list, mock_team, no_cache=False, assignee=None, priority=None, due_before=None, group_by="status"
         )
