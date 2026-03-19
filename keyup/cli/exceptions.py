@@ -103,12 +103,14 @@ class ListNotFoundError(ClickupyError):
 
     exit_code = 3
 
-    def __init__(self, list_id: str | None = None):
+    def __init__(self, list_id: str | None = None, hint: str | None = None):
         if list_id:
             super().__init__(
                 f"List '{list_id}' not found.",
                 "Check that the list ID is correct and belongs to the selected project.",
             )
+        elif hint:
+            super().__init__("No lists found.", hint)
         else:
             super().__init__(
                 "No lists found for this project.",

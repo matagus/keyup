@@ -178,3 +178,38 @@ def get_list_for(space_obj, argv):
     except Exception:
         # Invalid list ID provided
         raise ListNotFoundError(list_id=argv[argv.index("--list") + 1] if "--list" in argv else None)
+
+
+def get_current_sprint_list(team, space):
+    """Auto-detect current sprint list from team's lists.
+
+    Searches for lists containing "sprint" or "iteration" in the name (case-insensitive).
+    Sorts candidates by ID descending (most recent first) and returns the first match.
+
+    Args:
+        team: Team object.
+        space: Space object (used to filter lists by space).
+
+    Returns:
+        List object for the current sprint.
+
+    Raises:
+        ListNotFoundError: If no sprint lists are found.
+    """
+    # Get all lists for the team
+    all_lists = team.lists
+
+    # Filter by space if provided
+    if space:
+        all_lists = [li for li in all_lists if li.space_id == space.id]
+
+    # Find sprint/iteration lists
+    sprint_lists = [li for li in all_lists if "sprint" in li.name.lower() or "iteration" in li.name.lower()]
+
+    if not sprint_lists:
+        raise ListNotFoundError(hint="No lists found with 'sprint' or 'iteration' in the name")
+
+    # Sort by ID descending (most recent first)
+    sprint_lists.sort(key=lambda x: x.id, reverse=True)
+
+    return sprint_lists[0]
