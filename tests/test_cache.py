@@ -1,8 +1,7 @@
 """Tests for KeyUp! cache module."""
 
-import pytest
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 
 from keyup.cli.cache import (
     get_cache,
@@ -23,6 +22,7 @@ class TestGetCache:
     def test_get_cache_creates_directory(self, tmp_path):
         """Test that get_cache creates the cache directory."""
         import shutil
+
         cache_dir = Path.home() / ".keyup" / "cache"
         backup_path = tmp_path / "keyup_cache_backup"
 

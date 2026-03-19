@@ -19,12 +19,24 @@ def list_tasks(
     space: Annotated[str | None, Parameter(name="--space", help="Space ID")] = None,
     project: Annotated[str | None, Parameter(name="--project", help="Project ID")] = None,
     list_id: Annotated[str | None, Parameter(name="--list", help="List ID")] = None,
+    assignee: Annotated[str | None, Parameter(name="--assignee", help="Filter by assignee username")] = None,
+    priority: Annotated[
+        str | None, Parameter(name="--priority", help="Filter by priority (low, normal, high, urgent)")
+    ] = None,
+    due_before: Annotated[
+        str | None, Parameter(name="--due-before", help="Filter tasks due before date (YYYY-MM-DD)")
+    ] = None,
     no_cache: Annotated[bool, Parameter(name="--no-cache", help="Bypass cache")] = False,
 ) -> None:
     """List tasks from a ClickUp list.
 
     Navigates through Team -> Space -> Project -> List hierarchy
     and displays all tasks grouped by status.
+
+    Filters:
+        --assignee: Filter by assignee username (case-insensitive)
+        --priority: Filter by priority level (low, normal, high, urgent)
+        --due-before: Filter tasks due before date (YYYY-MM-DD)
     """
     environ = init_environ()
     token = environ.get("TOKEN")
@@ -48,7 +60,7 @@ def list_tasks(
     space_obj = get_space_for(team_obj, argv)
     project_obj = get_project_for(space_obj, argv)
     list_obj = get_list_for(project_obj, argv)
-    render_list(list_obj, team_obj, no_cache=no_cache)
+    render_list(list_obj, team_obj, no_cache=no_cache, assignee=assignee, priority=priority, due_before=due_before)
 
 
 def run_app():

@@ -3,7 +3,6 @@
 Provides TTL-based caching for ClickUp API responses to reduce API calls.
 """
 
-import os
 from pathlib import Path
 
 import diskcache
@@ -25,7 +24,7 @@ def get_cache() -> diskcache.Cache:
     return diskcache.Cache(str(CACHE_DIR))
 
 
-def get_teams_data(clickup) -> list:
+def get_teams_data(clickup):
     """Get teams data from cache or fetch from API.
 
     Args:
@@ -38,14 +37,14 @@ def get_teams_data(clickup) -> list:
     cache_key = "teams"
 
     if cache_key in cache:
-        return cache.get(cache_key)
+        return cache.get(cache_key)  # type: ignore[no-any-return]  # type: ignore[no-any-return]  # type: ignore[no-any-return]
 
     teams = clickup.teams
     cache.set(cache_key, teams, expire=TEAMS_TTL)
     return teams
 
 
-def get_lists_data(team) -> list:
+def get_lists_data(team):
     """Get lists data for a team from cache or fetch from API.
 
     Args:
@@ -58,14 +57,14 @@ def get_lists_data(team) -> list:
     cache_key = f"lists:{team.id}"
 
     if cache_key in cache:
-        return cache.get(cache_key)
+        return cache.get(cache_key)  # type: ignore[no-any-return]  # type: ignore[no-any-return]  # type: ignore[no-any-return]
 
     lists = team.lists
     cache.set(cache_key, lists, expire=LISTS_TTL)
     return lists
 
 
-def get_tasks_data(team, list_id: str) -> list:
+def get_tasks_data(team, list_id: str):
     """Get tasks data for a list from cache or fetch from API.
 
     Args:
@@ -79,7 +78,7 @@ def get_tasks_data(team, list_id: str) -> list:
     cache_key = f"tasks:{list_id}"
 
     if cache_key in cache:
-        return cache.get(cache_key)
+        return cache.get(cache_key)  # type: ignore[no-any-return]  # type: ignore[no-any-return]
 
     tasks = team.get_all_tasks(subtasks=False, list_ids=[list_id])
     cache.set(cache_key, tasks, expire=TASKS_TTL)
