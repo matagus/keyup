@@ -78,6 +78,10 @@ def list_tasks(
         priority=priority,
         due_before=due_before,
         group_by=group_by,
+        team=team or team_obj.id,
+        space=space or space_obj.id,
+        project=project or project_obj.id,
+        list_id=list_id or list_obj.id,
     )
 
 
@@ -143,7 +147,7 @@ def sprint(
 
     team_obj = get_team(clickup, argv, interactive=interactive)
     space_obj = get_space_for(team_obj, argv, interactive=interactive)
-    _ = get_project_for(space_obj, argv, interactive=interactive)  # Navigate to project but don't use it
+    project_obj = get_project_for(space_obj, argv, interactive=interactive)
 
     # Auto-detect sprint list
     list_obj = get_current_sprint_list(team_obj, space_obj)
@@ -156,6 +160,10 @@ def sprint(
         priority=priority,
         due_before=due_before,
         group_by=group_by,
+        team=team or team_obj.id,
+        space=space or space_obj.id,
+        project=project or project_obj.id,
+        list_id=list_obj.id,
     )
 
 

@@ -293,10 +293,15 @@ class TestRenderList:
         mock_team = Mock()
         mock_team.name = "Test Team"
 
-        render_list(mock_list, mock_team, assignee="john", priority="high", group_by="priority")
+        render_list(mock_list, mock_team, assignee="john", priority="high", group_by="priority",
+                    team="team-123", space="space-456", project="proj-789", list_id="list-123")
 
         captured = capsys.readouterr()
         assert "Run again:" in captured.out
+        assert "--team team-123" in captured.out
+        assert "--space space-456" in captured.out
+        assert "--project proj-789" in captured.out
+        assert "--list list-123" in captured.out
         assert "--assignee john" in captured.out
         assert "--priority high" in captured.out
         assert "--group-by priority" in captured.out
@@ -322,8 +327,66 @@ class TestRenderList:
         mock_team = Mock()
         mock_team.name = "Test Team"
 
-        render_list(mock_list, mock_team)
+        render_list(mock_list, mock_team, team="team-123", list_id="list-123")
 
         captured = capsys.readouterr()
         assert "Run again:" in captured.out
-        assert "keyup" in captured.out
+        assert "--team team-123" in captured.out
+        assert "--list list-123" in captured.out
+        # Should not include optional filters
+        assert "--assignee" not in captured.out
+        assert "--priority" not in captured.out
+        assert "--group-by" not in captured.out
+
+    @patch("keyup.cli.renderer.get_tasks_data")
+    def test_render_list_run_again_suggestion_with_all_params(self, mock_get_tasks, capsys):
+        """Test render_list displays comprehensive 'Run again' suggestion with all parameters."""
+        mock_assignee = Mock()
+        mock_assignee.username = "jane"
+
+        mock_status = Mock()
+        mock_status.status = "To Do"
+        mock_status.color = "#123456"
+        mock_status.orderindex = 0
+
+        mock_task = Mock()
+        mock_task.parent = None
+        mock_task.status = mock_status
+        mock_task.name = "Test Task"
+        mock_task.url = "https://test.com"
+        mock_task.assignees = [mock_assignee]
+        mock_task.priority = {"priority": "urgent", "color": "#FF0000"}
+        mock_task.due_date = "2024-01-01T00:00:00.000Z"
+
+        mock_list = Mock()
+        mock_list.name = "Test List"
+        mock_list.id = "list-123"
+
+        mock_team = Mock()
+        mock_team.name = "Test Team"
+        mock_team.get_all_tasks.return_value = [mock_task]
+
+        render_list(
+            mock_list, mock_team,
+            team="team-abc",
+            space="space-def",
+            project="proj-ghi",
+            list_id="list-123",
+            assignee="jane",
+            priority="urgent",
+            due_before="2024-12-31",
+            group_by="assignee",
+            no_cache=True
+        )
+
+        captured = capsys.readouterr()
+        assert "Run again:" in captured.out
+        assert "--team team-abc" in captured.out
+        assert "--space space-def" in captured.out
+        assert "--project proj-ghi" in captured.out
+        assert "--list list-123" in captured.out
+        assert "--assignee jane" in captured.out
+        assert "--priority urgent" in captured.out
+        assert "--due-before 2024-12-31" in captured.out
+        assert "--group-by assignee" in captured.out
+        assert "--no-cache" in captured.out

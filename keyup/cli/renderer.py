@@ -137,7 +137,8 @@ def _group_by_priority(task_list):
 
 
 def render_list(
-    list_obj, team_obj, no_cache: bool = False, assignee=None, priority=None, due_before=None, group_by="status"
+    list_obj, team_obj, no_cache: bool = False, assignee=None, priority=None, due_before=None, group_by="status",
+    team=None, space=None, project=None, list_id=None
 ):
     """Render tasks from a list grouped by status, assignee, or priority.
 
@@ -149,6 +150,10 @@ def render_list(
         priority: Filter by priority level (low, normal, high, urgent).
         due_before: Filter tasks due before date (YYYY-MM-DD).
         group_by: Group by "status" (default), "assignee", or "priority".
+        team: Team ID from command line.
+        space: Space ID from command line.
+        project: Project ID from command line.
+        list_id: List ID from command line.
     """
     # Print a header with the list and team names
     styled_list_name = f"{Color.YELLOW}{Effect.BOLD}{list_obj.name}{Effect.BOLD_OFF}{Color.OFF}"
@@ -209,6 +214,14 @@ def render_list(
     # Render suggestion for repeating the command
     print()
     cmd_parts = ["keyup"]
+    if team:
+        cmd_parts.append(f"--team {team}")
+    if space:
+        cmd_parts.append(f"--space {space}")
+    if project:
+        cmd_parts.append(f"--project {project}")
+    if list_id:
+        cmd_parts.append(f"--list {list_id}")
     if assignee:
         cmd_parts.append(f"--assignee {assignee}")
     if priority:
