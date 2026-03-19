@@ -5,6 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "KeyUp"
 dynamic = ["version"]
+requires-python = ">=3.10"
 description = " A colorful command-line client for Clickup written in Python 3.10+."
 readme = "README.md"
 authors = [
