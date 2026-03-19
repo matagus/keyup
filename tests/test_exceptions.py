@@ -1,44 +1,158 @@
 """Tests for KeyUp! exceptions."""
 
+import pytest
+
 from keyup.cli.exceptions import (
-    NoTeamFoundError,
-    NoSpaceFoundError,
-    NoProjectFoundError,
-    NoListFoundError,
+    ClickupyError,
+    TokenError,
+    TeamNotFoundError,
+    TeamAmbiguousError,
+    SpaceNotFoundError,
+    ProjectNotFoundError,
+    ListNotFoundError,
+    NetworkError,
+    APIError,
+    handle_exception,
 )
 
 
-class TestNoTeamFoundError:
-    """Tests for NoTeamFoundError exception."""
+class TestClickupyError:
+    """Tests for base ClickupyError."""
+
+    def test_default_message(self):
+        """Test default message."""
+        exc = ClickupyError("Test error")
+        assert str(exc) == "Test error"
+        assert exc.exit_code == 1
+
+    def test_message_with_hint(self):
+        """Test message with hint."""
+        exc = ClickupyError("Test error", "Fix this")
+        assert "Test error" in str(exc)
+        assert "Hint: Fix this" in str(exc)
+
+
+class TestTokenError:
+    """Tests for TokenError."""
 
     def test_message(self):
         """Test exception message."""
-        exc = NoTeamFoundError()
-        assert str(exc) == "No team found. Please create at least one team."
+        exc = TokenError()
+        assert "Invalid or missing ClickUp API token" in exc.message
+        assert exc.exit_code == 1
 
 
-class TestNoSpaceFoundError:
-    """Tests for NoSpaceFoundError exception."""
+class TestTeamNotFoundError:
+    """Tests for TeamNotFoundError."""
+
+    def test_no_team_id(self):
+        """Test with no team ID."""
+        exc = TeamNotFoundError()
+        assert "No teams found" in exc.message
+        assert exc.exit_code == 2
+
+    def test_with_team_id(self):
+        """Test with specific team ID."""
+        exc = TeamNotFoundError(team_id="abc123")
+        assert "Team 'abc123' not found" in exc.message
+        assert exc.exit_code == 2
+
+
+class TestTeamAmbiguousError:
+    """Tests for TeamAmbiguousError."""
 
     def test_message(self):
         """Test exception message."""
-        exc = NoSpaceFoundError()
-        assert str(exc) == "No space found. Please create at least one space for this team."
+        exc = TeamAmbiguousError(["Team A", "Team B"])
+        assert "Multiple teams found: Team A, Team B" in exc.message
+        assert exc.exit_code == 2
 
 
-class TestNoProjectFoundError:
-    """Tests for NoProjectFoundError exception."""
+class TestSpaceNotFoundError:
+    """Tests for SpaceNotFoundError."""
 
-    def test_message(self):
-        """Test exception message."""
-        exc = NoProjectFoundError()
-        assert str(exc) == "No project found. Please create at least one project for this space."
+    def test_no_space_id(self):
+        """Test with no space ID."""
+        exc = SpaceNotFoundError()
+        assert "No spaces found" in exc.message
+        assert exc.exit_code == 2
+
+    def test_with_space_id(self):
+        """Test with specific space ID."""
+        exc = SpaceNotFoundError(space_id="xyz789")
+        assert "Space 'xyz789' not found" in exc.message
 
 
-class TestNoListFoundError:
-    """Tests for NoListFoundError exception."""
+class TestProjectNotFoundError:
+    """Tests for ProjectNotFoundError."""
 
-    def test_message(self):
-        """Test exception message."""
-        exc = NoListFoundError()
-        assert str(exc) == "No list found. Please create at least one list for this project."
+    def test_no_project_id(self):
+        """Test with no project ID."""
+        exc = ProjectNotFoundError()
+        assert "No projects found" in exc.message
+        assert exc.exit_code == 2
+
+
+class TestListNotFoundError:
+    """Tests for ListNotFoundError."""
+
+    def test_no_list_id(self):
+        """Test with no list ID."""
+        exc = ListNotFoundError()
+        assert "No lists found" in exc.message
+        assert exc.exit_code == 3
+
+    def test_with_list_id(self):
+        """Test with specific list ID."""
+        exc = ListNotFoundError(list_id="list-000")
+        assert "List 'list-000' not found" in exc.message
+
+
+class TestNetworkError:
+    """Tests for NetworkError."""
+
+    def test_default_message(self):
+        """Test default message."""
+        exc = NetworkError()
+        assert "Network error occurred" in exc.message
+        assert exc.exit_code == 4
+
+
+class TestAPIError:
+    """Tests for APIError."""
+
+    def test_default(self):
+        """Test default API error."""
+        exc = APIError()
+        assert exc.exit_code == 5
+
+    def test_401(self):
+        """Test 401 status code."""
+        exc = APIError(status_code=401)
+        assert exc.hint
+        assert "Authentication failed" in exc.hint
+
+    def test_403(self):
+        """Test 403 status code."""
+        exc = APIError(status_code=403)
+        assert exc.hint
+        assert "Access denied" in exc.hint
+
+    def test_429(self):
+        """Test 429 status code."""
+        exc = APIError(status_code=429)
+        assert exc.hint
+        assert "Rate limit" in exc.hint
+
+
+class TestHandleException:
+    """Tests for handle_exception function."""
+
+    def test_exit_code(self):
+        """Test that correct exit code is used."""
+        exc = ListNotFoundError()
+
+        with pytest.raises(SystemExit) as exc_info:
+            handle_exception(exc)
+
+        assert exc_info.value.code == 3

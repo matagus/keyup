@@ -1,7 +1,6 @@
 """Tests for KeyUp! CLI module."""
 
-import pytest
-from unittest.mock import Mock, patch, MagicMock, call
+from unittest.mock import Mock, patch
 
 from keyup.cli.main import app, list_tasks
 
@@ -34,10 +33,17 @@ class TestListTasks:
     @patch("keyup.cli.main.get_team")
     @patch("keyup.cli.main.ClickUp")
     @patch("keyup.cli.main.init_environ")
-    def test_list_tasks_with_all_params(self, mock_environ, mock_clickup_class,
-                                         mock_get_team, mock_get_space_for,
-                                         mock_get_project_for, mock_get_list_for,
-                                         mock_render_list, capsys):
+    def test_list_tasks_with_all_params(
+        self,
+        mock_environ,
+        mock_clickup_class,
+        mock_get_team,
+        mock_get_space_for,
+        mock_get_project_for,
+        mock_get_list_for,
+        mock_render_list,
+        capsys,
+    ):
         """Test list_tasks with all parameters provided."""
         mock_environ.return_value = {"TOKEN": "test-token"}
 
@@ -51,12 +57,7 @@ class TestListTasks:
         mock_get_project_for.return_value = mock_project
         mock_get_list_for.return_value = mock_list
 
-        list_tasks(
-            team="team-123",
-            space="space-456",
-            project="project-789",
-            list_id="list-000"
-        )
+        list_tasks(team="team-123", space="space-456", project="project-789", list_id="list-000")
 
         mock_environ.assert_called_once()
         mock_clickup_class.assert_called_once_with("test-token")

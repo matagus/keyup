@@ -1,6 +1,5 @@
 """Main CLI entry point for KeyUp! using cyclopts."""
 
-import sys
 from typing import Annotated
 
 from pyclickup import ClickUp
@@ -9,12 +8,7 @@ from cyclopts import App, Parameter
 from .config import init_environ
 from .api_client import get_team, get_space_for, get_project_for, get_list_for
 from .renderer import render_list
-from .exceptions import (
-    NoTeamFoundError,
-    NoSpaceFoundError,
-    NoProjectFoundError,
-    NoListFoundError,
-)
+from .exceptions import TokenError, handle_exception
 
 app = App(name="keyup", help="A simple and beautiful console-based client for ClickUp.")
 
@@ -34,8 +28,8 @@ def list_tasks(
     environ = init_environ()
     token = environ.get("TOKEN")
     if not token:
-        print("Error: TOKEN environment variable not set.")
-        sys.exit(1)
+        raise TokenError()
+
     clickup = ClickUp(token)
 
     # Build argv-style list for backward compatibility with api_client
@@ -49,18 +43,18 @@ def list_tasks(
     if list_id:
         argv.extend(["--list", list_id])
 
-    try:
-        team_obj = get_team(clickup, argv)
-        space_obj = get_space_for(team_obj, argv)
-        project_obj = get_project_for(space_obj, argv)
-        list_obj = get_list_for(project_obj, argv)
-        render_list(list_obj, team_obj)
-
-    except (NoTeamFoundError, NoSpaceFoundError, NoProjectFoundError, NoListFoundError) as e:
-        print(e)
-        sys.exit(1)
+    team_obj = get_team(clickup, argv)
+    space_obj = get_space_for(team_obj, argv)
+    project_obj = get_project_for(space_obj, argv)
+    list_obj = get_list_for(project_obj, argv)
+    render_list(list_obj, team_obj)
 
 
 def run_app():
     """Run the KeyUp! CLI application."""
-    app()
+    from .exceptions import ClickupyError
+
+    try:
+        app()
+    except ClickupyError as e:
+        handle_exception(e)

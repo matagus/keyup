@@ -1,29 +1,158 @@
-"""Custom exceptions for KeyUp! CLI."""
+"""Custom exceptions for KeyUp! CLI with exit codes."""
+
+import sys
 
 
-class NoTeamFoundError(Exception):
-    """Raised when no team is found."""
+class ClickupyError(Exception):
+    """Base exception for KeyUp! CLI."""
+
+    exit_code = 1
+
+    def __init__(self, message: str, hint: str | None = None):
+        self.message = message
+        self.hint = hint
+        super().__init__(self.message)
+
+    def __str__(self) -> str:
+        if self.hint:
+            return f"{self.message}\nHint: {self.hint}"
+        return self.message
+
+
+class TokenError(ClickupyError):
+    """Raised when API token is invalid or missing."""
+
+    exit_code = 1
 
     def __init__(self):
-        super().__init__("No team found. Please create at least one team.")
+        super().__init__(
+            "Invalid or missing ClickUp API token.",
+            "Set CLICKUP_TOKEN in your .env file or environment variables. "
+            "Get your token from ClickUp Settings > Apps > Personal Settings.",
+        )
 
 
-class NoSpaceFoundError(Exception):
-    """Raised when no space is found."""
+class TeamNotFoundError(ClickupyError):
+    """Raised when team ID is invalid or no teams exist."""
 
-    def __init__(self):
-        super().__init__("No space found. Please create at least one space for this team.")
+    exit_code = 2
+
+    def __init__(self, team_id: str | None = None):
+        if team_id:
+            super().__init__(
+                f"Team '{team_id}' not found.",
+                "Check that the team ID is correct and you have access to this team.",
+            )
+        else:
+            super().__init__(
+                "No teams found in your ClickUp account.",
+                "Create at least one team in ClickUp or check your API token permissions.",
+            )
 
 
-class NoProjectFoundError(Exception):
-    """Raised when no project is found."""
+class TeamAmbiguousError(ClickupyError):
+    """Raised when multiple teams exist but no team ID is specified."""
 
-    def __init__(self):
-        super().__init__("No project found. Please create at least one project for this space.")
+    exit_code = 2
+
+    def __init__(self, team_names: list[str]):
+        super().__init__(
+            f"Multiple teams found: {', '.join(team_names)}.",
+            "Specify a team using --team <team_id> or use interactive mode.",
+        )
 
 
-class NoListFoundError(Exception):
-    """Raised when no list is found."""
+class SpaceNotFoundError(ClickupyError):
+    """Raised when space is not found."""
 
-    def __init__(self):
-        super().__init__("No list found. Please create at least one list for this project.")
+    exit_code = 2
+
+    def __init__(self, space_id: str | None = None):
+        if space_id:
+            super().__init__(
+                f"Space '{space_id}' not found.",
+                "Check that the space ID is correct and belongs to the selected team.",
+            )
+        else:
+            super().__init__(
+                "No spaces found for this team.",
+                "Create at least one space in this team or check permissions.",
+            )
+
+
+class ProjectNotFoundError(ClickupyError):
+    """Raised when project is not found."""
+
+    exit_code = 2
+
+    def __init__(self, project_id: str | None = None):
+        if project_id:
+            super().__init__(
+                f"Project '{project_id}' not found.",
+                "Check that the project ID is correct and belongs to the selected space.",
+            )
+        else:
+            super().__init__(
+                "No projects found for this space.",
+                "Create at least one project in this space or check permissions.",
+            )
+
+
+class ListNotFoundError(ClickupyError):
+    """Raised when list is not found."""
+
+    exit_code = 3
+
+    def __init__(self, list_id: str | None = None):
+        if list_id:
+            super().__init__(
+                f"List '{list_id}' not found.",
+                "Check that the list ID is correct and belongs to the selected project.",
+            )
+        else:
+            super().__init__(
+                "No lists found for this project.",
+                "Create at least one list in this project or check permissions.",
+            )
+
+
+class NetworkError(ClickupyError):
+    """Raised for HTTP/connection failures."""
+
+    exit_code = 4
+
+    def __init__(self, message: str = "Network error occurred."):
+        super().__init__(
+            message,
+            "Check your internet connection and try again. "
+            "If the problem persists, ClickUp API may be experiencing issues.",
+        )
+
+
+class APIError(ClickupyError):
+    """Raised for ClickUp API errors."""
+
+    exit_code = 5
+
+    def __init__(self, message: str = "ClickUp API error.", status_code: int | None = None):
+        hint = None
+        if status_code == 401:
+            hint = "Authentication failed. Check your API token."
+        elif status_code == 403:
+            hint = "Access denied. Check your permissions in ClickUp."
+        elif status_code == 404:
+            hint = "Resource not found. Check the ID and try again."
+        elif status_code == 429:
+            hint = "Rate limit exceeded. Wait a moment and try again."
+        elif status_code and status_code >= 500:
+            hint = "ClickUp server error. Try again later."
+
+        super().__init__(message, hint)
+
+
+def handle_exception(exc: ClickupyError) -> None:
+    """Print exception message and exit with appropriate code."""
+    print(f"Error: {exc.message}", file=sys.stderr)
+    if exc.hint:
+        print(f"Hint: {exc.hint}", file=sys.stderr)
+    sys.exit(exc.exit_code)
