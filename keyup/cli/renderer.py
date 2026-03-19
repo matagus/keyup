@@ -205,3 +205,61 @@ def render_list(
 
         for task in tasks:
             _render_task(task)
+
+
+def render_task_detail(task):
+    """Render detailed task information.
+
+    Args:
+        task: Task object from ClickUp.
+    """
+    print(f"{Effect.BOLD}{Color.YELLOW}Task Details{Color.OFF}{Effect.BOLD_OFF}")
+    print(f"{'─' * 40}")
+
+    # ID and Name
+    print(f"\n{Effect.BOLD}ID:{Effect.BOLD_OFF} {task.id}")
+    print(f"{Effect.BOLD}Name:{Effect.BOLD_OFF} {task.name}")
+
+    # Status
+    status_color = ColorHex(task.status.color)
+    print(f"{Effect.BOLD}Status:{Effect.BOLD_OFF} {status_color}{task.status.status}{status_color.OFF}")
+
+    # URL
+    print(
+        f"{Effect.BOLD}URL:{Effect.BOLD_OFF} {Color.BLUE}{Effect.UNDERLINE}{task.url}{Effect.UNDERLINE_OFF}{Color.OFF}"
+    )
+
+    # Assignees
+    if task.assignees:
+        assignee_names = ", ".join([f"{a.username}" for a in task.assignees])
+        print(f"{Effect.BOLD}Assignees:{Effect.BOLD_OFF} {assignee_names}")
+    else:
+        print(f"{Effect.BOLD}Assignees:{Effect.BOLD_OFF} Unassigned")
+
+    # Priority
+    if task.priority:
+        priority_color = ColorHex(task.priority["color"])
+        priority_label = task.priority["priority"].capitalize()
+        print(f"{Effect.BOLD}Priority:{Effect.BOLD_OFF} {priority_color}{priority_label}{priority_color.OFF}")
+    else:
+        print(f"{Effect.BOLD}Priority:{Effect.BOLD_OFF} None")
+
+    # Due Date
+    if task.due_date:
+        due_date = task.due_date.split("T")[0]
+        print(f"{Effect.BOLD}Due Date:{Effect.BOLD_OFF} {due_date}")
+    else:
+        print(f"{Effect.BOLD}Due Date:{Effect.BOLD_OFF} None")
+
+    # Description
+    if task.description:
+        print(f"\n{Effect.BOLD}Description:{Effect.BOLD_OFF}")
+        print(f"{task.description}")
+
+    # Subtasks
+    if hasattr(task, "subtasks") and task.subtasks:
+        print(f"\n{Effect.BOLD}Subtasks ({len(task.subtasks)}):{Effect.BOLD_OFF}")
+        for subtask in task.subtasks:
+            print(f"  - {subtask.name}")
+    else:
+        print(f"\n{Effect.BOLD}Subtasks:{Effect.BOLD_OFF} None")

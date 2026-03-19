@@ -1,7 +1,7 @@
 """Tests for KeyUp! sprint command."""
 
 import pytest
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 from keyup.cli.api_client import get_current_sprint_list
 

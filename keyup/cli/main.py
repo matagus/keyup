@@ -7,7 +7,7 @@ from cyclopts import App, Parameter
 
 from .config import init_environ
 from .api_client import get_team, get_space_for, get_project_for, get_list_for, get_current_sprint_list
-from .renderer import render_list
+from .renderer import render_list, render_task_detail
 from .exceptions import TokenError, handle_exception
 
 app = App(name="keyup", help="A simple and beautiful console-based client for ClickUp.")
@@ -149,3 +149,37 @@ def sprint(
         due_before=due_before,
         group_by=group_by,
     )
+
+
+@app.command(name="task")
+def show_task(
+    task_id: Annotated[str, Parameter(name="task_id", help="Task ID")],
+    team: Annotated[str | None, Parameter(name="--team", help="Team ID")] = None,
+) -> None:
+    """Show detailed information about a specific task.
+
+    Displays all task metadata including ID, name, status, URL,
+    assignees, priority, due date, description, and subtasks.
+
+    Args:
+        task_id: ClickUp task ID.
+        team: Optional team ID (required if multiple teams exist).
+    """
+    environ = init_environ()
+    token = environ.get("TOKEN")
+    if not token:
+        raise TokenError()
+
+    clickup = ClickUp(token)
+
+    # Build argv for team resolution
+    argv = []
+    if team:
+        argv.extend(["--team", team])
+
+    get_team(clickup, argv)
+
+    # Get task by ID
+    task = clickup.get_task_by_id(task_id)  # type: ignore[attr-defined]
+
+    render_task_detail(task)
