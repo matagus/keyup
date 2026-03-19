@@ -19,6 +19,7 @@ def list_tasks(
     space: Annotated[str | None, Parameter(name="--space", help="Space ID")] = None,
     project: Annotated[str | None, Parameter(name="--project", help="Project ID")] = None,
     list_id: Annotated[str | None, Parameter(name="--list", help="List ID")] = None,
+    no_cache: Annotated[bool, Parameter(name="--no-cache", help="Bypass cache")] = False,
 ) -> None:
     """List tasks from a ClickUp list.
 
@@ -47,7 +48,7 @@ def list_tasks(
     space_obj = get_space_for(team_obj, argv)
     project_obj = get_project_for(space_obj, argv)
     list_obj = get_list_for(project_obj, argv)
-    render_list(list_obj, team_obj)
+    render_list(list_obj, team_obj, no_cache=no_cache)
 
 
 def run_app():

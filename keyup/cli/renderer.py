@@ -4,20 +4,26 @@ from collections import defaultdict
 
 from colorist import Effect, Color, ColorHex, BgColorHex
 
+from .cache import get_tasks_data
 
-def render_list(list_obj, team_obj):
+
+def render_list(list_obj, team_obj, no_cache: bool = False):
     """Render tasks from a list grouped by status.
 
     Args:
         list_obj: List object from ClickUp.
         team_obj: Team object from ClickUp.
+        no_cache: If True, bypass cache and fetch from API.
     """
     # Print a header with the list and team names
     styled_list_name = f"{Color.YELLOW}{Effect.BOLD}{list_obj.name}{Effect.BOLD_OFF}{Color.OFF}"
     team_name = f"{Effect.BOLD}{Color.MAGENTA}{team_obj.name}{Color.OFF}{Effect.BOLD_OFF}"
     print(f"{styled_list_name} :: Team: {team_name}")
 
-    task_list = team_obj.get_all_tasks(subtasks=False, list_ids=[list_obj.id])
+    if no_cache:
+        task_list = team_obj.get_all_tasks(subtasks=False, list_ids=[list_obj.id])
+    else:
+        task_list = get_tasks_data(team_obj, list_obj.id)
 
     tasks_by_status = defaultdict(list)
     color_for_status = {}

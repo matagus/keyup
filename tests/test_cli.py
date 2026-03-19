@@ -65,4 +65,4 @@ class TestListTasks:
         mock_get_space_for.assert_called()
         mock_get_project_for.assert_called()
         mock_get_list_for.assert_called()
-        mock_render_list.assert_called_once_with(mock_list, mock_team)
+        mock_render_list.assert_called_once_with(mock_list, mock_team, no_cache=False)
