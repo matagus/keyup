@@ -15,19 +15,20 @@ from .exceptions import (
 )
 
 
-def get_team(clickup, argv):
+def get_team(clickup, argv, interactive=False):
     """Get team from CLI args or interactive selection.
 
     Args:
         clickup: ClickUp client instance.
         argv: Command line arguments.
+        interactive: If True, prompt user to select team when multiple exist.
 
     Returns:
         Team object.
 
     Raises:
         TeamNotFoundError: If team ID is invalid or no teams exist.
-        TeamAmbiguousError: If multiple teams exist but no ID specified.
+        TeamAmbiguousError: If multiple teams exist but interactive=False.
     """
     try:
         team_id = sys.argv[sys.argv.index("--team") + 1]
@@ -38,6 +39,20 @@ def get_team(clickup, argv):
             raise TeamNotFoundError()
 
         if len(clickup.teams) > 1:
+            if interactive:
+                questions = [
+                    inquirer.List(
+                        "team",
+                        message=f"Select a {Color.MAGENTA}Team{Color.OFF}",
+                        choices=[f"{t.name} [{t.id}]" for t in clickup.teams],
+                    )
+                ]
+                answers = inquirer.prompt(questions)
+                if answers:
+                    for t in clickup.teams:
+                        if f"{t.name} [{t.id}]" == answers["team"]:
+                            return t
+
             raise TeamAmbiguousError([t.name for t in clickup.teams])
 
         return clickup.teams[0]
@@ -47,12 +62,13 @@ def get_team(clickup, argv):
         raise TeamNotFoundError(team_id=argv[argv.index("--team") + 1] if "--team" in argv else None)
 
 
-def get_space_for(team, argv):
+def get_space_for(team, argv, interactive=False):
     """Get space from CLI args or interactive selection.
 
     Args:
         team: Team object.
         argv: Command line arguments.
+        interactive: If True, prompt user to select space when multiple exist.
 
     Returns:
         Space object.
@@ -69,20 +85,21 @@ def get_space_for(team, argv):
             raise SpaceNotFoundError()
 
         if len(team.spaces) > 1:
-            questions = [
-                inquirer.List(
-                    "space",
-                    message=f"Select a {Color.CYAN}Space{Color.OFF}",
-                    choices=[f"{space.name} [{space.id}]" for space in team.spaces],
-                )
-            ]
+            if interactive:
+                questions = [
+                    inquirer.List(
+                        "space",
+                        message=f"Select a {Color.CYAN}Space{Color.OFF}",
+                        choices=[f"{space.name} [{space.id}]" for space in team.spaces],
+                    )
+                ]
 
-            answers = inquirer.prompt(questions)
+                answers = inquirer.prompt(questions)
 
-            if answers:
-                for space in team.spaces:
-                    if f"{space.name} [{space.id}]" == answers["space"]:
-                        return space
+                if answers:
+                    for space in team.spaces:
+                        if f"{space.name} [{space.id}]" == answers["space"]:
+                            return space
 
         return team.spaces[0]
 
@@ -91,12 +108,13 @@ def get_space_for(team, argv):
         raise SpaceNotFoundError(space_id=argv[argv.index("--space") + 1] if "--space" in argv else None)
 
 
-def get_project_for(space, argv):
+def get_project_for(space, argv, interactive=False):
     """Get project from CLI args or interactive selection.
 
     Args:
         space: Space object.
         argv: Command line arguments.
+        interactive: If True, prompt user to select project when multiple exist.
 
     Returns:
         Project object.
@@ -113,20 +131,21 @@ def get_project_for(space, argv):
             raise ProjectNotFoundError()
 
         if len(space.projects) > 1:
-            questions = [
-                inquirer.List(
-                    "project",
-                    message=f"Select a {Color.GREEN}Project{Color.OFF}",
-                    choices=[f"{project.name} [{project.id}]" for project in space.projects],
-                )
-            ]
+            if interactive:
+                questions = [
+                    inquirer.List(
+                        "project",
+                        message=f"Select a {Color.GREEN}Project{Color.OFF}",
+                        choices=[f"{project.name} [{project.id}]" for project in space.projects],
+                    )
+                ]
 
-            answers = inquirer.prompt(questions)
+                answers = inquirer.prompt(questions)
 
-            if answers:
-                for project in space.projects:
-                    if f"{project.name} [{project.id}]" == answers["project"]:
-                        return project
+                if answers:
+                    for project in space.projects:
+                        if f"{project.name} [{project.id}]" == answers["project"]:
+                            return project
 
         return space.projects[0]
 
@@ -135,12 +154,13 @@ def get_project_for(space, argv):
         raise ProjectNotFoundError(project_id=argv[argv.index("--project") + 1] if "--project" in argv else None)
 
 
-def get_list_for(space_obj, argv):
+def get_list_for(space_obj, argv, interactive=False):
     """Get list from CLI args or interactive selection.
 
     Args:
         space_obj: Space object.
         argv: Command line arguments.
+        interactive: If True, prompt user to select list when multiple exist.
 
     Returns:
         List object.
@@ -158,20 +178,21 @@ def get_list_for(space_obj, argv):
             raise ListNotFoundError()
 
         if len(space_obj.lists) > 1:
-            questions = [
-                inquirer.List(
-                    "list",
-                    message=f"Select a {Color.YELLOW}List{Color.OFF}",
-                    choices=[f"{li.name} [{li.id}]" for li in space_obj.lists],
-                )
-            ]
+            if interactive:
+                questions = [
+                    inquirer.List(
+                        "list",
+                        message=f"Select a {Color.YELLOW}List{Color.OFF}",
+                        choices=[f"{li.name} [{li.id}]" for li in space_obj.lists],
+                    )
+                ]
 
-            answers = inquirer.prompt(questions)
+                answers = inquirer.prompt(questions)
 
-            if answers:
-                for li in space_obj.lists:
-                    if f"{li.name} [{li.id}]" == answers["list"]:
-                        return li
+                if answers:
+                    for li in space_obj.lists:
+                        if f"{li.name} [{li.id}]" == answers["list"]:
+                            return li
 
         return space_obj.lists[0]
 

@@ -1,7 +1,6 @@
 """Tests for KeyUp! update command."""
 
-import pytest
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 from keyup.cli.renderer import render_task_update
 

@@ -30,6 +30,7 @@ def list_tasks(
         str, Parameter(name="--group-by", help="Group by: status (default), assignee, priority")
     ] = "status",
     no_cache: Annotated[bool, Parameter(name="--no-cache", help="Bypass cache")] = False,
+    interactive: Annotated[bool, Parameter(name="-i", help="Enable interactive mode")] = False,
 ) -> None:
     """List tasks from a ClickUp list.
 
@@ -43,6 +44,9 @@ def list_tasks(
 
     Grouping:
         --group-by: Group by status (default), assignee, or priority
+
+    Interactive Mode:
+        -i, --interactive: Prompt for Team/Space/Project/List selection
     """
     environ = init_environ()
     token = environ.get("TOKEN")
@@ -62,10 +66,10 @@ def list_tasks(
     if list_id:
         argv.extend(["--list", list_id])
 
-    team_obj = get_team(clickup, argv)
-    space_obj = get_space_for(team_obj, argv)
-    project_obj = get_project_for(space_obj, argv)
-    list_obj = get_list_for(project_obj, argv)
+    team_obj = get_team(clickup, argv, interactive=interactive)
+    space_obj = get_space_for(team_obj, argv, interactive=interactive)
+    project_obj = get_project_for(space_obj, argv, interactive=interactive)
+    list_obj = get_list_for(project_obj, argv, interactive=interactive)
     render_list(
         list_obj,
         team_obj,
@@ -103,6 +107,7 @@ def sprint(
         str, Parameter(name="--group-by", help="Group by: status (default), assignee, priority")
     ] = "status",
     no_cache: Annotated[bool, Parameter(name="--no-cache", help="Bypass cache")] = False,
+    interactive: Annotated[bool, Parameter(name="-i", help="Enable interactive mode")] = False,
 ) -> None:
     """List tasks from the current sprint.
 
@@ -116,6 +121,9 @@ def sprint(
 
     Grouping:
         --group-by: Group by status (default), assignee, or priority
+
+    Interactive Mode:
+        -i, --interactive: Prompt for Team/Space/Project selection
     """
     environ = init_environ()
     token = environ.get("TOKEN")
@@ -133,9 +141,9 @@ def sprint(
     if project:
         argv.extend(["--project", project])
 
-    team_obj = get_team(clickup, argv)
-    space_obj = get_space_for(team_obj, argv)
-    _ = get_project_for(space_obj, argv)  # Navigate to project but don't use it
+    team_obj = get_team(clickup, argv, interactive=interactive)
+    space_obj = get_space_for(team_obj, argv, interactive=interactive)
+    _ = get_project_for(space_obj, argv, interactive=interactive)  # Navigate to project but don't use it
 
     # Auto-detect sprint list
     list_obj = get_current_sprint_list(team_obj, space_obj)
@@ -155,6 +163,7 @@ def sprint(
 def show_task(
     task_id: Annotated[str, Parameter(name="task_id", help="Task ID")],
     team: Annotated[str | None, Parameter(name="--team", help="Team ID")] = None,
+    interactive: Annotated[bool, Parameter(name="-i", help="Enable interactive mode")] = False,
 ) -> None:
     """Show detailed information about a specific task.
 
@@ -164,6 +173,7 @@ def show_task(
     Args:
         task_id: ClickUp task ID.
         team: Optional team ID (required if multiple teams exist).
+        interactive: Enable interactive team selection.
     """
     environ = init_environ()
     token = environ.get("TOKEN")
@@ -177,7 +187,7 @@ def show_task(
     if team:
         argv.extend(["--team", team])
 
-    get_team(clickup, argv)
+    get_team(clickup, argv, interactive=interactive)
 
     # Get task by ID
     task = clickup.get_task_by_id(task_id)  # type: ignore[attr-defined]
@@ -190,6 +200,7 @@ def update_task(
     task_id: Annotated[str, Parameter(name="task_id", help="Task ID")],
     status: Annotated[str, Parameter(name="--status", help="New status name")],
     team: Annotated[str | None, Parameter(name="--team", help="Team ID")] = None,
+    interactive: Annotated[bool, Parameter(name="-i", help="Enable interactive mode")] = False,
 ) -> None:
     """Update the status of a specific task.
 
@@ -200,6 +211,7 @@ def update_task(
         task_id: ClickUp task ID.
         status: New status name (e.g., "To Do", "In Progress", "Done").
         team: Optional team ID (required if multiple teams exist).
+        interactive: Enable interactive team selection.
     """
     environ = init_environ()
     token = environ.get("TOKEN")
@@ -213,7 +225,7 @@ def update_task(
     if team:
         argv.extend(["--team", team])
 
-    get_team(clickup, argv)
+    get_team(clickup, argv, interactive=interactive)
 
     # Get current task to find old status
     task = clickup.get_task_by_id(task_id)  # type: ignore[attr-defined]
