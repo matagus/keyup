@@ -7,7 +7,7 @@ from cyclopts import App, Parameter
 
 from .config import init_environ
 from .api_client import get_team, get_space_for, get_project_for, get_list_for, get_current_sprint_list
-from .renderer import render_list, render_task_detail
+from .renderer import render_list, render_task_detail, render_task_update
 from .exceptions import TokenError, handle_exception
 
 app = App(name="keyup", help="A simple and beautiful console-based client for ClickUp.")
@@ -183,3 +183,43 @@ def show_task(
     task = clickup.get_task_by_id(task_id)  # type: ignore[attr-defined]
 
     render_task_detail(task)
+
+
+@app.command(name="update")
+def update_task(
+    task_id: Annotated[str, Parameter(name="task_id", help="Task ID")],
+    status: Annotated[str, Parameter(name="--status", help="New status name")],
+    team: Annotated[str | None, Parameter(name="--team", help="Team ID")] = None,
+) -> None:
+    """Update the status of a specific task.
+
+    Changes the task status to the specified value.
+    Shows confirmation with old -> new status transition.
+
+    Args:
+        task_id: ClickUp task ID.
+        status: New status name (e.g., "To Do", "In Progress", "Done").
+        team: Optional team ID (required if multiple teams exist).
+    """
+    environ = init_environ()
+    token = environ.get("TOKEN")
+    if not token:
+        raise TokenError()
+
+    clickup = ClickUp(token)
+
+    # Build argv for team resolution
+    argv = []
+    if team:
+        argv.extend(["--team", team])
+
+    get_team(clickup, argv)
+
+    # Get current task to find old status
+    task = clickup.get_task_by_id(task_id)  # type: ignore[attr-defined]
+    old_status = task.status.status
+
+    # Update task status
+    clickup.update_task(task_id, status=status)  # type: ignore[attr-defined]
+
+    render_task_update(task_id, old_status, status)

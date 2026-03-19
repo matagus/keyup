@@ -263,3 +263,20 @@ def render_task_detail(task):
             print(f"  - {subtask.name}")
     else:
         print(f"\n{Effect.BOLD}Subtasks:{Effect.BOLD_OFF} None")
+
+
+def render_task_update(task_id, old_status, new_status):
+    """Render task status update confirmation.
+
+    Args:
+        task_id: ClickUp task ID.
+        old_status: Previous status name.
+        new_status: New status name.
+    """
+    print(f"{Effect.BOLD}{Color.GREEN}Task Updated{Color.OFF}{Effect.BOLD_OFF}")
+    print(f"{'─' * 40}")
+    print(f"\n{Effect.BOLD}Task ID:{Effect.BOLD_OFF} {task_id}")
+    print(
+        f"{Effect.BOLD}Status:{Effect.BOLD_OFF} {Color.YELLOW}{old_status}{Color.OFF} → {Color.GREEN}{new_status}{Color.OFF}"
+    )
+    print(f"\n{Color.GREEN}✓{Color.OFF} Status updated successfully")
