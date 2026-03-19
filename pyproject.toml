@@ -30,7 +30,7 @@ classifiers = [
     "Topic :: Software Development",
 ]
 dependencies = [
-  "python-dotenv", "colorist", "pyclickup", "inquirer"
+  "python-dotenv", "colorist", "pyclickup", "inquirer", "cyclopts"
 ]
 
 [project.urls]

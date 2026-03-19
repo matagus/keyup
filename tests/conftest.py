@@ -1,7 +1,7 @@
 """Reusable test fixtures for KeyUp! CLI tests."""
 
 import pytest
-from unittest.mock import Mock, MagicMock
+from unittest.mock import Mock
 
 
 @pytest.fixture

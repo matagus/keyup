@@ -59,7 +59,7 @@ repos:
     hooks:
       - id: creosote
         files: ^keyup/
-        args: ["--paths", "keyup"]
+        args: ["--path", "keyup", "--exclude-dep", "python-dotenv"]
         exclude: ^tests/
 
   - repo: https://github.com/codespell-project/codespell

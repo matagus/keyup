@@ -38,9 +38,10 @@ def get_team(clickup, argv):
 
             answers = inquirer.prompt(questions)
 
-            for team in clickup.teams:
-                if f"{team.name} [{team.id}]" == answers["team"]:
-                    return team
+            if answers:
+                for team in clickup.teams:
+                    if f"{team.name} [{team.id}]" == answers["team"]:
+                        return team
 
         elif len(clickup.teams) == 1:
             return clickup.teams[0]
@@ -77,9 +78,10 @@ def get_space_for(team, argv):
 
             answers = inquirer.prompt(questions)
 
-            for space in team.spaces:
-                if f"{space.name} [{space.id}]" == answers["space"]:
-                    return space
+            if answers:
+                for space in team.spaces:
+                    if f"{space.name} [{space.id}]" == answers["space"]:
+                        return space
 
         elif len(team.spaces) == 1:
             return team.spaces[0]
@@ -116,9 +118,10 @@ def get_project_for(space, argv):
 
             answers = inquirer.prompt(questions)
 
-            for project in space.projects:
-                if f"{project.name} [{project.id}]" == answers["project"]:
-                    return project
+            if answers:
+                for project in space.projects:
+                    if f"{project.name} [{project.id}]" == answers["project"]:
+                        return project
 
         elif len(space.projects) == 1:
             return space.projects[0]
@@ -158,8 +161,9 @@ def get_list_for(space_obj, argv):
 
         answers = inquirer.prompt(questions)
 
-        for li in space_obj.lists:
-            if f"{li.name} [{li.id}]" == answers["list"]:
-                return li
+        if answers:
+            for li in space_obj.lists:
+                if f"{li.name} [{li.id}]" == answers["list"]:
+                    return li
 
     raise NoListFoundError()

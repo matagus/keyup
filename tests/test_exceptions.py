@@ -1,7 +1,5 @@
 """Tests for KeyUp! exceptions."""
 
-import pytest
-
 from keyup.cli.exceptions import (
     NoTeamFoundError,
     NoSpaceFoundError,
