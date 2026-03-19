@@ -158,6 +158,14 @@ Tasks are displayed with:
 
 Status groups are displayed with color-coded headers matching the ClickUp status colors.
 
+At the bottom of the output, a suggestion is shown in gray text with the command to repeat the same query:
+
+```
+Run again: keyup --assignee john --priority high --group-by priority
+```
+
+This makes it easy to re-run the same filtered/grouped view without typing the full command again.
+
 ## Caching
 
 KeyUp! uses disk-based caching to reduce API calls:

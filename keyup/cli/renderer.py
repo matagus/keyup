@@ -206,6 +206,23 @@ def render_list(
         for task in tasks:
             _render_task(task)
 
+    # Render suggestion for repeating the command
+    print()
+    cmd_parts = ["keyup"]
+    if assignee:
+        cmd_parts.append(f"--assignee {assignee}")
+    if priority:
+        cmd_parts.append(f"--priority {priority}")
+    if due_before:
+        cmd_parts.append(f"--due-before {due_before}")
+    if group_by != "status":
+        cmd_parts.append(f"--group-by {group_by}")
+    if no_cache:
+        cmd_parts.append("--no-cache")
+
+    suggestion = " ".join(cmd_parts)
+    print(f"{Color.BLACK}Run again: {suggestion}{Color.OFF}")
+
 
 def render_task_detail(task):
     """Render detailed task information.

@@ -271,3 +271,59 @@ class TestRenderList:
         captured = capsys.readouterr()
         assert "group_by=priority" in captured.out
         assert "HIGH" in captured.out
+
+    @patch("keyup.cli.renderer.get_tasks_data")
+    def test_render_list_shows_run_again_suggestion(self, mock_get_tasks, capsys):
+        """Test render_list displays 'Run again' suggestion at bottom."""
+        mock_task = Mock()
+        mock_task.parent = None
+        mock_task.status.status = "To Do"
+        mock_task.status.color = "#123456"
+        mock_task.status.orderindex = 0
+        mock_task.name = "Test Task"
+        mock_task.url = "https://test.com"
+        mock_task.assignees = []
+        mock_task.priority = None
+        mock_get_tasks.return_value = [mock_task]
+
+        mock_list = Mock()
+        mock_list.name = "Test List"
+        mock_list.id = "list-123"
+
+        mock_team = Mock()
+        mock_team.name = "Test Team"
+
+        render_list(mock_list, mock_team, assignee="john", priority="high", group_by="priority")
+
+        captured = capsys.readouterr()
+        assert "Run again:" in captured.out
+        assert "--assignee john" in captured.out
+        assert "--priority high" in captured.out
+        assert "--group-by priority" in captured.out
+
+    @patch("keyup.cli.renderer.get_tasks_data")
+    def test_render_list_run_again_suggestion_no_filters(self, mock_get_tasks, capsys):
+        """Test render_list displays 'Run again' suggestion with no filters."""
+        mock_task = Mock()
+        mock_task.parent = None
+        mock_task.status.status = "To Do"
+        mock_task.status.color = "#123456"
+        mock_task.status.orderindex = 0
+        mock_task.name = "Test Task"
+        mock_task.url = "https://test.com"
+        mock_task.assignees = []
+        mock_task.priority = None
+        mock_get_tasks.return_value = [mock_task]
+
+        mock_list = Mock()
+        mock_list.name = "Test List"
+        mock_list.id = "list-123"
+
+        mock_team = Mock()
+        mock_team.name = "Test Team"
+
+        render_list(mock_list, mock_team)
+
+        captured = capsys.readouterr()
+        assert "Run again:" in captured.out
+        assert "keyup" in captured.out
