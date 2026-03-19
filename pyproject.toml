@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "KeyUp"
 dynamic = ["version"]
-description = "A simple and beautiful console-based client for Clickup written in Python"
+description = " A colorful command-line client for Clickup written in Python 3.10+."
 readme = "README.md"
 authors = [
     { name = "Matias Agustin Mendez", email = "matagus@gmail.com" },
@@ -61,3 +61,7 @@ line-length = 120
 
 [tool.black]
 line-length = 120
+
+[tool.pyright]
+include = ["keyup"]
+exclude = ["**/__pycache__"]
