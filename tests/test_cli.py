@@ -13,12 +13,12 @@ class TestApp:
         assert "keyup" in app.name
         assert "console-based client for ClickUp" in app.help
 
-    def test_app_help(self, capsys):
+    def test_app_help(self, capsys, monkeypatch):
         """Test that --help works."""
-        import pytest
+        import sys
 
-        with pytest.raises(SystemExit):
-            app(["--help"])
+        monkeypatch.setattr(sys, "exit", lambda x: None)
+        app(["--help"])
         captured = capsys.readouterr()
         assert "Team ID" in captured.out
         assert "Space ID" in captured.out
