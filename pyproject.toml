@@ -33,6 +33,11 @@ dependencies = [
   "python-dotenv", "colorist", "pyclickup", "inquirer", "cyclopts"
 ]
 
+[project.optional-dependencies]
+dev = [
+  "pytest", "pytest-mock", "pytest-cov", "coverage"
+]
+
 [project.urls]
 Homepage = "https://github.com/matagus/keyup"
 Issues = "https://github.com/matagus/keyup/issues"
@@ -45,6 +50,11 @@ path = "__about__.py"
 [tool.hatch.envs.default]
 dependencies = [
     "ipython", "ipdb"
+]
+
+[tool.hatch.envs.test]
+dependencies = [
+    "pytest", "pytest-mock", "pytest-cov"
 ]
 
 [tool.hatch.envs.default.scripts]
@@ -65,3 +75,19 @@ line-length = 120
 [tool.pyright]
 include = ["keyup"]
 exclude = ["**/__pycache__"]
+
+[tool.pytest.ini_options]
+addopts = "-v --tb=short"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
+source = ["keyup"]
+omit = ["*/tests/*", "*/__pycache__/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
+]
