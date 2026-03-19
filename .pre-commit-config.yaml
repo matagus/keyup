@@ -73,7 +73,14 @@ repos:
     rev: v1.1.408
     hooks:
       - id: pyright
-        args: ["--pythonpath", "/Users/matagus/.pyenv/versions/3.12.1/bin/python"]
+        additional_dependencies:
+          - "python-dotenv"
+          - "colorist"
+          - "pyclickup"
+          - "inquirer"
+          - "cyclopts"
+          - "diskcache"
+          - "pytest"
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.19.0

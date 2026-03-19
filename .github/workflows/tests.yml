@@ -48,7 +48,7 @@ jobs:
       - name: Run pre-commit
         run: |
           pip install pre-commit
-          pre-commit run --all-files
+          pre-commit run --all-files --show-diff-on-failure
 
       - name: Run tests with coverage
         run: |

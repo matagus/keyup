@@ -137,8 +137,17 @@ def _group_by_priority(task_list):
 
 
 def render_list(
-    list_obj, team_obj, no_cache: bool = False, assignee=None, priority=None, due_before=None, group_by="status",
-    team=None, space=None, project=None, list_id=None
+    list_obj,
+    team_obj,
+    no_cache: bool = False,
+    assignee=None,
+    priority=None,
+    due_before=None,
+    group_by="status",
+    team=None,
+    space=None,
+    project=None,
+    list_id=None,
 ):
     """Render tasks from a list grouped by status, assignee, or priority.
 

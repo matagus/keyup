@@ -293,8 +293,17 @@ class TestRenderList:
         mock_team = Mock()
         mock_team.name = "Test Team"
 
-        render_list(mock_list, mock_team, assignee="john", priority="high", group_by="priority",
-                    team="team-123", space="space-456", project="proj-789", list_id="list-123")
+        render_list(
+            mock_list,
+            mock_team,
+            assignee="john",
+            priority="high",
+            group_by="priority",
+            team="team-123",
+            space="space-456",
+            project="proj-789",
+            list_id="list-123",
+        )
 
         captured = capsys.readouterr()
         assert "Run again:" in captured.out
@@ -367,7 +376,8 @@ class TestRenderList:
         mock_team.get_all_tasks.return_value = [mock_task]
 
         render_list(
-            mock_list, mock_team,
+            mock_list,
+            mock_team,
             team="team-abc",
             space="space-def",
             project="proj-ghi",
@@ -376,7 +386,7 @@ class TestRenderList:
             priority="urgent",
             due_before="2024-12-31",
             group_by="assignee",
-            no_cache=True
+            no_cache=True,
         )
 
         captured = capsys.readouterr()
