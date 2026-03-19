@@ -195,10 +195,10 @@ def show_task(
     if team:
         argv.extend(["--team", team])
 
-    get_team(clickup, argv, interactive=interactive)
+    team_obj = get_team(clickup, argv, interactive=interactive)
 
     # Get task by ID - fetch all tasks and find the matching one
-    team_id = team.id if team else clickup.teams[0].id
+    team_id = team_obj.id if team_obj else clickup.teams[0].id
     all_tasks = clickup._get_all_tasks(team_id)
     task = next((t for t in all_tasks if t.id == task_id), None)
     if task is None:
@@ -238,10 +238,10 @@ def update_task(
     if team:
         argv.extend(["--team", team])
 
-    get_team(clickup, argv, interactive=interactive)
+    team_obj = get_team(clickup, argv, interactive=interactive)
 
     # Get current task to find old status - fetch all tasks and find the matching one
-    team_id = team.id if team else clickup.teams[0].id
+    team_id = team_obj.id if team_obj else clickup.teams[0].id
     all_tasks = clickup._get_all_tasks(team_id)
     task = next((t for t in all_tasks if t.id == task_id), None)
     if task is None:
