@@ -190,3 +190,14 @@ class TestHandleException:
 
         captured = capsys.readouterr()
         assert "Hint:" in captured.err
+
+    def test_no_hint_does_not_print(self, capsys):
+        """Test that hint is not printed when exception has no hint."""
+        exc = ClickupyError("Error without hint")
+
+        with pytest.raises(SystemExit):
+            handle_exception(exc)
+
+        captured = capsys.readouterr()
+        assert "Hint:" not in captured.err
+        assert "Error: Error without hint" in captured.err

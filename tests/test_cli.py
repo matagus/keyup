@@ -182,6 +182,143 @@ class TestListTasks:
             list_id="list-000",
         )
 
+    @patch("keyup.cli.main.render_list")
+    @patch("keyup.cli.main.get_list_for")
+    @patch("keyup.cli.main.get_project_for")
+    @patch("keyup.cli.main.get_space_for")
+    @patch("keyup.cli.main.get_team")
+    @patch("keyup.cli.main.ClickUp")
+    @patch("keyup.cli.main.init_environ")
+    def test_list_tasks_with_team_only(
+        self,
+        mock_environ,
+        mock_clickup_class,
+        mock_get_team,
+        mock_get_space_for,
+        mock_get_project_for,
+        mock_get_list_for,
+        mock_render_list,
+    ):
+        """Test list_tasks with only team parameter."""
+        mock_environ.return_value = {"TOKEN": "test-token"}
+        mock_team = Mock()
+        mock_space = Mock()
+        mock_project = Mock()
+        mock_list = Mock()
+
+        mock_get_team.return_value = mock_team
+        mock_get_space_for.return_value = mock_space
+        mock_get_project_for.return_value = mock_project
+        mock_get_list_for.return_value = mock_list
+
+        list_tasks(team="team-123")
+
+        mock_render_list.assert_called_once()
+        call_args = mock_render_list.call_args
+        assert call_args[1]["team"] == "team-123"
+
+    @patch("keyup.cli.main.render_list")
+    @patch("keyup.cli.main.get_list_for")
+    @patch("keyup.cli.main.get_project_for")
+    @patch("keyup.cli.main.get_space_for")
+    @patch("keyup.cli.main.get_team")
+    @patch("keyup.cli.main.ClickUp")
+    @patch("keyup.cli.main.init_environ")
+    def test_list_tasks_with_space_only(
+        self,
+        mock_environ,
+        mock_clickup_class,
+        mock_get_team,
+        mock_get_space_for,
+        mock_get_project_for,
+        mock_get_list_for,
+        mock_render_list,
+    ):
+        """Test list_tasks with only space parameter."""
+        mock_environ.return_value = {"TOKEN": "test-token"}
+        mock_team = Mock()
+        mock_space = Mock()
+        mock_project = Mock()
+        mock_list = Mock()
+
+        mock_get_team.return_value = mock_team
+        mock_get_space_for.return_value = mock_space
+        mock_get_project_for.return_value = mock_project
+        mock_get_list_for.return_value = mock_list
+
+        list_tasks(space="space-456")
+
+        call_args = mock_render_list.call_args
+        assert call_args[1]["space"] == "space-456"
+
+    @patch("keyup.cli.main.render_list")
+    @patch("keyup.cli.main.get_list_for")
+    @patch("keyup.cli.main.get_project_for")
+    @patch("keyup.cli.main.get_space_for")
+    @patch("keyup.cli.main.get_team")
+    @patch("keyup.cli.main.ClickUp")
+    @patch("keyup.cli.main.init_environ")
+    def test_list_tasks_with_project_only(
+        self,
+        mock_environ,
+        mock_clickup_class,
+        mock_get_team,
+        mock_get_space_for,
+        mock_get_project_for,
+        mock_get_list_for,
+        mock_render_list,
+    ):
+        """Test list_tasks with only project parameter."""
+        mock_environ.return_value = {"TOKEN": "test-token"}
+        mock_team = Mock()
+        mock_space = Mock()
+        mock_project = Mock()
+        mock_list = Mock()
+
+        mock_get_team.return_value = mock_team
+        mock_get_space_for.return_value = mock_space
+        mock_get_project_for.return_value = mock_project
+        mock_get_list_for.return_value = mock_list
+
+        list_tasks(project="project-789")
+
+        call_args = mock_render_list.call_args
+        assert call_args[1]["project"] == "project-789"
+
+    @patch("keyup.cli.main.render_list")
+    @patch("keyup.cli.main.get_list_for")
+    @patch("keyup.cli.main.get_project_for")
+    @patch("keyup.cli.main.get_space_for")
+    @patch("keyup.cli.main.get_team")
+    @patch("keyup.cli.main.ClickUp")
+    @patch("keyup.cli.main.init_environ")
+    def test_list_tasks_with_list_only(
+        self,
+        mock_environ,
+        mock_clickup_class,
+        mock_get_team,
+        mock_get_space_for,
+        mock_get_project_for,
+        mock_get_list_for,
+        mock_render_list,
+    ):
+        """Test list_tasks with only list_id parameter."""
+        mock_environ.return_value = {"TOKEN": "test-token"}
+        mock_team = Mock()
+        mock_space = Mock()
+        mock_project = Mock()
+        mock_list = Mock()
+
+        mock_get_team.return_value = mock_team
+        mock_get_space_for.return_value = mock_space
+        mock_get_project_for.return_value = mock_project
+        mock_get_list_for.return_value = mock_list
+
+        list_tasks(list_id="list-000")
+
+        call_args = mock_render_list.call_args
+        assert call_args[1]["list_id"] == "list-000"
+
 
 class TestUpdateTask:
     """Tests for the update_task command."""
@@ -402,6 +539,108 @@ class TestSprint:
         mock_get_project_for.assert_called()
         mock_get_sprint_list.assert_called_once_with(mock_team, mock_space)
         mock_render_list.assert_called_once()
+
+    @patch("keyup.cli.main.render_list")
+    @patch("keyup.cli.main.get_current_sprint_list")
+    @patch("keyup.cli.main.get_project_for")
+    @patch("keyup.cli.main.get_space_for")
+    @patch("keyup.cli.main.get_team")
+    @patch("keyup.cli.main.ClickUp")
+    @patch("keyup.cli.main.init_environ")
+    def test_sprint_with_team_only(
+        self,
+        mock_environ,
+        mock_clickup_class,
+        mock_get_team,
+        mock_get_space_for,
+        mock_get_project_for,
+        mock_get_sprint_list,
+        mock_render_list,
+    ):
+        """Test sprint with only team parameter."""
+        mock_environ.return_value = {"TOKEN": "test-token"}
+        mock_team = Mock()
+        mock_space = Mock()
+        mock_project = Mock()
+        mock_sprint_list = Mock()
+
+        mock_get_team.return_value = mock_team
+        mock_get_space_for.return_value = mock_space
+        mock_get_project_for.return_value = mock_project
+        mock_get_sprint_list.return_value = mock_sprint_list
+
+        sprint(team="team-123")
+
+        call_args = mock_render_list.call_args
+        assert call_args[1]["team"] == "team-123"
+
+    @patch("keyup.cli.main.render_list")
+    @patch("keyup.cli.main.get_current_sprint_list")
+    @patch("keyup.cli.main.get_project_for")
+    @patch("keyup.cli.main.get_space_for")
+    @patch("keyup.cli.main.get_team")
+    @patch("keyup.cli.main.ClickUp")
+    @patch("keyup.cli.main.init_environ")
+    def test_sprint_with_space_only(
+        self,
+        mock_environ,
+        mock_clickup_class,
+        mock_get_team,
+        mock_get_space_for,
+        mock_get_project_for,
+        mock_get_sprint_list,
+        mock_render_list,
+    ):
+        """Test sprint with only space parameter."""
+        mock_environ.return_value = {"TOKEN": "test-token"}
+        mock_team = Mock()
+        mock_space = Mock()
+        mock_project = Mock()
+        mock_sprint_list = Mock()
+
+        mock_get_team.return_value = mock_team
+        mock_get_space_for.return_value = mock_space
+        mock_get_project_for.return_value = mock_project
+        mock_get_sprint_list.return_value = mock_sprint_list
+
+        sprint(space="space-456")
+
+        call_args = mock_render_list.call_args
+        assert call_args[1]["space"] == "space-456"
+
+    @patch("keyup.cli.main.render_list")
+    @patch("keyup.cli.main.get_current_sprint_list")
+    @patch("keyup.cli.main.get_project_for")
+    @patch("keyup.cli.main.get_space_for")
+    @patch("keyup.cli.main.get_team")
+    @patch("keyup.cli.main.ClickUp")
+    @patch("keyup.cli.main.init_environ")
+    def test_sprint_with_project_only(
+        self,
+        mock_environ,
+        mock_clickup_class,
+        mock_get_team,
+        mock_get_space_for,
+        mock_get_project_for,
+        mock_get_sprint_list,
+        mock_render_list,
+    ):
+        """Test sprint with only project parameter."""
+        mock_environ.return_value = {"TOKEN": "test-token"}
+        mock_team = Mock()
+        mock_space = Mock()
+        mock_project = Mock()
+        mock_sprint_list = Mock()
+
+        mock_get_team.return_value = mock_team
+        mock_get_space_for.return_value = mock_space
+        mock_get_project_for.return_value = mock_project
+        mock_get_sprint_list.return_value = mock_sprint_list
+
+        sprint(project="project-789")
+
+        call_args = mock_render_list.call_args
+        assert call_args[1]["project"] == "project-789"
 
     @patch("keyup.cli.main.ClickUp")
     @patch("keyup.cli.main.init_environ")

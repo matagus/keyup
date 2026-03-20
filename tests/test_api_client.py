@@ -63,6 +63,63 @@ class TestGetTeam:
             assert result is mock_team1
 
     @patch("sys.argv", ["keyup"])
+    def test_multiple_teams_interactive_no_answer(self):
+        """Test with multiple teams and interactive=True but prompt returns None."""
+        mock_clickup = Mock()
+        mock_team1 = Mock()
+        mock_team1.id = "team-1"
+        mock_team1.name = "Team A"
+        mock_team2 = Mock()
+        mock_team2.id = "team-2"
+        mock_team2.name = "Team B"
+        mock_clickup.teams = [mock_team1, mock_team2]
+
+        with patch("inquirer.prompt") as mock_prompt:
+            mock_prompt.return_value = None
+
+            # When no answer, falls through to raise TeamAmbiguousError
+            with pytest.raises(TeamAmbiguousError):
+                get_team(mock_clickup, [], interactive=True)
+
+    @patch("sys.argv", ["keyup"])
+    def test_multiple_teams_interactive_invalid_answer(self):
+        """Test with multiple teams and interactive=True but answer doesn't match any team."""
+        mock_clickup = Mock()
+        mock_team1 = Mock()
+        mock_team1.id = "team-1"
+        mock_team1.name = "Team A"
+        mock_team2 = Mock()
+        mock_team2.id = "team-2"
+        mock_team2.name = "Team B"
+        mock_clickup.teams = [mock_team1, mock_team2]
+
+        with patch("inquirer.prompt") as mock_prompt:
+            mock_prompt.return_value = {"team": "Nonexistent Team [team-999]"}
+
+            # When answer doesn't match, falls through to raise TeamAmbiguousError
+            with pytest.raises(TeamAmbiguousError):
+                get_team(mock_clickup, [], interactive=True)
+
+    @patch("sys.argv", ["keyup"])
+    def test_multiple_teams_interactive_no_match(self):
+        """Test with multiple teams and interactive=True but answer doesn't match any team."""
+        mock_clickup = Mock()
+        mock_team1 = Mock()
+        mock_team1.id = "team-1"
+        mock_team1.name = "Team A"
+        mock_team2 = Mock()
+        mock_team2.id = "team-2"
+        mock_team2.name = "Team B"
+        mock_clickup.teams = [mock_team1, mock_team2]
+
+        with patch("inquirer.prompt") as mock_prompt:
+            mock_prompt.return_value = {"team": "Nonexistent Team [team-999]"}
+
+            # When answer doesn't match, falls through to raise TeamAmbiguousError
+            with pytest.raises(TeamAmbiguousError):
+                get_team(mock_clickup, [], interactive=True)
+
+    @patch("sys.argv", ["keyup"])
     def test_multiple_teams_non_interactive_raises(self):
         """Test with multiple teams and interactive=False raises TeamAmbiguousError."""
         mock_clickup = Mock()
@@ -145,12 +202,74 @@ class TestGetSpaceFor:
             assert result is mock_space1
 
     @patch("sys.argv", ["keyup"])
+    def test_multiple_spaces_interactive_no_answer(self):
+        """Test with multiple spaces and interactive=True but prompt returns None."""
+        mock_space1 = Mock(id="space-1", name="Space A")
+        mock_space2 = Mock(id="space-2", name="Space B")
+        self.mock_team.spaces = [mock_space1, mock_space2]
+
+        with patch("inquirer.prompt") as mock_prompt:
+            mock_prompt.return_value = None
+
+            # When no answer, returns first space
+            result = get_space_for(self.mock_team, [], interactive=True)
+            assert result is mock_space1
+
+    @patch("sys.argv", ["keyup"])
+    def test_multiple_spaces_interactive_selects_second(self):
+        """Test with multiple spaces and interactive=True selects correct space."""
+        mock_space1 = Mock()
+        mock_space1.id = "space-1"
+        mock_space1.name = "Space A"
+        mock_space2 = Mock()
+        mock_space2.id = "space-2"
+        mock_space2.name = "Space B"
+        self.mock_team.spaces = [mock_space1, mock_space2]
+
+        with patch("inquirer.prompt") as mock_prompt:
+            mock_prompt.return_value = {"space": "Space B [space-2]"}
+
+            result = get_space_for(self.mock_team, [], interactive=True)
+
+            assert result is mock_space2
+
+    @patch("sys.argv", ["keyup"])
+    def test_multiple_spaces_interactive_invalid_answer(self):
+        """Test with multiple spaces and interactive=True but answer doesn't match."""
+        mock_space1 = Mock()
+        mock_space1.id = "space-1"
+        mock_space1.name = "Space A"
+        mock_space2 = Mock()
+        mock_space2.id = "space-2"
+        mock_space2.name = "Space B"
+        self.mock_team.spaces = [mock_space1, mock_space2]
+
+        with patch("inquirer.prompt") as mock_prompt:
+            mock_prompt.return_value = {"space": "Nonexistent Space [space-999]"}
+
+            # When answer doesn't match, returns first space
+            result = get_space_for(self.mock_team, [], interactive=True)
+            assert result is mock_space1
+
+    @patch("sys.argv", ["keyup"])
     def test_multiple_spaces_non_interactive_returns_first(self):
         """Test with multiple spaces returns first when not interactive."""
         mock_space1 = Mock(id="space-1", name="Space A")
         mock_space2 = Mock(id="space-2", name="Space B")
         self.mock_team.spaces = [mock_space1, mock_space2]
 
+        result = get_space_for(self.mock_team, [], interactive=False)
+
+        assert result is mock_space1
+
+    @patch("sys.argv", ["keyup"])
+    def test_multiple_spaces_interactive_false_explicit(self):
+        """Test with multiple spaces and interactive=False explicitly."""
+        mock_space1 = Mock(id="space-1", name="Space A")
+        mock_space2 = Mock(id="space-2", name="Space B")
+        self.mock_team.spaces = [mock_space1, mock_space2]
+
+        # Explicitly pass interactive=False
         result = get_space_for(self.mock_team, [], interactive=False)
 
         assert result is mock_space1
@@ -205,6 +324,56 @@ class TestGetProjectFor:
 
             result = get_project_for(self.mock_space, [], interactive=True)
 
+            assert result is mock_proj1
+
+    @patch("sys.argv", ["keyup"])
+    def test_multiple_projects_interactive_no_answer(self):
+        """Test with multiple projects and interactive=True but prompt returns None."""
+        mock_proj1 = Mock(id="proj-1", name="Project A")
+        mock_proj2 = Mock(id="proj-2", name="Project B")
+        self.mock_space.projects = [mock_proj1, mock_proj2]
+
+        with patch("inquirer.prompt") as mock_prompt:
+            mock_prompt.return_value = None
+
+            # When no answer, returns first project
+            result = get_project_for(self.mock_space, [], interactive=True)
+            assert result is mock_proj1
+
+    @patch("sys.argv", ["keyup"])
+    def test_multiple_projects_interactive_selects_second(self):
+        """Test with multiple projects and interactive=True selects correct project."""
+        mock_proj1 = Mock()
+        mock_proj1.id = "proj-1"
+        mock_proj1.name = "Project A"
+        mock_proj2 = Mock()
+        mock_proj2.id = "proj-2"
+        mock_proj2.name = "Project B"
+        self.mock_space.projects = [mock_proj1, mock_proj2]
+
+        with patch("inquirer.prompt") as mock_prompt:
+            mock_prompt.return_value = {"project": "Project B [proj-2]"}
+
+            result = get_project_for(self.mock_space, [], interactive=True)
+
+            assert result is mock_proj2
+
+    @patch("sys.argv", ["keyup"])
+    def test_multiple_projects_interactive_invalid_answer(self):
+        """Test with multiple projects and interactive=True but answer doesn't match."""
+        mock_proj1 = Mock()
+        mock_proj1.id = "proj-1"
+        mock_proj1.name = "Project A"
+        mock_proj2 = Mock()
+        mock_proj2.id = "proj-2"
+        mock_proj2.name = "Project B"
+        self.mock_space.projects = [mock_proj1, mock_proj2]
+
+        with patch("inquirer.prompt") as mock_prompt:
+            mock_prompt.return_value = {"project": "Nonexistent Project [proj-999]"}
+
+            # When answer doesn't match, returns first project
+            result = get_project_for(self.mock_space, [], interactive=True)
             assert result is mock_proj1
 
     @patch("sys.argv", ["keyup"])
@@ -269,6 +438,38 @@ class TestGetListFor:
             result = get_list_for(self.mock_space, [], interactive=True)
 
             assert result is mock_list1
+
+    @patch("sys.argv", ["keyup"])
+    def test_multiple_lists_interactive_no_answer(self):
+        """Test with multiple lists and interactive=True but prompt returns None."""
+        mock_list1 = Mock(id="list-1", name="List A")
+        mock_list2 = Mock(id="list-2", name="List B")
+        self.mock_space.lists = [mock_list1, mock_list2]
+
+        with patch("inquirer.prompt") as mock_prompt:
+            mock_prompt.return_value = None
+
+            # When no answer, returns first list
+            result = get_list_for(self.mock_space, [], interactive=True)
+            assert result is mock_list1
+
+    @patch("sys.argv", ["keyup"])
+    def test_multiple_lists_interactive_selects_second(self):
+        """Test with multiple lists and interactive=True selects correct list."""
+        mock_list1 = Mock()
+        mock_list1.id = "list-1"
+        mock_list1.name = "List A"
+        mock_list2 = Mock()
+        mock_list2.id = "list-2"
+        mock_list2.name = "List B"
+        self.mock_space.lists = [mock_list1, mock_list2]
+
+        with patch("inquirer.prompt") as mock_prompt:
+            mock_prompt.return_value = {"list": "List B [list-2]"}
+
+            result = get_list_for(self.mock_space, [], interactive=True)
+
+            assert result is mock_list2
 
     @patch("sys.argv", ["keyup"])
     def test_multiple_lists_non_interactive_returns_first(self):
