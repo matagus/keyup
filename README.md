@@ -204,7 +204,7 @@ Use `--no-cache` to bypass cache and fetch fresh data from the API.
 - [pyclickup](https://github.com/matagus/pyclickup) - ClickUp API wrapper
 - [colorist](https://github.com/TMDBC/colorist) - Terminal colors
 - [inquirer](https://github.com/magmax/python-inquirer) - Interactive prompts
-- [diskcache](https://github.com/kemche007/diskcache) - Caching layer
+- [sqlite3](https://docs.python.org/3/library/sqlite3.html) - Caching layer (Python standard library)
 - [python-dotenv](https://github.com/theskumar/python-dotenv) - Environment loading
 
 ## Development

@@ -31,7 +31,7 @@ classifiers = [
     "Topic :: Software Development",
 ]
 dependencies = [
-  "python-dotenv", "colorist", "pyclickup", "inquirer", "cyclopts", "diskcache"
+  "python-dotenv", "colorist", "pyclickup", "inquirer", "cyclopts"
 ]
 
 [project.optional-dependencies]

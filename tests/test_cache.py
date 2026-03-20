@@ -41,13 +41,13 @@ class TestGetCache:
                     shutil.rmtree(str(cache_dir))
                 shutil.move(str(backup_path), str(cache_dir))
 
-    @patch("keyup.cli.cache.diskcache.Cache")
+    @patch("keyup.cli.cache.SQLiteCache")
     @patch("keyup.cli.cache.Path")
-    def test_get_cache_returns_cache_instance(self, mock_path_class, mock_cache):
-        """Test that get_cache returns a Cache instance."""
+    def test_get_cache_returns_cache_instance(self, mock_path_class, mock_sqlite_cache):
+        """Test that get_cache returns a SQLiteCache instance."""
         mock_path_class.return_value = Mock()
         cache = get_cache()
-        assert cache is mock_cache.return_value
+        assert cache is mock_sqlite_cache.return_value
 
 
 class TestGetTeamsData:
