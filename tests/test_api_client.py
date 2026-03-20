@@ -172,12 +172,11 @@ class TestGetSpaceFor:
     def test_with_space_flag(self):
         """Test with --space flag provided."""
         mock_space = Mock(id="space-456")
-        self.mock_team.get_space_by_id.return_value = mock_space
+        self.mock_team.spaces = [mock_space]
 
         result = get_space_for(self.mock_team, ["--space", "space-456"])
 
         assert result is mock_space
-        self.mock_team.get_space_by_id.assert_called_once_with("space-456")
 
     @patch("sys.argv", ["keyup"])
     def test_no_spaces_raises_error(self):
@@ -278,7 +277,6 @@ class TestGetSpaceFor:
     def test_invalid_space_id_raises_error(self):
         """Test with invalid space ID raises SpaceNotFoundError with space_id."""
         self.mock_team.spaces = [Mock(id="space-1")]
-        self.mock_team.get_space_by_id.side_effect = Exception("Invalid ID")
 
         with pytest.raises(SpaceNotFoundError) as exc_info:
             get_space_for(self.mock_team, ["--space", "invalid-id"])
@@ -297,12 +295,11 @@ class TestGetProjectFor:
     def test_with_project_flag(self):
         """Test with --project flag provided."""
         mock_project = Mock(id="project-789")
-        self.mock_space.get_project_by_id.return_value = mock_project
+        self.mock_space.projects = [mock_project]
 
         result = get_project_for(self.mock_space, ["--project", "project-789"])
 
         assert result is mock_project
-        self.mock_space.get_project_by_id.assert_called_once_with("project-789")
 
     @patch("sys.argv", ["keyup"])
     def test_no_projects_raises_error(self):
@@ -391,7 +388,6 @@ class TestGetProjectFor:
     def test_invalid_project_id_raises_error(self):
         """Test with invalid project ID raises ProjectNotFoundError with project_id."""
         self.mock_space.projects = [Mock(id="proj-1")]
-        self.mock_space.get_project_by_id.side_effect = Exception("Invalid ID")
 
         with pytest.raises(ProjectNotFoundError) as exc_info:
             get_project_for(self.mock_space, ["--project", "invalid-id"])
@@ -410,12 +406,11 @@ class TestGetListFor:
     def test_with_list_flag(self):
         """Test with --list flag provided."""
         mock_list = Mock(id="list-000")
-        self.mock_space.get_list_by_id.return_value = mock_list
+        self.mock_space.lists = [mock_list]
 
         result = get_list_for(self.mock_space, ["--list", "list-000"])
 
         assert result is mock_list
-        self.mock_space.get_list_by_id.assert_called_once_with("list-000")
 
     @patch("sys.argv", ["keyup"])
     def test_no_lists_raises_error(self):
@@ -486,7 +481,6 @@ class TestGetListFor:
     def test_invalid_list_id_raises_error(self):
         """Test with invalid list ID raises ListNotFoundError with list_id."""
         self.mock_space.lists = [Mock(id="list-1")]
-        self.mock_space.get_list_by_id.side_effect = Exception("Invalid ID")
 
         with pytest.raises(ListNotFoundError) as exc_info:
             get_list_for(self.mock_space, ["--list", "invalid-id"])

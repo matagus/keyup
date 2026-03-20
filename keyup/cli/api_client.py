@@ -78,7 +78,7 @@ def get_space_for(team, argv, interactive=False):
     """
     try:
         space_id = sys.argv[sys.argv.index("--space") + 1]
-        return team.get_space_by_id(space_id)
+        return next(s for s in team.spaces if str(s.id) == space_id)
 
     except ValueError:
         if len(team.spaces) == 0:
@@ -124,7 +124,7 @@ def get_project_for(space, argv, interactive=False):
     """
     try:
         project_id = sys.argv[sys.argv.index("--project") + 1]
-        return space.get_project_by_id(project_id)
+        return next(p for p in space.projects if str(p.id) == project_id)
 
     except ValueError:
         if len(space.projects) == 0:
@@ -171,7 +171,7 @@ def get_list_for(space_obj, argv, interactive=False):
     try:
         index = sys.argv.index("--list")
         list_id = sys.argv[index + 1]
-        return space_obj.get_list_by_id(list_id)
+        return next(li for li in space_obj.lists if str(li.id) == list_id)
 
     except ValueError:
         if len(space_obj.lists) == 0:
