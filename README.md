@@ -1,8 +1,8 @@
 # KeyUp!
 
-[![GHA Status](https://github.com/matagus/keyup/workflows/tests/badge.svg)](https://github.com/matagus/keyup/actions?query=workflow%3Atests)
 ![Python Compatibility](https://img.shields.io/badge/python-3.10|3.11|3.12|3.13|3.14-blue.svg)
 [![PyPI Version](https://img.shields.io/pypi/v/keyup.svg)](https://pypi.python.org/pypi/keyup)
+[![Tests](https://github.com/matagus/keyup/actions/workflows/tests.yml/badge.svg)](https://github.com/matagus/keyup/actions/workflows/tests.yml)
 [![Documentation Status](https://readthedocs.org/projects/keyup/badge/?version=latest)](https://keyup.readthedocs.io/en/latest/?badge=latest)
 
 A simple, lightweight, and beautiful console-based client for ClickUp.
