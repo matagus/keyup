@@ -45,6 +45,9 @@ docs = [
   "sphinx-copybutton>=0.5.2",
 ]
 
+[project.scripts]
+keyup = "keyup.cli.main:run_app"
+
 [project.urls]
 Homepage = "https://github.com/matagus/keyup"
 Issues = "https://github.com/matagus/keyup/issues"
