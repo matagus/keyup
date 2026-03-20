@@ -207,6 +207,58 @@ Use `--no-cache` to bypass cache and fetch fresh data from the API.
 - [diskcache](https://github.com/kemche007/diskcache) - Caching layer
 - [python-dotenv](https://github.com/theskumar/python-dotenv) - Environment loading
 
+## Development
+
+### Running Tests
+
+Run the test suite:
+
+```bash
+hatch run test:test
+```
+
+Run tests with coverage:
+
+```bash
+hatch run test:cov
+```
+
+Coverage reports are generated in:
+- `coverage.json` - JSON format
+- Terminal - Human-readable report
+
+Run tests on a specific Python version:
+
+```bash
+hatch run +py=3.11 test:test
+```
+
+### Documentation
+
+Build the documentation:
+
+```bash
+hatch run docs:build
+```
+
+Serve the documentation locally:
+
+```bash
+hatch run docs:serve
+```
+
+Then open http://localhost:8000 in your browser.
+
+### Debug Environment
+
+For debugging with enhanced tooling:
+
+```bash
+hatch run debug:python
+```
+
+This environment includes `ipdb` and `line_profiler`.
+
 ## License
 
 MIT

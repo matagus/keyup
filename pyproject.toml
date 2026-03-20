@@ -69,11 +69,31 @@ dependencies = [
 
 [tool.hatch.envs.default.scripts]
 app = "python keyup.py"
+install = "pip install -e .[dev]"
+
+[tool.hatch.envs.docs]
+dependencies = [
+    "sphinx~=7.1.2",
+    "sphinx_rtd_theme~=2.0.0",
+    "gitpython>=3.1.31",
+    "sphinx-copybutton>=0.5.2",
+]
+
+[tool.hatch.envs.docs.scripts]
+build = "sphinx-build -b html docs/source docs/build"
+serve = "python -m http.server 8000 --directory docs/build"
+
+[tool.hatch.envs.debug]
+dependencies = ["ipdb>=0.13.9", "line_profiler>=3.5.1"]
 
 [[tool.hatch.envs.test.matrix]]
 python = ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
 [tool.hatch.envs.test.scripts]
+test = "pytest {args:tests}"
+test-cov = "coverage run -m pytest {args:tests}"
+cov-report = ["coverage json", "coverage report"]
+cov = ["test-cov", "cov-report"]
 app = "python keyup.py"
 
 [tool.ruff]

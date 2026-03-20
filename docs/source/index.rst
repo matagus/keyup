@@ -65,6 +65,7 @@ Documentation Contents
 
    api
    troubleshooting
+   contributing
 
 
 Indices and tables
