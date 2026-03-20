@@ -1,8 +1,10 @@
 """Tests for KeyUp! CLI module."""
 
+import pytest
 from unittest.mock import Mock, patch
 
-from keyup.cli.main import app, list_tasks, update_task, show_task
+from keyup.cli.main import app, list_tasks, update_task, show_task, run_app, sprint
+from keyup.cli.exceptions import TokenError, ClickupyError
 
 
 class TestApp:
@@ -24,6 +26,104 @@ class TestApp:
         assert "Space ID" in captured.out
         assert "Project ID" in captured.out
         assert "List ID" in captured.out
+
+
+class TestRunApp:
+    """Tests for run_app function."""
+
+    @patch("keyup.cli.main.app")
+    def test_successful_execution(self, mock_app):
+        """Test successful execution mocks app()."""
+        run_app()
+
+        mock_app.assert_called_once()
+
+    @patch("keyup.cli.main.handle_exception")
+    @patch("keyup.cli.main.app")
+    def test_exception_handling(self, mock_app, mock_handle_exception):
+        """Test exception handling mocks ClickupyError and handle_exception."""
+        mock_app.side_effect = ClickupyError("Test error")
+
+        run_app()
+
+        mock_handle_exception.assert_called_once()
+
+
+class TestSprintCommand:
+    """Tests for the sprint command."""
+
+    @patch("keyup.cli.main.render_list")
+    @patch("keyup.cli.main.get_current_sprint_list")
+    @patch("keyup.cli.main.get_project_for")
+    @patch("keyup.cli.main.get_space_for")
+    @patch("keyup.cli.main.get_team")
+    @patch("keyup.cli.main.ClickUp")
+    @patch("keyup.cli.main.init_environ")
+    def test_with_all_params(
+        self,
+        mock_environ,
+        mock_clickup_class,
+        mock_get_team,
+        mock_get_space_for,
+        mock_get_project_for,
+        mock_get_sprint_list,
+        mock_render_list,
+    ):
+        """Test with all parameters provided."""
+        mock_environ.return_value = {"TOKEN": "test-token"}
+
+        mock_team = Mock()
+        mock_space = Mock()
+        mock_project = Mock()
+        mock_sprint_list = Mock()
+
+        mock_get_team.return_value = mock_team
+        mock_get_space_for.return_value = mock_space
+        mock_get_project_for.return_value = mock_project
+        mock_get_sprint_list.return_value = mock_sprint_list
+
+        sprint(team="team-123", space="space-456", project="project-789")
+
+        mock_environ.assert_called_once()
+        mock_get_sprint_list.assert_called_once_with(mock_team, mock_space)
+        mock_render_list.assert_called_once()
+
+    @patch("keyup.cli.main.ClickUp")
+    @patch("keyup.cli.main.init_environ")
+    def test_token_missing_raises(self, mock_environ, mock_clickup_class):
+        """Test token missing scenario raises TokenError."""
+        mock_environ.return_value = {}  # No TOKEN
+
+        with pytest.raises(TokenError):
+            sprint(team="team-123")
+
+
+class TestTokenMissingScenarios:
+    """Tests for token missing scenarios."""
+
+    @patch("keyup.cli.main.init_environ")
+    def test_list_tasks_raises_token_error(self, mock_environ):
+        """Test list_tasks raises TokenError when TOKEN not set."""
+        mock_environ.return_value = {}  # No TOKEN
+
+        with pytest.raises(TokenError):
+            list_tasks()
+
+    @patch("keyup.cli.main.init_environ")
+    def test_show_task_raises_token_error(self, mock_environ):
+        """Test show_task raises TokenError when TOKEN not set."""
+        mock_environ.return_value = {}  # No TOKEN
+
+        with pytest.raises(TokenError):
+            show_task(task_id="task-123")
+
+    @patch("keyup.cli.main.init_environ")
+    def test_update_task_raises_token_error(self, mock_environ):
+        """Test update_task raises TokenError when TOKEN not set."""
+        mock_environ.return_value = {}  # No TOKEN
+
+        with pytest.raises(TokenError):
+            update_task(task_id="task-123", status="Done")
 
 
 class TestListTasks:
@@ -257,3 +357,57 @@ class TestShowTask:
 
         with pytest.raises(ClickupyError, match="Task .* not found"):
             show_task(task_id="nonexistent")
+
+
+class TestSprint:
+    """Tests for the sprint command."""
+
+    @patch("keyup.cli.main.render_list")
+    @patch("keyup.cli.main.get_current_sprint_list")
+    @patch("keyup.cli.main.get_project_for")
+    @patch("keyup.cli.main.get_space_for")
+    @patch("keyup.cli.main.get_team")
+    @patch("keyup.cli.main.ClickUp")
+    @patch("keyup.cli.main.init_environ")
+    def test_with_all_params(
+        self,
+        mock_environ,
+        mock_clickup_class,
+        mock_get_team,
+        mock_get_space_for,
+        mock_get_project_for,
+        mock_get_sprint_list,
+        mock_render_list,
+        capsys,
+    ):
+        """Test sprint with all parameters provided."""
+        mock_environ.return_value = {"TOKEN": "test-token"}
+
+        mock_team = Mock()
+        mock_space = Mock()
+        mock_project = Mock()
+        mock_sprint_list = Mock(id="sprint-100")
+
+        mock_get_team.return_value = mock_team
+        mock_get_space_for.return_value = mock_space
+        mock_get_project_for.return_value = mock_project
+        mock_get_sprint_list.return_value = mock_sprint_list
+
+        sprint(team="team-123", space="space-456", project="project-789")
+
+        mock_environ.assert_called_once()
+        mock_clickup_class.assert_called_once_with("test-token")
+        mock_get_team.assert_called()
+        mock_get_space_for.assert_called()
+        mock_get_project_for.assert_called()
+        mock_get_sprint_list.assert_called_once_with(mock_team, mock_space)
+        mock_render_list.assert_called_once()
+
+    @patch("keyup.cli.main.ClickUp")
+    @patch("keyup.cli.main.init_environ")
+    def test_token_missing_raises_error(self, mock_environ, mock_clickup_class):
+        """Test token missing scenario raises TokenError."""
+        mock_environ.return_value = {"TOKEN": None}
+
+        with pytest.raises(TokenError):
+            sprint(team="team-123")

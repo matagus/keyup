@@ -1,0 +1,385 @@
+"""Tests for KeyUp! API client module."""
+
+import pytest
+from unittest.mock import Mock, patch
+
+from keyup.cli.api_client import (
+    get_team,
+    get_space_for,
+    get_project_for,
+    get_list_for,
+    get_current_sprint_list,
+)
+from keyup.cli.exceptions import (
+    TeamNotFoundError,
+    TeamAmbiguousError,
+    SpaceNotFoundError,
+    ProjectNotFoundError,
+    ListNotFoundError,
+)
+
+
+class TestGetTeam:
+    """Tests for get_team function."""
+
+    @patch("sys.argv", ["keyup", "--team", "team-123"])
+    def test_with_team_flag(self):
+        """Test with --team flag provided."""
+        mock_clickup = Mock()
+        mock_team = Mock(id="team-123")
+        mock_clickup.get_team_by_id.return_value = mock_team
+
+        result = get_team(mock_clickup, ["--team", "team-123"])
+
+        assert result is mock_team
+        mock_clickup.get_team_by_id.assert_called_once_with("team-123")
+
+    @patch("sys.argv", ["keyup"])
+    def test_no_teams_raises_error(self):
+        """Test with no teams available raises TeamNotFoundError."""
+        mock_clickup = Mock()
+        mock_clickup.teams = []
+
+        with pytest.raises(TeamNotFoundError):
+            get_team(mock_clickup, [])
+
+    @patch("sys.argv", ["keyup"])
+    def test_multiple_teams_interactive(self):
+        """Test with multiple teams and interactive=True prompts user."""
+        mock_clickup = Mock()
+        mock_team1 = Mock()
+        mock_team1.id = "team-1"
+        mock_team1.name = "Team A"
+        mock_team2 = Mock()
+        mock_team2.id = "team-2"
+        mock_team2.name = "Team B"
+        mock_clickup.teams = [mock_team1, mock_team2]
+
+        with patch("inquirer.prompt") as mock_prompt:
+            mock_prompt.return_value = {"team": "Team A [team-1]"}
+
+            result = get_team(mock_clickup, [], interactive=True)
+
+            assert result is mock_team1
+
+    @patch("sys.argv", ["keyup"])
+    def test_multiple_teams_non_interactive_raises(self):
+        """Test with multiple teams and interactive=False raises TeamAmbiguousError."""
+        mock_clickup = Mock()
+        mock_team1 = Mock()
+        mock_team1.id = "team-1"
+        mock_team1.name = "Team A"
+        mock_team2 = Mock()
+        mock_team2.id = "team-2"
+        mock_team2.name = "Team B"
+        mock_clickup.teams = [mock_team1, mock_team2]
+
+        with pytest.raises(TeamAmbiguousError) as exc_info:
+            get_team(mock_clickup, [], interactive=False)
+
+        assert "Team A" in str(exc_info.value)
+        assert "Team B" in str(exc_info.value)
+
+    @patch("sys.argv", ["keyup"])
+    def test_single_team_returns_first(self):
+        """Test with single team returns first team."""
+        mock_clickup = Mock()
+        mock_team = Mock(id="team-1", name="Solo Team")
+        mock_clickup.teams = [mock_team]
+
+        result = get_team(mock_clickup, [])
+
+        assert result is mock_team
+
+    @patch("sys.argv", ["keyup", "--team", "invalid-id"])
+    def test_invalid_team_id_raises_error(self):
+        """Test with invalid team ID raises TeamNotFoundError with team_id."""
+        mock_clickup = Mock()
+        mock_clickup.teams = [Mock(id="team-1")]
+        mock_clickup.get_team_by_id.side_effect = Exception("Invalid ID")
+
+        with pytest.raises(TeamNotFoundError) as exc_info:
+            get_team(mock_clickup, ["--team", "invalid-id"])
+
+        assert exc_info.value.message == "Team 'invalid-id' not found."
+
+
+class TestGetSpaceFor:
+    """Tests for get_space_for function."""
+
+    def setup_method(self):
+        """Set up test fixtures."""
+        self.mock_team = Mock()
+
+    @patch("sys.argv", ["keyup", "--space", "space-456"])
+    def test_with_space_flag(self):
+        """Test with --space flag provided."""
+        mock_space = Mock(id="space-456")
+        self.mock_team.get_space_by_id.return_value = mock_space
+
+        result = get_space_for(self.mock_team, ["--space", "space-456"])
+
+        assert result is mock_space
+        self.mock_team.get_space_by_id.assert_called_once_with("space-456")
+
+    @patch("sys.argv", ["keyup"])
+    def test_no_spaces_raises_error(self):
+        """Test with no spaces available raises SpaceNotFoundError."""
+        self.mock_team.spaces = []
+
+        with pytest.raises(SpaceNotFoundError):
+            get_space_for(self.mock_team, [])
+
+    @patch("sys.argv", ["keyup"])
+    def test_multiple_spaces_interactive(self):
+        """Test with multiple spaces and interactive=True."""
+        mock_space1 = Mock(id="space-1", name="Space A")
+        mock_space2 = Mock(id="space-2", name="Space B")
+        self.mock_team.spaces = [mock_space1, mock_space2]
+
+        with patch("inquirer.prompt") as mock_prompt:
+            mock_prompt.return_value = {"space": "Space A [space-1]"}
+
+            result = get_space_for(self.mock_team, [], interactive=True)
+
+            assert result is mock_space1
+
+    @patch("sys.argv", ["keyup"])
+    def test_multiple_spaces_non_interactive_returns_first(self):
+        """Test with multiple spaces returns first when not interactive."""
+        mock_space1 = Mock(id="space-1", name="Space A")
+        mock_space2 = Mock(id="space-2", name="Space B")
+        self.mock_team.spaces = [mock_space1, mock_space2]
+
+        result = get_space_for(self.mock_team, [], interactive=False)
+
+        assert result is mock_space1
+
+    @patch("sys.argv", ["keyup", "--space", "invalid-id"])
+    def test_invalid_space_id_raises_error(self):
+        """Test with invalid space ID raises SpaceNotFoundError with space_id."""
+        self.mock_team.spaces = [Mock(id="space-1")]
+        self.mock_team.get_space_by_id.side_effect = Exception("Invalid ID")
+
+        with pytest.raises(SpaceNotFoundError) as exc_info:
+            get_space_for(self.mock_team, ["--space", "invalid-id"])
+
+        assert exc_info.value.message == "Space 'invalid-id' not found."
+
+
+class TestGetProjectFor:
+    """Tests for get_project_for function."""
+
+    def setup_method(self):
+        """Set up test fixtures."""
+        self.mock_space = Mock()
+
+    @patch("sys.argv", ["keyup", "--project", "project-789"])
+    def test_with_project_flag(self):
+        """Test with --project flag provided."""
+        mock_project = Mock(id="project-789")
+        self.mock_space.get_project_by_id.return_value = mock_project
+
+        result = get_project_for(self.mock_space, ["--project", "project-789"])
+
+        assert result is mock_project
+        self.mock_space.get_project_by_id.assert_called_once_with("project-789")
+
+    @patch("sys.argv", ["keyup"])
+    def test_no_projects_raises_error(self):
+        """Test with no projects available raises ProjectNotFoundError."""
+        self.mock_space.projects = []
+
+        with pytest.raises(ProjectNotFoundError):
+            get_project_for(self.mock_space, [])
+
+    @patch("sys.argv", ["keyup"])
+    def test_multiple_projects_interactive(self):
+        """Test with multiple projects and interactive=True."""
+        mock_proj1 = Mock(id="proj-1", name="Project A")
+        mock_proj2 = Mock(id="proj-2", name="Project B")
+        self.mock_space.projects = [mock_proj1, mock_proj2]
+
+        with patch("inquirer.prompt") as mock_prompt:
+            mock_prompt.return_value = {"project": "Project A [proj-1]"}
+
+            result = get_project_for(self.mock_space, [], interactive=True)
+
+            assert result is mock_proj1
+
+    @patch("sys.argv", ["keyup"])
+    def test_multiple_projects_non_interactive_returns_first(self):
+        """Test with multiple projects returns first when not interactive."""
+        mock_proj1 = Mock(id="proj-1", name="Project A")
+        mock_proj2 = Mock(id="proj-2", name="Project B")
+        self.mock_space.projects = [mock_proj1, mock_proj2]
+
+        result = get_project_for(self.mock_space, [], interactive=False)
+
+        assert result is mock_proj1
+
+    @patch("sys.argv", ["keyup", "--project", "invalid-id"])
+    def test_invalid_project_id_raises_error(self):
+        """Test with invalid project ID raises ProjectNotFoundError with project_id."""
+        self.mock_space.projects = [Mock(id="proj-1")]
+        self.mock_space.get_project_by_id.side_effect = Exception("Invalid ID")
+
+        with pytest.raises(ProjectNotFoundError) as exc_info:
+            get_project_for(self.mock_space, ["--project", "invalid-id"])
+
+        assert exc_info.value.message == "Project 'invalid-id' not found."
+
+
+class TestGetListFor:
+    """Tests for get_list_for function."""
+
+    def setup_method(self):
+        """Set up test fixtures."""
+        self.mock_space = Mock()
+
+    @patch("sys.argv", ["keyup", "--list", "list-000"])
+    def test_with_list_flag(self):
+        """Test with --list flag provided."""
+        mock_list = Mock(id="list-000")
+        self.mock_space.get_list_by_id.return_value = mock_list
+
+        result = get_list_for(self.mock_space, ["--list", "list-000"])
+
+        assert result is mock_list
+        self.mock_space.get_list_by_id.assert_called_once_with("list-000")
+
+    @patch("sys.argv", ["keyup"])
+    def test_no_lists_raises_error(self):
+        """Test with no lists available raises ListNotFoundError."""
+        self.mock_space.lists = []
+
+        with pytest.raises(ListNotFoundError):
+            get_list_for(self.mock_space, [])
+
+    @patch("sys.argv", ["keyup"])
+    def test_multiple_lists_interactive(self):
+        """Test with multiple lists and interactive=True."""
+        mock_list1 = Mock(id="list-1", name="List A")
+        mock_list2 = Mock(id="list-2", name="List B")
+        self.mock_space.lists = [mock_list1, mock_list2]
+
+        with patch("inquirer.prompt") as mock_prompt:
+            mock_prompt.return_value = {"list": "List A [list-1]"}
+
+            result = get_list_for(self.mock_space, [], interactive=True)
+
+            assert result is mock_list1
+
+    @patch("sys.argv", ["keyup"])
+    def test_multiple_lists_non_interactive_returns_first(self):
+        """Test with multiple lists returns first when not interactive."""
+        mock_list1 = Mock(id="list-1", name="List A")
+        mock_list2 = Mock(id="list-2", name="List B")
+        self.mock_space.lists = [mock_list1, mock_list2]
+
+        result = get_list_for(self.mock_space, [], interactive=False)
+
+        assert result is mock_list1
+
+    @patch("sys.argv", ["keyup", "--list", "invalid-id"])
+    def test_invalid_list_id_raises_error(self):
+        """Test with invalid list ID raises ListNotFoundError with list_id."""
+        self.mock_space.lists = [Mock(id="list-1")]
+        self.mock_space.get_list_by_id.side_effect = Exception("Invalid ID")
+
+        with pytest.raises(ListNotFoundError) as exc_info:
+            get_list_for(self.mock_space, ["--list", "invalid-id"])
+
+        assert exc_info.value.message == "List 'invalid-id' not found."
+
+
+class TestGetCurrentSprintList:
+    """Tests for get_current_sprint_list function."""
+
+    def setup_method(self):
+        """Set up test fixtures."""
+        self.mock_team = Mock()
+        self.mock_space = Mock()
+
+    def test_finds_sprint_lists(self):
+        """Test finds sprint lists (case-insensitive 'sprint' match)."""
+        mock_list = Mock()
+        mock_list.id = "123"
+        mock_list.name = "Sprint 1"
+        mock_proj = Mock()
+        mock_proj.lists = [mock_list]
+        self.mock_space.projects = [mock_proj]
+        self.mock_team.spaces = [self.mock_space]
+
+        result = get_current_sprint_list(self.mock_team, self.mock_space)
+
+        assert result is mock_list
+
+    def test_finds_iteration_lists(self):
+        """Test finds iteration lists (case-insensitive 'iteration' match)."""
+        mock_list = Mock()
+        mock_list.id = "456"
+        mock_list.name = "Iteration 2"
+        mock_proj = Mock()
+        mock_proj.lists = [mock_list]
+        self.mock_space.projects = [mock_proj]
+        self.mock_team.spaces = [self.mock_space]
+
+        result = get_current_sprint_list(self.mock_team, self.mock_space)
+
+        assert result is mock_list
+
+    def test_returns_most_recent_sprint(self):
+        """Test returns most recent sprint (sorted by ID descending)."""
+        mock_list1 = Mock()
+        mock_list1.id = "100"
+        mock_list1.name = "Sprint 1"
+        mock_list2 = Mock()
+        mock_list2.id = "200"
+        mock_list2.name = "Sprint 2"
+        mock_proj = Mock()
+        mock_proj.lists = [mock_list1, mock_list2]
+        self.mock_space.projects = [mock_proj]
+        self.mock_team.spaces = [self.mock_space]
+
+        result = get_current_sprint_list(self.mock_team, self.mock_space)
+
+        assert result is mock_list2  # Higher ID (more recent)
+
+    def test_filters_by_space_parameter(self):
+        """Test filters by space parameter."""
+        mock_list1 = Mock()
+        mock_list1.id = "100"
+        mock_list1.name = "Sprint A"
+        mock_proj1 = Mock()
+        mock_proj1.lists = [mock_list1]
+
+        mock_list2 = Mock()
+        mock_list2.id = "200"
+        mock_list2.name = "Sprint B"
+        mock_proj2 = Mock()
+        mock_proj2.lists = [mock_list2]
+
+        mock_space1 = Mock(projects=[mock_proj1])
+        mock_space2 = Mock(projects=[mock_proj2])
+        self.mock_team.spaces = [mock_space1, mock_space2]
+
+        # When space is specified, only that space's projects are searched
+        result = get_current_sprint_list(self.mock_team, mock_space2)
+
+        assert result is mock_list2
+
+    def test_raises_error_when_no_sprint_lists_found(self):
+        """Test raises error when no sprint lists found."""
+        mock_list = Mock()
+        mock_list.id = "100"
+        mock_list.name = "Backlog"  # No "sprint" or "iteration" in name
+        mock_proj = Mock()
+        mock_proj.lists = [mock_list]
+        self.mock_space.projects = [mock_proj]
+        self.mock_team.spaces = [self.mock_space]
+
+        with pytest.raises(ListNotFoundError) as exc_info:
+            get_current_sprint_list(self.mock_team, self.mock_space)
+
+        assert "No lists found with 'sprint' or 'iteration' in the name" in str(exc_info.value)

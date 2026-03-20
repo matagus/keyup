@@ -92,6 +92,12 @@ class TestProjectNotFoundError:
         assert "No projects found" in exc.message
         assert exc.exit_code == 2
 
+    def test_with_project_id(self):
+        """Test with specific project ID."""
+        exc = ProjectNotFoundError(project_id="proj-abc")
+        assert "Project 'proj-abc' not found" in exc.message
+        assert exc.exit_code == 2
+
 
 class TestListNotFoundError:
     """Tests for ListNotFoundError."""
@@ -144,6 +150,24 @@ class TestAPIError:
         assert exc.hint
         assert "Rate limit" in exc.hint
 
+    def test_404(self):
+        """Test 404 status code."""
+        exc = APIError(status_code=404)
+        assert exc.hint
+        assert "Resource not found" in exc.hint
+
+    def test_500(self):
+        """Test 500 status code."""
+        exc = APIError(status_code=500)
+        assert exc.hint
+        assert "ClickUp server error" in exc.hint
+
+    def test_503(self):
+        """Test 503 status code."""
+        exc = APIError(status_code=503)
+        assert exc.hint
+        assert "ClickUp server error" in exc.hint
+
 
 class TestHandleException:
     """Tests for handle_exception function."""
@@ -156,3 +180,13 @@ class TestHandleException:
             handle_exception(exc)
 
         assert exc_info.value.code == 3
+
+    def test_prints_hint_to_stderr(self, capsys):
+        """Test that hint is printed to stderr."""
+        exc = TokenError()
+
+        with pytest.raises(SystemExit):
+            handle_exception(exc)
+
+        captured = capsys.readouterr()
+        assert "Hint:" in captured.err
