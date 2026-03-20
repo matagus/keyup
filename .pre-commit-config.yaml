@@ -1,9 +1,10 @@
 exclude: ^(.idea/)
 repos:
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
+  - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: "v0.15.6"
     hooks:
       - id: ruff
+        name: ruff
         args: [--fix, --exit-non-zero-on-fix]
 
   - repo: https://github.com/psf/black
@@ -83,7 +84,7 @@ repos:
           - "pytest"
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.19.0
+    rev: v3.21.2
     hooks:
       - id: pyupgrade
         args: ["--py312-plus"]
