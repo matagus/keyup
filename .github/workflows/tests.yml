@@ -59,3 +59,12 @@ jobs:
         with:
           files: ./coverage.xml
           fail_ci_if_error: false
+
+      #----------------------------------------------
+      #            make sure docs build
+      #----------------------------------------------
+      - name: Install docs dependencies
+        run: pip install -e ".[docs]"
+
+      - name: Build HTML docs
+        run: sphinx-build -b html docs/source/ docs/build/html

@@ -38,6 +38,12 @@ dependencies = [
 dev = [
   "pytest", "pytest-mock", "pytest-cov", "coverage"
 ]
+docs = [
+  "sphinx~=7.1.2",
+  "sphinx_rtd_theme~=2.0.0",
+  "gitpython>=3.1.31",
+  "sphinx-copybutton>=0.5.2",
+]
 
 [project.urls]
 Homepage = "https://github.com/matagus/keyup"
@@ -74,7 +80,7 @@ line-length = 120
 line-length = 120
 
 [tool.pyright]
-include = ["keyup"]
+include = ["keyup", "docs/source/conf.py"]
 exclude = ["**/__pycache__"]
 
 [tool.pytest.ini_options]
