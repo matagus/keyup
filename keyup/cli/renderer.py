@@ -54,6 +54,7 @@ def _render_task(task):
     task_url = f"{Color.BLUE}{Effect.UNDERLINE}{task.url}{Effect.UNDERLINE_OFF}{Color.OFF}"
     task_assignees = ", ".join([f"{a.username}" for a in task.assignees])
     task_assignee_str = f"{Color.BLACK}({task_assignees}){Color.OFF}" if task_assignees else ""
+    task_id_str = f"{Color.BLACK}[id={task.id}]{Color.OFF}"
 
     task_priority = ""
     if task.priority is not None:
@@ -61,7 +62,7 @@ def _render_task(task):
         priority_label = task.priority["priority"].capitalize()
         task_priority = f"[{priority_color}{priority_label}{priority_color.OFF}] "
 
-    print(f" ▫ {task_priority}{task_name}: {task_url} {task_assignee_str}")
+    print(f" ▫ {task_priority}{task_name}: {task_url} {task_assignee_str} {task_id_str}")
 
 
 def _group_by_status(task_list):
