@@ -424,8 +424,10 @@ class TestUpdateTask:
 
     @patch("quickup.cli.main.ClickUp")
     @patch("quickup.cli.main.init_environ")
+    @patch("quickup.cli.api_client.get_teams_data")
     def test_update_task_not_found(
         self,
+        mock_get_teams_data,
         mock_environ,
         mock_clickup_class,
         capsys,
@@ -437,7 +439,9 @@ class TestUpdateTask:
         mock_clickup = Mock()
         mock_clickup_class.return_value = mock_clickup
 
-        mock_clickup.teams = [Mock(id="team-123")]
+        mock_team = Mock(id="team-123")
+        mock_clickup.teams = [mock_team]
+        mock_get_teams_data.return_value = [mock_team]
         mock_clickup._get_all_tasks.return_value = []
 
         import pytest
@@ -510,8 +514,10 @@ class TestShowTask:
 
     @patch("quickup.cli.main.ClickUp")
     @patch("quickup.cli.main.init_environ")
+    @patch("quickup.cli.api_client.get_teams_data")
     def test_show_task_not_found(
         self,
+        mock_get_teams_data,
         mock_environ,
         mock_clickup_class,
         capsys,
@@ -523,7 +529,9 @@ class TestShowTask:
         mock_clickup = Mock()
         mock_clickup_class.return_value = mock_clickup
 
-        mock_clickup.teams = [Mock(id="team-123")]
+        mock_team = Mock(id="team-123")
+        mock_clickup.teams = [mock_team]
+        mock_get_teams_data.return_value = [mock_team]
         mock_clickup._get_all_tasks.return_value = []
 
         import pytest
