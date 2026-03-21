@@ -3,7 +3,7 @@
 from collections import defaultdict
 from datetime import datetime
 
-from colorist import Effect, Color, ColorHex, BgColorHex
+from colorist import BgColorHex, Color, ColorHex, Effect
 
 from .cache import get_tasks_data
 

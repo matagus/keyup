@@ -2,17 +2,16 @@
 
 import sys
 
+from colorist import Color
 import inquirer
 
-from colorist import Color
-
-from .cache import get_teams_data, get_spaces_data, get_projects_data, get_lists_data
+from .cache import get_lists_data, get_projects_data, get_spaces_data, get_teams_data
 from .exceptions import (
-    TeamNotFoundError,
-    TeamAmbiguousError,
-    SpaceNotFoundError,
-    ProjectNotFoundError,
     ListNotFoundError,
+    ProjectNotFoundError,
+    SpaceNotFoundError,
+    TeamAmbiguousError,
+    TeamNotFoundError,
 )
 
 

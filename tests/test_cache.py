@@ -4,23 +4,23 @@ from pathlib import Path
 from unittest.mock import Mock, patch
 
 from keyup.cli.cache import (
-    get_cache,
-    get_teams_data,
-    get_spaces_data,
-    get_projects_data,
-    get_lists_data,
-    get_tasks_data,
-    find_task_in_cache,
-    get_task_data,
-    force_refresh_tasks,
-    maybe_warmup,
-    invalidate_tasks_cache,
-    clear_cache,
-    TEAMS_TTL,
-    SPACES_TTL,
-    PROJECTS_TTL,
     LISTS_TTL,
+    PROJECTS_TTL,
+    SPACES_TTL,
     TASKS_TTL,
+    TEAMS_TTL,
+    clear_cache,
+    find_task_in_cache,
+    force_refresh_tasks,
+    get_cache,
+    get_lists_data,
+    get_projects_data,
+    get_spaces_data,
+    get_task_data,
+    get_tasks_data,
+    get_teams_data,
+    invalidate_tasks_cache,
+    maybe_warmup,
 )
 
 

@@ -3,15 +3,15 @@
 import pytest
 
 from keyup.cli.exceptions import (
+    APIError,
     ClickupyError,
-    TokenError,
-    TeamNotFoundError,
-    TeamAmbiguousError,
-    SpaceNotFoundError,
-    ProjectNotFoundError,
     ListNotFoundError,
     NetworkError,
-    APIError,
+    ProjectNotFoundError,
+    SpaceNotFoundError,
+    TeamAmbiguousError,
+    TeamNotFoundError,
+    TokenError,
     handle_exception,
 )
 

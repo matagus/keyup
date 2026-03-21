@@ -1,21 +1,16 @@
 """Tests for KeyUp! API client module."""
 
-import pytest
 from unittest.mock import Mock, patch
 
-from keyup.cli.api_client import (
-    get_team,
-    get_space_for,
-    get_project_for,
-    get_list_for,
-    get_current_sprint_list,
-)
+import pytest
+
+from keyup.cli.api_client import get_current_sprint_list, get_list_for, get_project_for, get_space_for, get_team
 from keyup.cli.exceptions import (
-    TeamNotFoundError,
-    TeamAmbiguousError,
-    SpaceNotFoundError,
-    ProjectNotFoundError,
     ListNotFoundError,
+    ProjectNotFoundError,
+    SpaceNotFoundError,
+    TeamAmbiguousError,
+    TeamNotFoundError,
 )
 
 

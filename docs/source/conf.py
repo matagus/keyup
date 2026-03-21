@@ -1,10 +1,10 @@
 # Configuration file for the Sphinx documentation builder.
 
+from datetime import date
 import importlib
 import inspect
-import sys
-from datetime import date
 from pathlib import Path
+import sys
 
 sys.path.insert(0, str(Path("../..").absolute()))
 sys.path.insert(0, str(Path("../../").absolute()))

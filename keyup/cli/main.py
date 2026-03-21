@@ -2,14 +2,14 @@
 
 from typing import Annotated, cast
 
-from pyclickup import ClickUp
 from cyclopts import App, Parameter
+from pyclickup import ClickUp
 
-from .config import init_environ
-from .api_client import get_team, get_space_for, get_project_for, get_list_for, get_current_sprint_list
+from .api_client import get_current_sprint_list, get_list_for, get_project_for, get_space_for, get_team
 from .cache import get_task_data
-from .renderer import render_list, render_task_detail, render_task_update
+from .config import init_environ
 from .exceptions import TokenError, handle_exception
+from .renderer import render_list, render_task_detail, render_task_update
 
 app = App(name="keyup", help="A simple and beautiful console-based client for ClickUp.")
 
@@ -88,8 +88,8 @@ def list_tasks(
 
 def run_app():
     """Run the KeyUp! CLI application."""
-    from .exceptions import ClickupyError
     from .cache import maybe_warmup
+    from .exceptions import ClickupyError
 
     environ = init_environ()
     token = environ.get("TOKEN")

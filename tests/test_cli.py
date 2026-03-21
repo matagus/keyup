@@ -1,10 +1,11 @@
 """Tests for KeyUp! CLI module."""
 
-import pytest
 from unittest.mock import Mock, patch
 
-from keyup.cli.main import app, list_tasks, update_task, show_task, run_app, sprint
-from keyup.cli.exceptions import TokenError, ClickupyError
+import pytest
+
+from keyup.cli.exceptions import ClickupyError, TokenError
+from keyup.cli.main import app, list_tasks, run_app, show_task, sprint, update_task
 
 
 class TestApp:

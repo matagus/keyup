@@ -3,12 +3,12 @@
 Provides TTL-based caching for ClickUp API responses to reduce API calls.
 """
 
+from concurrent.futures import ThreadPoolExecutor
 import os
+from pathlib import Path
 import pickle
 import sqlite3
 import time
-from concurrent.futures import ThreadPoolExecutor
-from pathlib import Path
 
 # Cache location: ~/.keyup/cache/
 CACHE_DIR = Path.home() / ".keyup" / "cache"
@@ -274,8 +274,8 @@ def maybe_warmup(token: str) -> None:
     if not list_team_pairs:
         return
 
-    from pyclickup import ClickUp
     from colorist import Effect
+    from pyclickup import ClickUp
 
     clickup = ClickUp(token)
     teams = {t.id: t for t in get_teams_data(clickup)}
