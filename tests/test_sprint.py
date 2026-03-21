@@ -1,13 +1,23 @@
 """Tests for KeyUp! sprint command."""
 
 import pytest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from keyup.cli.api_client import get_current_sprint_list
 
 
 class TestGetCurrentSprintList:
     """Tests for get_current_sprint_list function."""
+
+    def setup_method(self):
+        self.patch_get_projects = patch("keyup.cli.api_client.get_projects_data", side_effect=lambda s: s.projects)
+        self.patch_get_lists = patch("keyup.cli.api_client.get_lists_data", side_effect=lambda p: p.lists)
+        self.patch_get_projects.start()
+        self.patch_get_lists.start()
+
+    def teardown_method(self):
+        self.patch_get_projects.stop()
+        self.patch_get_lists.stop()
 
     def test_finds_sprint_list(self):
         """Test finding a sprint list."""

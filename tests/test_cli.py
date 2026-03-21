@@ -413,6 +413,7 @@ class TestShowTask:
     """Tests for the show_task command."""
 
     @patch("keyup.cli.main.render_task_detail")
+    @patch("keyup.cli.main.get_task_data")
     @patch("keyup.cli.main.get_team")
     @patch("keyup.cli.main.ClickUp")
     @patch("keyup.cli.main.init_environ")
@@ -421,21 +422,19 @@ class TestShowTask:
         mock_environ,
         mock_clickup_class,
         mock_get_team,
+        mock_get_task_data,
         mock_render_task_detail,
         capsys,
     ):
         """Test show_task with explicit team ID."""
         mock_environ.return_value = {"TOKEN": "test-token"}
-        mock_clickup = Mock()
-        mock_clickup_class.return_value = mock_clickup
+        mock_clickup_class.return_value = Mock()
 
         mock_team = Mock(id="team-123")
         mock_get_team.return_value = mock_team
 
-        mock_task = Mock()
-        mock_task.id = "task-86b8z0dn3"
-
-        mock_clickup._get_all_tasks.return_value = [mock_task]
+        mock_task = Mock(id="task-86b8z0dn3")
+        mock_get_task_data.return_value = mock_task
 
         show_task(task_id="task-86b8z0dn3", team="team-123")
 
@@ -443,6 +442,7 @@ class TestShowTask:
         mock_render_task_detail.assert_called_once_with(mock_task)
 
     @patch("keyup.cli.main.render_task_detail")
+    @patch("keyup.cli.main.get_task_data")
     @patch("keyup.cli.main.get_team")
     @patch("keyup.cli.main.ClickUp")
     @patch("keyup.cli.main.init_environ")
@@ -451,6 +451,7 @@ class TestShowTask:
         mock_environ,
         mock_clickup_class,
         mock_get_team,
+        mock_get_task_data,
         mock_render_task_detail,
         capsys,
     ):
@@ -463,10 +464,8 @@ class TestShowTask:
         mock_clickup.teams = [mock_team]
         mock_get_team.return_value = None
 
-        mock_task = Mock()
-        mock_task.id = "task-123"
-
-        mock_clickup._get_all_tasks.return_value = [mock_task]
+        mock_task = Mock(id="task-123")
+        mock_get_task_data.return_value = mock_task
 
         show_task(task_id="task-123")
 

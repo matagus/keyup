@@ -14,6 +14,8 @@ CACHE_FILE = CACHE_DIR / "keyup_cache.db"
 
 # TTL values in seconds
 TEAMS_TTL = 24 * 60 * 60  # 24 hours
+SPACES_TTL = 24 * 60 * 60  # 24 hours
+PROJECTS_TTL = 24 * 60 * 60  # 24 hours
 LISTS_TTL = 24 * 60 * 60  # 24 hours
 TASKS_TTL = 5 * 60  # 5 minutes
 
@@ -59,6 +61,18 @@ class SQLiteCache:
         with sqlite3.connect(self._db_path) as conn:
             conn.execute("DELETE FROM cache WHERE key = ?", (key,))
 
+    def get_all_by_prefix(self, prefix: str) -> list:
+        """Return all non-expired values whose keys start with prefix."""
+        with sqlite3.connect(self._db_path) as conn:
+            rows = conn.execute(
+                "SELECT value, expires_at FROM cache WHERE key LIKE ?",
+                (f"{prefix}%",),
+            ).fetchall()
+        now = time.time()
+        return [
+            pickle.loads(value) for value, expires_at in rows if expires_at > now
+        ]  # noqa: S301 - local self-written cache
+
     def clear(self) -> None:
         with sqlite3.connect(self._db_path) as conn:
             conn.execute("DELETE FROM cache")
@@ -70,7 +84,7 @@ def get_cache() -> SQLiteCache:
     return SQLiteCache(str(CACHE_FILE))
 
 
-def get_teams_data(clickup):
+def get_teams_data(clickup) -> list:
     """Get teams data from cache or fetch from API.
 
     Args:
@@ -90,27 +104,67 @@ def get_teams_data(clickup):
     return teams
 
 
-def get_lists_data(team):
-    """Get lists data for a team from cache or fetch from API.
+def get_spaces_data(team) -> list:
+    """Get spaces data for a team from cache or fetch from API.
 
     Args:
         team: Team object.
 
     Returns:
-        List of list objects.
+        List of space objects.
     """
     cache = get_cache()
-    cache_key = f"lists:{team.id}"
+    cache_key = f"spaces:{team.id}"
 
     if cache_key in cache:
         return cache.get(cache_key)  # type: ignore[no-any-return]
 
-    lists = team.lists
+    spaces = team.spaces
+    cache.set(cache_key, spaces, expire=SPACES_TTL)
+    return spaces
+
+
+def get_projects_data(space) -> list:
+    """Get projects data for a space from cache or fetch from API.
+
+    Args:
+        space: Space object.
+
+    Returns:
+        List of project objects.
+    """
+    cache = get_cache()
+    cache_key = f"projects:{space.id}"
+
+    if cache_key in cache:
+        return cache.get(cache_key)  # type: ignore[no-any-return]
+
+    projects = space.projects
+    cache.set(cache_key, projects, expire=PROJECTS_TTL)
+    return projects
+
+
+def get_lists_data(project) -> list:
+    """Get lists data for a project from cache or fetch from API.
+
+    Args:
+        project: Project object.
+
+    Returns:
+        List of list objects.
+    """
+    cache = get_cache()
+    cache_key = f"lists:{project.id}"
+
+    if cache_key in cache:
+        return cache.get(cache_key)  # type: ignore[no-any-return]
+
+    lists = project.lists
     cache.set(cache_key, lists, expire=LISTS_TTL)
     return lists
 
 
-def get_tasks_data(team, list_id: str):
+def get_tasks_data(team, list_id: str) -> list:
     """Get tasks data for a list from cache or fetch from API.
 
     Args:
@@ -129,6 +183,55 @@ def get_tasks_data(team, list_id: str):
     tasks = team.get_all_tasks(subtasks=False, list_ids=[list_id])
     cache.set(cache_key, tasks, expire=TASKS_TTL)
     return tasks
+
+
+def find_task_in_cache(task_id: str):
+    """Search all cached task lists for a task by ID.
+
+    Args:
+        task_id: ClickUp task ID.
+
+    Returns:
+        Task object if found in cache, None otherwise.
+    """
+    cache = get_cache()
+    cache_key = f"task:{task_id}"
+    if cache_key in cache:
+        return cache.get(cache_key)
+    for task_list in cache.get_all_by_prefix("tasks:"):
+        for task in task_list:
+            if task.id == task_id:
+                return task
+    return None
+
+
+def get_task_data(clickup, team_id: str, task_id: str):
+    """Get a single task from cache or fetch from API.
+
+    Checks the per-task cache key first, then searches cached list entries,
+    then falls back to the API. Always caches the result under 'task:{task_id}'.
+
+    Args:
+        clickup: ClickUp client instance.
+        team_id: Team ID to scope the API call.
+        task_id: ClickUp task ID.
+
+    Returns:
+        Task object, or None if not found.
+    """
+    cache = get_cache()
+    cache_key = f"task:{task_id}"
+
+    task = find_task_in_cache(task_id)
+    if task is not None:
+        cache.set(cache_key, task, expire=TASKS_TTL)
+        return task
+
+    all_tasks = clickup._get_all_tasks(team_id)
+    task = next((t for t in all_tasks if t.id == task_id), None)
+    if task is not None:
+        cache.set(cache_key, task, expire=TASKS_TTL)
+    return task
 
 
 def invalidate_tasks_cache(list_id: str) -> None:

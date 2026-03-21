@@ -7,6 +7,7 @@ from cyclopts import App, Parameter
 
 from .config import init_environ
 from .api_client import get_team, get_space_for, get_project_for, get_list_for, get_current_sprint_list
+from .cache import get_task_data
 from .renderer import render_list, render_task_detail, render_task_update
 from .exceptions import TokenError, handle_exception
 
@@ -197,15 +198,12 @@ def show_task(
 
     team_obj = get_team(clickup, argv, interactive=interactive)
 
-    # Fall back to first team if get_team returns None
     if team_obj is None:
         team_id = cast(str, clickup.teams[0].id)
     else:
         team_id = team_obj.id
 
-    # Get task by ID - fetch all tasks and find the matching one
-    all_tasks = clickup._get_all_tasks(cast(str, team_id))
-    task = next((t for t in all_tasks if t.id == task_id), None)
+    task = get_task_data(clickup, team_id, task_id)
     if task is None:
         from .exceptions import ClickupyError
 

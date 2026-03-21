@@ -22,17 +22,23 @@ from keyup.cli.exceptions import (
 class TestGetTeam:
     """Tests for get_team function."""
 
+    def setup_method(self):
+        self.patch_get_teams = patch("keyup.cli.api_client.get_teams_data", side_effect=lambda c: c.teams)
+        self.patch_get_teams.start()
+
+    def teardown_method(self):
+        self.patch_get_teams.stop()
+
     @patch("sys.argv", ["keyup", "--team", "team-123"])
     def test_with_team_flag(self):
         """Test with --team flag provided."""
         mock_clickup = Mock()
         mock_team = Mock(id="team-123")
-        mock_clickup.get_team_by_id.return_value = mock_team
+        mock_clickup.teams = [mock_team]
 
         result = get_team(mock_clickup, ["--team", "team-123"])
 
         assert result is mock_team
-        mock_clickup.get_team_by_id.assert_called_once_with("team-123")
 
     @patch("sys.argv", ["keyup"])
     def test_no_teams_raises_error(self):
@@ -167,6 +173,11 @@ class TestGetSpaceFor:
     def setup_method(self):
         """Set up test fixtures."""
         self.mock_team = Mock()
+        self.patch_get_spaces = patch("keyup.cli.api_client.get_spaces_data", side_effect=lambda t: t.spaces)
+        self.patch_get_spaces.start()
+
+    def teardown_method(self):
+        self.patch_get_spaces.stop()
 
     @patch("sys.argv", ["keyup", "--space", "space-456"])
     def test_with_space_flag(self):
@@ -290,6 +301,11 @@ class TestGetProjectFor:
     def setup_method(self):
         """Set up test fixtures."""
         self.mock_space = Mock()
+        self.patch_get_projects = patch("keyup.cli.api_client.get_projects_data", side_effect=lambda s: s.projects)
+        self.patch_get_projects.start()
+
+    def teardown_method(self):
+        self.patch_get_projects.stop()
 
     @patch("sys.argv", ["keyup", "--project", "project-789"])
     def test_with_project_flag(self):
@@ -401,6 +417,11 @@ class TestGetListFor:
     def setup_method(self):
         """Set up test fixtures."""
         self.mock_space = Mock()
+        self.patch_get_lists = patch("keyup.cli.api_client.get_lists_data", side_effect=lambda p: p.lists)
+        self.patch_get_lists.start()
+
+    def teardown_method(self):
+        self.patch_get_lists.stop()
 
     @patch("sys.argv", ["keyup", "--list", "list-000"])
     def test_with_list_flag(self):
@@ -495,6 +516,17 @@ class TestGetCurrentSprintList:
         """Set up test fixtures."""
         self.mock_team = Mock()
         self.mock_space = Mock()
+        self.patch_get_spaces = patch("keyup.cli.api_client.get_spaces_data", side_effect=lambda t: t.spaces)
+        self.patch_get_projects = patch("keyup.cli.api_client.get_projects_data", side_effect=lambda s: s.projects)
+        self.patch_get_lists = patch("keyup.cli.api_client.get_lists_data", side_effect=lambda p: p.lists)
+        self.patch_get_spaces.start()
+        self.patch_get_projects.start()
+        self.patch_get_lists.start()
+
+    def teardown_method(self):
+        self.patch_get_spaces.stop()
+        self.patch_get_projects.stop()
+        self.patch_get_lists.stop()
 
     def test_finds_sprint_lists(self):
         """Test finds sprint lists (case-insensitive 'sprint' match)."""
