@@ -5,7 +5,9 @@
 [![Tests](https://github.com/matagus/keyup/actions/workflows/tests.yml/badge.svg)](https://github.com/matagus/keyup/actions/workflows/tests.yml)
 [![Documentation Status](https://readthedocs.org/projects/keyup/badge/?version=latest)](https://keyup.readthedocs.io/en/latest/?badge=latest)
 
-A simple, lightweight, and beautiful console-based client for ClickUp.
+A simple, lightweight, and beautiful console-based client for ClickUp that lets you view, filter, and manage tasks
+directly from your command line. View tasks grouped by status, assignee, or priority, update task statuses, and
+auto-detect your current sprint. It features interactive mode for easy navigation and caching for fast performance.
 
 ![KeyUp! in action](https://github.com/matagus/keyup/blob/main/screenshots/one.png)
 
