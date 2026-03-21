@@ -175,23 +175,24 @@ def get_lists_data(project) -> list:
     return lists
 
 
-def get_tasks_data(team, list_id: str) -> list:
+def get_tasks_data(team, list_id: str, include_closed: bool = False) -> list:
     """Get tasks data for a list from cache or fetch from API.
 
     Args:
         team: Team object.
         list_id: ClickUp list ID.
+        include_closed: If True, include closed/done tasks.
 
     Returns:
         List of task objects.
     """
     cache = get_cache()
-    cache_key = f"tasks:{list_id}"
+    cache_key = f"tasks:{list_id}:closed" if include_closed else f"tasks:{list_id}"
 
     if cache_key in cache:
         return cache.get(cache_key)  # type: ignore[no-any-return]
 
-    tasks = team.get_all_tasks(subtasks=False, list_ids=[list_id])
+    tasks = team.get_all_tasks(subtasks=False, list_ids=[list_id], include_closed=include_closed)
     cache.set(cache_key, tasks, expire=TASKS_TTL)
     cache.set(f"team_for_list:{list_id}", team.id, expire=TEAMS_TTL)
     return tasks

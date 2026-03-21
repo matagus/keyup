@@ -141,24 +141,28 @@ def get_project_for(space, argv, interactive=False):
         if len(projects) == 0:
             raise ProjectNotFoundError()
 
-        if len(projects) > 1:
+        visible = [p for p in projects if not getattr(p, "hidden", False)]
+        if not visible:
+            visible = projects
+
+        if len(visible) > 1:
             if interactive:
                 questions = [
                     inquirer.List(
                         "project",
                         message=f"Select a {Color.GREEN}Project{Color.OFF}",
-                        choices=[f"{project.name} [{project.id}]" for project in projects],
+                        choices=[f"{project.name} [{project.id}]" for project in visible],
                     )
                 ]
 
                 answers = inquirer.prompt(questions)
 
                 if answers:
-                    for project in projects:
+                    for project in visible:
                         if f"{project.name} [{project.id}]" == answers["project"]:
                             return project
 
-        return projects[0]
+        return visible[0]
 
     except ProjectNotFoundError:
         raise
@@ -184,10 +188,21 @@ def get_list_for(space_obj, argv, interactive=False):
         index = sys.argv.index("--list")
         list_id = sys.argv[index + 1]
         lists = get_lists_data(space_obj)
+        # Also include lists from hidden (folderless) sibling projects
+        if hasattr(space_obj, "space"):
+            for p in get_projects_data(space_obj.space):
+                if getattr(p, "hidden", False) and p.id != space_obj.id:
+                    lists = lists + get_lists_data(p)
         return next(li for li in lists if str(li.id) == list_id)
 
     except ValueError:
         lists = get_lists_data(space_obj)
+        # Also include lists from hidden (folderless) sibling projects
+        if hasattr(space_obj, "space"):
+            for p in get_projects_data(space_obj.space):
+                if getattr(p, "hidden", False) and p.id != space_obj.id:
+                    lists = lists + get_lists_data(p)
+
         if len(lists) == 0:
             raise ListNotFoundError()
 

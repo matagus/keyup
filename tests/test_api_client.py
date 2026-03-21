@@ -413,10 +413,13 @@ class TestGetListFor:
         """Set up test fixtures."""
         self.mock_space = Mock()
         self.patch_get_lists = patch("keyup.cli.api_client.get_lists_data", side_effect=lambda p: p.lists)
+        self.patch_get_projects = patch("keyup.cli.api_client.get_projects_data", return_value=[])
         self.patch_get_lists.start()
+        self.patch_get_projects.start()
 
     def teardown_method(self):
         self.patch_get_lists.stop()
+        self.patch_get_projects.stop()
 
     @patch("sys.argv", ["keyup", "--list", "list-000"])
     def test_with_list_flag(self):

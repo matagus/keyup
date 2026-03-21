@@ -216,9 +216,25 @@ class TestGetTasksData:
         result = get_tasks_data(mock_team, "list-000")
 
         assert result == ["api_task"]
-        mock_team.get_all_tasks.assert_called_once_with(subtasks=False, list_ids=["list-000"])
+        mock_team.get_all_tasks.assert_called_once_with(subtasks=False, list_ids=["list-000"], include_closed=False)
         mock_cache.set.assert_any_call("tasks:list-000", ["api_task"], expire=TASKS_TTL)
         mock_cache.set.assert_any_call("team_for_list:list-000", mock_team.id, expire=TEAMS_TTL)
+
+    @patch("keyup.cli.cache.get_cache")
+    def test_cache_miss_with_include_closed(self, mock_get_cache):
+        """Test cache miss with include_closed uses separate cache key."""
+        mock_cache = Mock()
+        mock_cache.__contains__ = Mock(return_value=False)
+        mock_get_cache.return_value = mock_cache
+
+        mock_team = Mock()
+        mock_team.get_all_tasks.return_value = ["closed_task"]
+
+        result = get_tasks_data(mock_team, "list-000", include_closed=True)
+
+        assert result == ["closed_task"]
+        mock_team.get_all_tasks.assert_called_once_with(subtasks=False, list_ids=["list-000"], include_closed=True)
+        mock_cache.set.assert_any_call("tasks:list-000:closed", ["closed_task"], expire=TASKS_TTL)
 
 
 class TestFindTaskInCache:

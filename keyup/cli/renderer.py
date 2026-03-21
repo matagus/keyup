@@ -145,6 +145,7 @@ def render_list(
     priority=None,
     due_before=None,
     group_by="status",
+    include_closed: bool = False,
     team=None,
     space=None,
     project=None,
@@ -160,6 +161,7 @@ def render_list(
         priority: Filter by priority level (low, normal, high, urgent).
         due_before: Filter tasks due before date (YYYY-MM-DD).
         group_by: Group by "status" (default), "assignee", or "priority".
+        include_closed: If True, include closed/done tasks.
         team: Team ID from command line.
         space: Space ID from command line.
         project: Project ID from command line.
@@ -179,14 +181,16 @@ def render_list(
         filters.append(f"due_before={due_before}")
     if group_by != "status":
         filters.append(f"group_by={group_by}")
+    if include_closed:
+        filters.append("closed=true")
 
     filter_info = f" {Effect.DIM}[{', '.join(filters)}]{Effect.DIM_OFF}" if filters else ""
     print(f"{styled_list_name} :: Team: {team_name}{filter_info}")
 
     if no_cache:
-        task_list = team_obj.get_all_tasks(subtasks=False, list_ids=[list_obj.id])
+        task_list = team_obj.get_all_tasks(subtasks=False, list_ids=[list_obj.id], include_closed=include_closed)
     else:
-        task_list = get_tasks_data(team_obj, list_obj.id)
+        task_list = get_tasks_data(team_obj, list_obj.id, include_closed=include_closed)
 
     # Apply filters
     task_list = _filter_tasks(task_list, assignee=assignee, priority=priority, due_before=due_before)
@@ -240,6 +244,8 @@ def render_list(
         cmd_parts.append(f"--due-before {due_before}")
     if group_by != "status":
         cmd_parts.append(f"--group-by {group_by}")
+    if include_closed:
+        cmd_parts.append("--closed")
     if no_cache:
         cmd_parts.append("--no-cache")
 

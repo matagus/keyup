@@ -30,6 +30,7 @@ def list_tasks(
     group_by: Annotated[
         str, Parameter(name="--group-by", help="Group by: status (default), assignee, priority")
     ] = "status",
+    closed: Annotated[bool, Parameter(name="--closed", help="Include closed/done tasks")] = False,
     no_cache: Annotated[bool, Parameter(name="--no-cache", help="Bypass cache")] = False,
     interactive: Annotated[bool, Parameter(name="-i", help="Enable interactive mode")] = False,
 ) -> None:
@@ -79,6 +80,7 @@ def list_tasks(
         priority=priority,
         due_before=due_before,
         group_by=group_by,
+        include_closed=closed,
         team=team or team_obj.id,
         space=space or space_obj.id,
         project=project or project_obj.id,
@@ -117,6 +119,7 @@ def sprint(
     group_by: Annotated[
         str, Parameter(name="--group-by", help="Group by: status (default), assignee, priority")
     ] = "status",
+    closed: Annotated[bool, Parameter(name="--closed", help="Include closed/done tasks")] = False,
     no_cache: Annotated[bool, Parameter(name="--no-cache", help="Bypass cache")] = False,
     interactive: Annotated[bool, Parameter(name="-i", help="Enable interactive mode")] = False,
 ) -> None:
@@ -167,6 +170,7 @@ def sprint(
         priority=priority,
         due_before=due_before,
         group_by=group_by,
+        include_closed=closed,
         team=team or team_obj.id,
         space=space or space_obj.id,
         project=project or project_obj.id,
