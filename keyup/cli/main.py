@@ -89,6 +89,12 @@ def list_tasks(
 def run_app():
     """Run the KeyUp! CLI application."""
     from .exceptions import ClickupyError
+    from .cache import maybe_warmup
+
+    environ = init_environ()
+    token = environ.get("TOKEN")
+    if token:
+        maybe_warmup(token)
 
     try:
         app()

@@ -3,9 +3,11 @@
 Provides TTL-based caching for ClickUp API responses to reduce API calls.
 """
 
+import os
 import pickle
 import sqlite3
 import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 # Cache location: ~/.keyup/cache/
@@ -72,6 +74,15 @@ class SQLiteCache:
         return [
             pickle.loads(value) for value, expires_at in rows if expires_at > now
         ]  # noqa: S301 - local self-written cache
+
+    def get_stale_keys(self, prefix: str) -> list[str]:
+        """Return keys matching prefix that have expired but not yet been deleted."""
+        with sqlite3.connect(self._db_path) as conn:
+            rows = conn.execute(
+                "SELECT key FROM cache WHERE key LIKE ? AND expires_at < ?",
+                (f"{prefix}%", time.time()),
+            ).fetchall()
+        return [row[0] for row in rows]
 
     def clear(self) -> None:
         with sqlite3.connect(self._db_path) as conn:
@@ -182,6 +193,7 @@ def get_tasks_data(team, list_id: str) -> list:
 
     tasks = team.get_all_tasks(subtasks=False, list_ids=[list_id])
     cache.set(cache_key, tasks, expire=TASKS_TTL)
+    cache.set(f"team_for_list:{list_id}", team.id, expire=TEAMS_TTL)
     return tasks
 
 
@@ -232,6 +244,54 @@ def get_task_data(clickup, team_id: str, task_id: str):
     if task is not None:
         cache.set(cache_key, task, expire=TASKS_TTL)
     return task
+
+
+def force_refresh_tasks(team, list_id: str) -> list:
+    """Fetch tasks unconditionally from API and overwrite cache."""
+    tasks = team.get_all_tasks(subtasks=False, list_ids=[list_id])
+    cache = get_cache()
+    cache.set(f"tasks:{list_id}", tasks, expire=TASKS_TTL)
+    return tasks
+
+
+def maybe_warmup(token: str) -> None:
+    """Refresh any expired task cache entries before the command runs."""
+    if os.environ.get("KEYUP_WARMUP", "true").lower() == "false":
+        return
+
+    cache = get_cache()
+    stale_keys = cache.get_stale_keys("tasks:")
+    if not stale_keys:
+        return
+
+    list_team_pairs = []
+    for key in stale_keys:
+        list_id = key.removeprefix("tasks:")
+        team_id = cache.get(f"team_for_list:{list_id}")
+        if team_id:
+            list_team_pairs.append((list_id, team_id))
+
+    if not list_team_pairs:
+        return
+
+    from pyclickup import ClickUp
+    from colorist import Effect
+
+    clickup = ClickUp(token)
+    teams = {t.id: t for t in get_teams_data(clickup)}
+
+    print(f"{Effect.DIM}Warming cache...{Effect.DIM_OFF}", end="", flush=True)
+
+    def _refresh(pair: tuple[str, str]) -> None:
+        list_id, team_id = pair
+        team = teams.get(team_id)
+        if team:
+            force_refresh_tasks(team, list_id)
+
+    with ThreadPoolExecutor(max_workers=min(4, len(list_team_pairs))) as pool:
+        list(pool.map(_refresh, list_team_pairs))
+
+    print(f"\r{' ' * 20}\r", end="", flush=True)
 
 
 def invalidate_tasks_cache(list_id: str) -> None:

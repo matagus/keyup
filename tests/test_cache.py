@@ -12,6 +12,8 @@ from keyup.cli.cache import (
     get_tasks_data,
     find_task_in_cache,
     get_task_data,
+    force_refresh_tasks,
+    maybe_warmup,
     invalidate_tasks_cache,
     clear_cache,
     TEAMS_TTL,
@@ -215,7 +217,8 @@ class TestGetTasksData:
 
         assert result == ["api_task"]
         mock_team.get_all_tasks.assert_called_once_with(subtasks=False, list_ids=["list-000"])
-        mock_cache.set.assert_called_once_with("tasks:list-000", ["api_task"], expire=TASKS_TTL)
+        mock_cache.set.assert_any_call("tasks:list-000", ["api_task"], expire=TASKS_TTL)
+        mock_cache.set.assert_any_call("team_for_list:list-000", mock_team.id, expire=TEAMS_TTL)
 
 
 class TestFindTaskInCache:
@@ -324,6 +327,98 @@ class TestGetTaskData:
 
         assert result is None
         mock_cache.set.assert_not_called()
+
+
+class TestForceRefreshTasks:
+    """Tests for force_refresh_tasks function."""
+
+    @patch("keyup.cli.cache.get_cache")
+    def test_fetches_from_api_and_overwrites_cache(self, mock_get_cache):
+        mock_cache = Mock()
+        mock_get_cache.return_value = mock_cache
+        mock_team = Mock()
+        mock_team.get_all_tasks.return_value = ["fresh_task"]
+
+        result = force_refresh_tasks(mock_team, "list-abc")
+
+        assert result == ["fresh_task"]
+        mock_team.get_all_tasks.assert_called_once_with(subtasks=False, list_ids=["list-abc"])
+        mock_cache.set.assert_called_once_with("tasks:list-abc", ["fresh_task"], expire=TASKS_TTL)
+
+
+class TestMaybeWarmup:
+    """Tests for maybe_warmup function."""
+
+    @patch("keyup.cli.cache.get_cache")
+    def test_skipped_when_disabled(self, mock_get_cache, monkeypatch):
+        monkeypatch.setenv("KEYUP_WARMUP", "false")
+
+        maybe_warmup("token-xyz")
+
+        mock_get_cache.assert_not_called()
+
+    @patch("keyup.cli.cache.get_cache")
+    def test_skipped_when_no_stale_keys(self, mock_get_cache):
+        mock_cache = Mock()
+        mock_cache.get_stale_keys.return_value = []
+        mock_get_cache.return_value = mock_cache
+
+        maybe_warmup("token-xyz")
+
+        mock_cache.get.assert_not_called()
+
+    @patch("keyup.cli.cache.get_cache")
+    def test_skipped_when_no_team_mapping(self, mock_get_cache):
+        """Stale task keys with no team_for_list mapping → skip warmup."""
+        mock_cache = Mock()
+        mock_cache.get_stale_keys.return_value = ["tasks:list-000"]
+        mock_cache.get.return_value = None  # no team_for_list entry
+        mock_get_cache.return_value = mock_cache
+
+        maybe_warmup("token-xyz")
+
+        mock_cache.get.assert_called_once_with("team_for_list:list-000")
+
+    @patch("keyup.cli.cache.force_refresh_tasks")
+    @patch("keyup.cli.cache.get_teams_data")
+    @patch("keyup.cli.cache.get_cache")
+    def test_warms_stale_lists(self, mock_get_cache, mock_get_teams, mock_refresh, monkeypatch):
+        monkeypatch.delenv("KEYUP_WARMUP", raising=False)
+        mock_cache = Mock()
+        mock_cache.get_stale_keys.return_value = ["tasks:list-000", "tasks:list-111"]
+        mock_cache.get.side_effect = lambda key: {
+            "team_for_list:list-000": "team-1",
+            "team_for_list:list-111": "team-1",
+        }.get(key)
+        mock_get_cache.return_value = mock_cache
+
+        mock_team = Mock(id="team-1")
+        mock_get_teams.return_value = [mock_team]
+
+        with patch("pyclickup.ClickUp"):
+            maybe_warmup("token-xyz")
+
+        assert mock_refresh.call_count == 2
+        mock_refresh.assert_any_call(mock_team, "list-000")
+        mock_refresh.assert_any_call(mock_team, "list-111")
+
+    @patch("keyup.cli.cache.force_refresh_tasks")
+    @patch("keyup.cli.cache.get_teams_data")
+    @patch("keyup.cli.cache.get_cache")
+    def test_skips_unknown_team(self, mock_get_cache, mock_get_teams, mock_refresh, monkeypatch):
+        """List mapped to a team_id not returned by API is silently skipped."""
+        monkeypatch.delenv("KEYUP_WARMUP", raising=False)
+        mock_cache = Mock()
+        mock_cache.get_stale_keys.return_value = ["tasks:list-000"]
+        mock_cache.get.return_value = "team-unknown"
+        mock_get_cache.return_value = mock_cache
+
+        mock_get_teams.return_value = [Mock(id="team-other")]
+
+        with patch("pyclickup.ClickUp"):
+            maybe_warmup("token-xyz")
+
+        mock_refresh.assert_not_called()
 
 
 class TestInvalidateTasksCache:
