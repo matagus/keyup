@@ -378,6 +378,7 @@ class TestMaybeWarmup:
         maybe_warmup("token-xyz")
 
         mock_cache.get.assert_called_once_with("team_for_list:list-000")
+        mock_cache.clear.assert_not_called()
 
     @patch("keyup.cli.cache.force_refresh_tasks")
     @patch("keyup.cli.cache.get_teams_data")
@@ -398,6 +399,7 @@ class TestMaybeWarmup:
         with patch("pyclickup.ClickUp"):
             maybe_warmup("token-xyz")
 
+        mock_cache.clear.assert_called_once()
         assert mock_refresh.call_count == 2
         mock_refresh.assert_any_call(mock_team, "list-000")
         mock_refresh.assert_any_call(mock_team, "list-111")
@@ -418,6 +420,7 @@ class TestMaybeWarmup:
         with patch("pyclickup.ClickUp"):
             maybe_warmup("token-xyz")
 
+        mock_cache.clear.assert_called_once()
         mock_refresh.assert_not_called()
 
 

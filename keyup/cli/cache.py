@@ -264,6 +264,7 @@ def maybe_warmup(token: str) -> None:
     if not stale_keys:
         return
 
+    # Collect team mappings BEFORE clearing cache
     list_team_pairs = []
     for key in stale_keys:
         list_id = key.removeprefix("tasks:")
@@ -273,6 +274,9 @@ def maybe_warmup(token: str) -> None:
 
     if not list_team_pairs:
         return
+
+    # Clear everything — hierarchy will be lazily re-fetched from API on next use
+    cache.clear()
 
     from colorist import Effect
     from pyclickup import ClickUp
