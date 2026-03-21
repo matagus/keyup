@@ -1,5 +1,5 @@
 QuickUp! Documentation
-=====================
+======================
 
 A simple, lightweight, and beautiful console-based client for ClickUp.
 

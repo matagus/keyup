@@ -4,7 +4,7 @@ Commands Reference
 This page documents all available QuickUp! CLI commands and their options.
 
 ``quickup`` (default) - List Tasks
---------------------------------
+----------------------------------
 
 List all tasks from a ClickUp list, grouped by status.
 
@@ -92,7 +92,7 @@ Bypass cache:
    quickup --team 12345 --list 67890 --no-cache
 
 ``quickup sprint`` - Current Sprint Tasks
----------------------------------------
+-----------------------------------------
 
 Auto-detects the current sprint list by searching for lists containing "sprint" or "iteration" in the name.
 
@@ -130,7 +130,7 @@ Group sprint tasks by priority:
    quickup sprint --team 12345 --group-by priority
 
 ``quickup task`` - Task Details
------------------------------
+-------------------------------
 
 Show detailed information about a specific task.
 
@@ -175,7 +175,7 @@ With team specification:
    quickup task 123456 --team 12345
 
 ``quickup update`` - Update Task Status
--------------------------------------
+---------------------------------------
 
 Update the status of a specific task.
 
