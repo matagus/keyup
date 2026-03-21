@@ -12,7 +12,7 @@ build:
       # Install uv
       - pip install uv
       # Install dependencies with docs extras
-      - uv pip install --system -e ".[docs]"
+      - uv pip install -e ".[docs]"
 
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
