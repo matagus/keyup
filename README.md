@@ -80,6 +80,7 @@ quickup --team <team_id> --list <list_id> --no-cache
 - `--priority`: Filter by priority (low, normal, high, urgent)
 - `--due-before`: Filter tasks due before date (YYYY-MM-DD)
 - `--group-by`: Group by status (default), assignee, or priority
+- `--closed`: Include closed/done tasks
 - `--no-cache`: Bypass cache and fetch from API
 - `-i, --interactive`: Enable interactive mode
 
@@ -103,6 +104,7 @@ quickup sprint --team <team_id> --assignee jane --group-by priority
 - `--priority`: Filter by priority
 - `--due-before`: Filter tasks due before date
 - `--group-by`: Group by status, assignee, or priority
+- `--closed`: Include closed/done tasks
 - `--no-cache`: Bypass cache
 - `-i, --interactive`: Enable interactive mode
 
