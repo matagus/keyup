@@ -53,8 +53,8 @@ def _render_task(task):
     task_name = f"{Effect.BOLD}{task.name}{Effect.BOLD_OFF}"
     task_url = f"{Color.BLUE}{Effect.UNDERLINE}{task.url}{Effect.UNDERLINE_OFF}{Color.OFF}"
     task_assignees = ", ".join([f"{a.username}" for a in task.assignees])
-    task_assignee_str = f"{Color.BLACK}({task_assignees}){Color.OFF}" if task_assignees else ""
-    task_id_str = f"{Color.BLACK}[id={task.id}]{Color.OFF}"
+    task_assignee_str = f"{Effect.DIM}({task_assignees}){Effect.DIM_OFF}" if task_assignees else ""
+    task_id_str = f"{Effect.DIM}[id={task.id}]{Effect.DIM_OFF}"
 
     task_priority = ""
     if task.priority is not None:
@@ -180,7 +180,7 @@ def render_list(
     if group_by != "status":
         filters.append(f"group_by={group_by}")
 
-    filter_info = f" {Color.BLACK}[{', '.join(filters)}]{Color.OFF}" if filters else ""
+    filter_info = f" {Effect.DIM}[{', '.join(filters)}]{Effect.DIM_OFF}" if filters else ""
     print(f"{styled_list_name} :: Team: {team_name}{filter_info}")
 
     if no_cache:
@@ -244,7 +244,7 @@ def render_list(
         cmd_parts.append("--no-cache")
 
     suggestion = " ".join(cmd_parts)
-    print(f"{Color.BLACK}Run again: {suggestion}{Color.OFF}")
+    print(f"{Effect.DIM}Run again: {suggestion}{Effect.DIM_OFF}")
 
 
 def render_task_detail(task):
