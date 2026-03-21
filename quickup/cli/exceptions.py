@@ -1,10 +1,10 @@
-"""Custom exceptions for KeyUp! CLI with exit codes."""
+"""Custom exceptions for QuickUp! CLI with exit codes."""
 
 import sys
 
 
 class ClickupyError(Exception):
-    """Base exception for KeyUp! CLI."""
+    """Base exception for QuickUp! CLI."""
 
     exit_code = 1
 

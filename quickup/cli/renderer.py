@@ -1,4 +1,4 @@
-"""Terminal output rendering for KeyUp! CLI."""
+"""Terminal output rendering for QuickUp! CLI."""
 
 from collections import defaultdict
 from datetime import datetime
@@ -227,7 +227,7 @@ def render_list(
 
     # Render suggestion for repeating the command
     print()
-    cmd_parts = ["keyup"]
+    cmd_parts = ["quickup"]
     if team:
         cmd_parts.append(f"--team {team}")
     if space:

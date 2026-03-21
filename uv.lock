@@ -451,49 +451,6 @@ wheels = [
 ]
 
 [[package]]
-name = "keyup"
-source = { editable = "." }
-dependencies = [
-    { name = "colorist" },
-    { name = "cyclopts" },
-    { name = "inquirer" },
-    { name = "pyclickup" },
-    { name = "python-dotenv" },
-]
-
-[package.optional-dependencies]
-dev = [
-    { name = "coverage" },
-    { name = "pytest" },
-    { name = "pytest-cov" },
-    { name = "pytest-mock" },
-]
-docs = [
-    { name = "gitpython" },
-    { name = "sphinx" },
-    { name = "sphinx-copybutton" },
-    { name = "sphinx-rtd-theme" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "colorist" },
-    { name = "coverage", marker = "extra == 'dev'" },
-    { name = "cyclopts" },
-    { name = "gitpython", marker = "extra == 'docs'", specifier = ">=3.1.31" },
-    { name = "inquirer" },
-    { name = "pyclickup" },
-    { name = "pytest", marker = "extra == 'dev'" },
-    { name = "pytest-cov", marker = "extra == 'dev'" },
-    { name = "pytest-mock", marker = "extra == 'dev'" },
-    { name = "python-dotenv" },
-    { name = "sphinx", marker = "extra == 'docs'", specifier = "~=7.1.2" },
-    { name = "sphinx-copybutton", marker = "extra == 'docs'", specifier = ">=0.5.2" },
-    { name = "sphinx-rtd-theme", marker = "extra == 'docs'", specifier = "~=2.0.0" },
-]
-provides-extras = ["dev", "docs"]
-
-[[package]]
 name = "markdown-it-py"
 version = "4.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -687,6 +644,49 @@ sdist = { url = "https://files.pythonhosted.org/packages/82/ed/0301aeeac3e5353ef
 wheels = [
     { url = "https://files.pythonhosted.org/packages/0b/d7/1959b9648791274998a9c3526f6d0ec8fd2233e4d4acce81bbae76b44b2a/python_dotenv-1.2.2-py3-none-any.whl", hash = "sha256:1d8214789a24de455a8b8bd8ae6fe3c6b69a5e3d64aa8a8e5d68e694bbcb285a", size = 22101, upload-time = "2026-03-01T16:00:25.09Z" },
 ]
+
+[[package]]
+name = "quickup"
+source = { editable = "." }
+dependencies = [
+    { name = "colorist" },
+    { name = "cyclopts" },
+    { name = "inquirer" },
+    { name = "pyclickup" },
+    { name = "python-dotenv" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "coverage" },
+    { name = "pytest" },
+    { name = "pytest-cov" },
+    { name = "pytest-mock" },
+]
+docs = [
+    { name = "gitpython" },
+    { name = "sphinx" },
+    { name = "sphinx-copybutton" },
+    { name = "sphinx-rtd-theme" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "colorist" },
+    { name = "coverage", marker = "extra == 'dev'" },
+    { name = "cyclopts" },
+    { name = "gitpython", marker = "extra == 'docs'", specifier = ">=3.1.31" },
+    { name = "inquirer" },
+    { name = "pyclickup" },
+    { name = "pytest", marker = "extra == 'dev'" },
+    { name = "pytest-cov", marker = "extra == 'dev'" },
+    { name = "pytest-mock", marker = "extra == 'dev'" },
+    { name = "python-dotenv" },
+    { name = "sphinx", marker = "extra == 'docs'", specifier = "~=7.1.2" },
+    { name = "sphinx-copybutton", marker = "extra == 'docs'", specifier = ">=0.5.2" },
+    { name = "sphinx-rtd-theme", marker = "extra == 'docs'", specifier = "~=2.0.0" },
+]
+provides-extras = ["dev", "docs"]
 
 [[package]]
 name = "readchar"

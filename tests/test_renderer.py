@@ -1,8 +1,8 @@
-"""Tests for KeyUp! renderer module."""
+"""Tests for QuickUp! renderer module."""
 
 from unittest.mock import Mock, patch
 
-from keyup.cli.renderer import _filter_tasks, _group_by_assignee, _group_by_priority, _group_by_status, render_list
+from quickup.cli.renderer import _filter_tasks, _group_by_assignee, _group_by_priority, _group_by_status, render_list
 
 
 class TestFilterTasks:
@@ -303,7 +303,7 @@ class TestGroupBy:
 class TestRenderList:
     """Tests for render_list function."""
 
-    @patch("keyup.cli.renderer.get_tasks_data")
+    @patch("quickup.cli.renderer.get_tasks_data")
     def test_render_list_with_filters(self, mock_get_tasks, capsys):
         """Test render_list displays filter info in header."""
         mock_task = Mock()
@@ -330,7 +330,7 @@ class TestRenderList:
         assert "assignee=john" in captured.out
         assert "priority=high" in captured.out
 
-    @patch("keyup.cli.renderer.get_tasks_data")
+    @patch("quickup.cli.renderer.get_tasks_data")
     def test_render_list_no_filters(self, mock_get_tasks, capsys):
         """Test render_list without filters."""
         mock_task = Mock()
@@ -357,7 +357,7 @@ class TestRenderList:
         assert "assignee=" not in captured.out
         assert "priority=" not in captured.out
 
-    @patch("keyup.cli.renderer.get_tasks_data")
+    @patch("quickup.cli.renderer.get_tasks_data")
     def test_render_list_group_by_assignee(self, mock_get_tasks, capsys):
         """Test render_list groups by assignee."""
         mock_task = Mock()
@@ -384,7 +384,7 @@ class TestRenderList:
         assert "group_by=assignee" in captured.out
         assert "john" in captured.out
 
-    @patch("keyup.cli.renderer.get_tasks_data")
+    @patch("quickup.cli.renderer.get_tasks_data")
     def test_render_list_group_by_priority(self, mock_get_tasks, capsys):
         """Test render_list groups by priority."""
         mock_task = Mock()
@@ -411,7 +411,7 @@ class TestRenderList:
         assert "group_by=priority" in captured.out
         assert "HIGH" in captured.out
 
-    @patch("keyup.cli.renderer.get_tasks_data")
+    @patch("quickup.cli.renderer.get_tasks_data")
     def test_render_list_shows_run_again_suggestion(self, mock_get_tasks, capsys):
         """Test render_list displays 'Run again' suggestion at bottom."""
         mock_task = Mock()
@@ -454,7 +454,7 @@ class TestRenderList:
         assert "--priority high" in captured.out
         assert "--group-by priority" in captured.out
 
-    @patch("keyup.cli.renderer.get_tasks_data")
+    @patch("quickup.cli.renderer.get_tasks_data")
     def test_render_list_run_again_suggestion_no_filters(self, mock_get_tasks, capsys):
         """Test render_list displays 'Run again' suggestion with no filters."""
         mock_task = Mock()
@@ -486,7 +486,7 @@ class TestRenderList:
         assert "--priority" not in captured.out
         assert "--group-by" not in captured.out
 
-    @patch("keyup.cli.renderer.get_tasks_data")
+    @patch("quickup.cli.renderer.get_tasks_data")
     def test_render_list_run_again_suggestion_with_all_params(self, mock_get_tasks, capsys):
         """Test render_list displays comprehensive 'Run again' suggestion with all parameters."""
         mock_assignee = Mock()
@@ -540,7 +540,7 @@ class TestRenderList:
         assert "--group-by assignee" in captured.out
         assert "--no-cache" in captured.out
 
-    @patch("keyup.cli.renderer.get_tasks_data")
+    @patch("quickup.cli.renderer.get_tasks_data")
     def test_render_list_group_by_status_shows_status_color(self, mock_get_tasks, capsys):
         """Test render_list shows status color when grouping by status."""
         mock_status = Mock()
@@ -571,7 +571,7 @@ class TestRenderList:
         # Status color should be rendered (hex converted to RGB: 255;85;0 for #FF5500)
         assert "255;85;0" in captured.out or "IN PROGRESS" in captured.out.upper()
 
-    @patch("keyup.cli.renderer.get_tasks_data")
+    @patch("quickup.cli.renderer.get_tasks_data")
     def test_render_list_group_by_priority_shows_priority_color(self, mock_get_tasks, capsys):
         """Test render_list shows priority color when grouping by priority."""
         mock_task = Mock()
@@ -597,7 +597,7 @@ class TestRenderList:
         # Priority color should be rendered
         assert "URGENT" in captured.out.upper()
 
-    @patch("keyup.cli.renderer.get_tasks_data")
+    @patch("quickup.cli.renderer.get_tasks_data")
     def test_render_list_group_by_assignee_empty_tasks(self, mock_get_tasks, capsys):
         """Test render_list handles empty task list."""
         mock_get_tasks.return_value = []
@@ -616,7 +616,7 @@ class TestRenderList:
         assert "Test List" in captured.out
         assert "Run again:" in captured.out
 
-    @patch("keyup.cli.renderer.get_tasks_data")
+    @patch("quickup.cli.renderer.get_tasks_data")
     def test_render_list_group_by_status_empty_tasks_group(self, mock_get_tasks, capsys):
         """Test render_list handles status group with no tasks."""
         # Create tasks that will result in an empty group after filtering
@@ -645,7 +645,7 @@ class TestRenderList:
         assert "Test List" in captured.out
         assert "Run again:" in captured.out
 
-    @patch("keyup.cli.renderer.get_tasks_data")
+    @patch("quickup.cli.renderer.get_tasks_data")
     def test_render_list_group_by_status_with_mixed_empty_and_nonempty_groups(self, mock_get_tasks, capsys):
         """Test render_list with status grouping where some groups have tasks and some don't.
 
@@ -687,7 +687,7 @@ class TestRenderList:
         assert "Test List" in captured.out
         assert "TO DO" in captured.out.upper()
 
-    @patch("keyup.cli.renderer.get_tasks_data")
+    @patch("quickup.cli.renderer.get_tasks_data")
     def test_render_list_group_by_assignee_executes_elif_path(self, mock_get_tasks, capsys):
         """Test render_list with assignee grouping executes the elif group_by == 'assignee' path.
 
@@ -721,7 +721,7 @@ class TestRenderList:
         # Should show assignee name with bold formatting
         assert "john" in captured.out
 
-    @patch("keyup.cli.renderer.get_tasks_data")
+    @patch("quickup.cli.renderer.get_tasks_data")
     def test_render_list_group_by_status_no_tasks(self, mock_get_tasks, capsys):
         """Test render_list with empty tasks list for status grouping."""
         mock_get_tasks.return_value = []
@@ -739,7 +739,7 @@ class TestRenderList:
         # Should handle empty tasks without error
         assert "Test List" in captured.out
 
-    @patch("keyup.cli.renderer.get_tasks_data")
+    @patch("quickup.cli.renderer.get_tasks_data")
     def test_render_list_group_by_assignee_no_tasks(self, mock_get_tasks, capsys):
         """Test render_list with empty tasks list for assignee grouping."""
         mock_get_tasks.return_value = []
@@ -759,7 +759,7 @@ class TestRenderList:
         assert "Test List" in captured.out
         assert "Run again:" in captured.out
 
-    @patch("keyup.cli.renderer.get_tasks_data")
+    @patch("quickup.cli.renderer.get_tasks_data")
     def test_render_list_group_by_priority_unknown_priority(self, mock_get_tasks, capsys):
         """Test render_list handles unknown priority with default color."""
         mock_task = Mock()
@@ -786,7 +786,7 @@ class TestRenderList:
         # Should render "NONE" with default color
         assert "NONE" in captured.out.upper()
 
-    @patch("keyup.cli.renderer.get_tasks_data")
+    @patch("quickup.cli.renderer.get_tasks_data")
     def test_render_list_group_by_priority_empty_tasks(self, mock_get_tasks, capsys):
         """Test render_list handles empty task list with priority grouping."""
         mock_get_tasks.return_value = []
@@ -805,7 +805,7 @@ class TestRenderList:
         assert "Test List" in captured.out
         assert "Run again:" in captured.out
 
-    @patch("keyup.cli.renderer.get_tasks_data")
+    @patch("quickup.cli.renderer.get_tasks_data")
     def test_render_list_group_by_assignee_shows_assignee_name(self, mock_get_tasks, capsys):
         """Test render_list with assignee grouping shows assignee name formatting."""
         mock_assignee = Mock()
@@ -836,7 +836,7 @@ class TestRenderList:
         # Should show assignee name with bold formatting
         assert "john" in captured.out
 
-    @patch("keyup.cli.renderer.get_tasks_data")
+    @patch("quickup.cli.renderer.get_tasks_data")
     def test_render_list_group_by_assignee_empty_group(self, mock_get_tasks, capsys):
         """Test render_list with assignee grouping where a group has no tasks."""
         # Create tasks that will result in an empty group after filtering
@@ -866,7 +866,7 @@ class TestRenderList:
         # Should handle empty groups without error
         assert "Test List" in captured.out
 
-    @patch("keyup.cli.renderer.get_tasks_data")
+    @patch("quickup.cli.renderer.get_tasks_data")
     def test_render_list_group_by_priority_with_none_priority(self, mock_get_tasks, capsys):
         """Test render_list groups by priority with tasks without priority."""
         mock_task = Mock()

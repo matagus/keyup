@@ -1,4 +1,4 @@
-"""Caching layer for KeyUp! CLI using sqlite3.
+"""Caching layer for QuickUp! CLI using sqlite3.
 
 Provides TTL-based caching for ClickUp API responses to reduce API calls.
 """
@@ -10,9 +10,9 @@ import pickle
 import sqlite3
 import time
 
-# Cache location: ~/.keyup/cache/
-CACHE_DIR = Path.home() / ".keyup" / "cache"
-CACHE_FILE = CACHE_DIR / "keyup_cache.db"
+# Cache location: ~/.quickup/cache/
+CACHE_DIR = Path.home() / ".quickup" / "cache"
+CACHE_FILE = CACHE_DIR / "quickup_cache.db"
 
 # TTL values in seconds
 TEAMS_TTL = 24 * 60 * 60  # 24 hours

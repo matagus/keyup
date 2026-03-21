@@ -1,4 +1,4 @@
-"""Configuration and environment loading for KeyUp! CLI."""
+"""Configuration and environment loading for QuickUp! CLI."""
 
 import dotenv
 

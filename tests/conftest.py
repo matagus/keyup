@@ -1,4 +1,4 @@
-"""Reusable test fixtures for KeyUp! CLI tests."""
+"""Reusable test fixtures for QuickUp! CLI tests."""
 
 from unittest.mock import Mock
 

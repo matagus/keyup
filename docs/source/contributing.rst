@@ -1,7 +1,7 @@
 Contributing Guide
 ==================
 
-This guide covers setting up a development environment and contributing to KeyUp!.
+This guide covers setting up a development environment and contributing to QuickUp!.
 
 Setting Up the Development Environment
 --------------------------------------
@@ -10,8 +10,8 @@ Clone the repository:
 
 .. code-block:: bash
 
-   git clone https://github.com/matagus/keyup.git
-   cd keyup
+   git clone https://github.com/matagus/quickup.git
+   cd quickup
 
 Install development dependencies:
 

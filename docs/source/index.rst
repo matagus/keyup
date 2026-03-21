@@ -1,4 +1,4 @@
-KeyUp! Documentation
+QuickUp! Documentation
 =====================
 
 A simple, lightweight, and beautiful console-based client for ClickUp.
@@ -6,11 +6,11 @@ A simple, lightweight, and beautiful console-based client for ClickUp.
 Quick Start
 -----------
 
-Install KeyUp!:
+Install QuickUp!:
 
 .. code-block:: bash
 
-   pip install keyup
+   pip install quickup
 
 Configure your ClickUp API token:
 
@@ -22,17 +22,17 @@ Run the tool:
 
 .. code-block:: bash
 
-   keyup --help
+   quickup --help
 
 Feature Highlights
 ------------------
 
 **CLI Commands**
 
-- ``keyup`` - List tasks from a ClickUp list with color-coded status groups
-- ``keyup sprint`` - Auto-detect and list tasks from the current sprint
-- ``keyup task <id>`` - Show detailed information about a specific task
-- ``keyup update <id>`` - Update a task's status
+- ``quickup`` - List tasks from a ClickUp list with color-coded status groups
+- ``quickup sprint`` - Auto-detect and list tasks from the current sprint
+- ``quickup task <id>`` - Show detailed information about a specific task
+- ``quickup update <id>`` - Update a task's status
 
 **Features**
 

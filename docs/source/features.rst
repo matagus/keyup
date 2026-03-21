@@ -1,12 +1,12 @@
 Features
 ========
 
-This page describes the key features of KeyUp!.
+This page describes the key features of QuickUp!.
 
 Task Listing
 ------------
 
-KeyUp! displays tasks from ClickUp lists with:
+QuickUp! displays tasks from ClickUp lists with:
 
 - **Bold** task names
 - Blue underlined URLs
@@ -26,7 +26,7 @@ Filter tasks by assignee username (case-insensitive):
 
 .. code-block:: bash
 
-   keyup --team 123 --list 456 --assignee john
+   quickup --team 123 --list 456 --assignee john
 
 Priority Filter
 ~~~~~~~~~~~~~~~
@@ -35,7 +35,7 @@ Filter by priority level:
 
 .. code-block:: bash
 
-   keyup --team 123 --list 456 --priority high
+   quickup --team 123 --list 456 --priority high
 
 Supported priorities: low, normal, high, urgent
 
@@ -46,7 +46,7 @@ Filter tasks due before a specific date:
 
 .. code-block:: bash
 
-   keyup --team 123 --list 456 --due-before 2024-12-31
+   quickup --team 123 --list 456 --due-before 2024-12-31
 
 Grouping
 --------
@@ -56,22 +56,22 @@ Group tasks by different criteria:
 .. code-block:: bash
 
    # Group by status (default)
-   keyup --team 123 --list 456 --group-by status
+   quickup --team 123 --list 456 --group-by status
 
    # Group by assignee
-   keyup --team 123 --list 456 --group-by assignee
+   quickup --team 123 --list 456 --group-by assignee
 
    # Group by priority
-   keyup --team 123 --list 456 --group-by priority
+   quickup --team 123 --list 456 --group-by priority
 
 Sprint Detection
 ----------------
 
-The ``keyup sprint`` command auto-detects the current sprint by searching for lists containing "sprint" or "iteration" in the name:
+The ``quickup sprint`` command auto-detects the current sprint by searching for lists containing "sprint" or "iteration" in the name:
 
 .. code-block:: bash
 
-   keyup sprint --team 123
+   quickup sprint --team 123
 
 Interactive Mode
 ----------------
@@ -80,7 +80,7 @@ When multiple teams, spaces, projects, or lists exist, use the ``-i`` flag to en
 
 .. code-block:: bash
 
-   keyup -i
+   quickup -i
 
 This prompts you to select:
 
@@ -92,19 +92,19 @@ This prompts you to select:
 Caching
 -------
 
-KeyUp! uses disk-based caching to reduce API calls and improve performance:
+QuickUp! uses disk-based caching to reduce API calls and improve performance:
 
 - **Teams**: 24 hours TTL
 - **Lists**: 24 hours TTL
 - **Tasks**: 5 minutes TTL
 
-Cache location: ``~/.keyup/cache/``
+Cache location: ``~/.quickup/cache/``
 
 Bypass the cache with ``--no-cache``:
 
 .. code-block:: bash
 
-   keyup --team 123 --list 456 --no-cache
+   quickup --team 123 --list 456 --no-cache
 
 Output Format
 -------------
@@ -126,6 +126,6 @@ At the bottom of the output, a suggestion is shown in gray text with the command
 
 .. code-block:: text
 
-   Run again: keyup --assignee john --priority high --group-by priority
+   Run again: quickup --assignee john --priority high --group-by priority
 
 This makes it easy to re-run the same filtered/grouped view without typing the full command again.

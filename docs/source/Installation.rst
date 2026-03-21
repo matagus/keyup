@@ -15,19 +15,19 @@ Installation Steps
 
    .. code-block:: bash
 
-      pip install keyup
+      pip install quickup
 
 2. Alternatively, install using uv:
 
    .. code-block:: bash
 
-      uv pip install keyup
+      uv pip install quickup
 
 3. Verify the installation:
 
    .. code-block:: bash
 
-      keyup --help
+      quickup --help
 
 Configuration
 -------------
@@ -58,7 +58,7 @@ Create a ``.env`` file in your project directory:
 
    CLICKUP_TOKEN=your_token_here
 
-KeyUp! will automatically load the token from this file.
+QuickUp! will automatically load the token from this file.
 
 Getting Your ClickUp API Token
 ------------------------------
@@ -76,13 +76,13 @@ To upgrade to the latest version:
 
 .. code-block:: bash
 
-   pip install --upgrade keyup
+   pip install --upgrade quickup
 
 Uninstallation
 --------------
 
-To remove KeyUp!:
+To remove QuickUp!:
 
 .. code-block:: bash
 
-   pip uninstall keyup
+   pip uninstall quickup

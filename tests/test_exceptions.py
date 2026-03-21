@@ -1,8 +1,8 @@
-"""Tests for KeyUp! exceptions."""
+"""Tests for QuickUp! exceptions."""
 
 import pytest
 
-from keyup.cli.exceptions import (
+from quickup.cli.exceptions import (
     APIError,
     ClickupyError,
     ListNotFoundError,

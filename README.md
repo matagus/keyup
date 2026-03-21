@@ -1,15 +1,15 @@
-# KeyUp!
+# QuickUp!
 
 ![Python Compatibility](https://img.shields.io/badge/python-3.10|3.11|3.12|3.13|3.14-blue.svg)
-[![PyPI Version](https://img.shields.io/pypi/v/keyup.svg)](https://pypi.python.org/pypi/keyup)
-[![Tests](https://github.com/matagus/keyup/actions/workflows/tests.yml/badge.svg)](https://github.com/matagus/keyup/actions/workflows/tests.yml)
-[![Documentation Status](https://readthedocs.org/projects/keyup/badge/?version=latest)](https://keyup.readthedocs.io/en/latest/?badge=latest)
+[![PyPI Version](https://img.shields.io/pypi/v/quickup.svg)](https://pypi.python.org/pypi/quickup)
+[![Tests](https://github.com/matagus/quickup/actions/workflows/tests.yml/badge.svg)](https://github.com/matagus/quickup/actions/workflows/tests.yml)
+[![Documentation Status](https://readthedocs.org/projects/quickup/badge/?version=latest)](https://quickup.readthedocs.io/en/latest/?badge=latest)
 
 A simple, lightweight, and beautiful console-based client for ClickUp that lets you view, filter, and manage tasks
 directly from your command line. View tasks grouped by status, assignee, or priority, update task statuses, and
 auto-detect your current sprint. It features interactive mode for easy navigation and caching for fast performance.
 
-![KeyUp! in action](https://github.com/matagus/keyup/blob/main/screenshots/one.png)
+![QuickUp! in action](https://github.com/matagus/quickup/blob/main/screenshots/one.png)
 
 ## Features
 
@@ -25,7 +25,7 @@ auto-detect your current sprint. It features interactive mode for easy navigatio
 ## Installation
 
 ```bash
-pip install keyup
+pip install quickup
 ```
 
 ## Quick Start
@@ -45,30 +45,30 @@ CLICKUP_TOKEN=your_token_here
 List tasks from a specific list:
 
 ```bash
-keyup --team <team_id> --list <list_id>
+quickup --team <team_id> --list <list_id>
 ```
 
 ## Commands
 
-### `keyup` (default) - List Tasks
+### `quickup` (default) - List Tasks
 
 List all tasks from a ClickUp list, grouped by status.
 
 ```bash
 # Basic usage
-keyup --team <team_id> --list <list_id>
+quickup --team <team_id> --list <list_id>
 
 # With filters
-keyup --team <team_id> --list <list_id> --assignee john --priority high
+quickup --team <team_id> --list <list_id> --assignee john --priority high
 
 # Group by assignee
-keyup --team <team_id> --list <list_id> --group-by assignee
+quickup --team <team_id> --list <list_id> --group-by assignee
 
 # Interactive mode
-keyup -i
+quickup -i
 
 # Bypass cache
-keyup --team <team_id> --list <list_id> --no-cache
+quickup --team <team_id> --list <list_id> --no-cache
 ```
 
 **Options:**
@@ -83,16 +83,16 @@ keyup --team <team_id> --list <list_id> --no-cache
 - `--no-cache`: Bypass cache and fetch from API
 - `-i, --interactive`: Enable interactive mode
 
-### `keyup sprint` - Current Sprint Tasks
+### `quickup sprint` - Current Sprint Tasks
 
 Auto-detects the current sprint list by searching for lists containing "sprint" or "iteration" in the name.
 
 ```bash
 # List tasks from current sprint
-keyup sprint --team <team_id>
+quickup sprint --team <team_id>
 
 # With filters
-keyup sprint --team <team_id> --assignee jane --group-by priority
+quickup sprint --team <team_id> --assignee jane --group-by priority
 ```
 
 **Options:**
@@ -106,16 +106,16 @@ keyup sprint --team <team_id> --assignee jane --group-by priority
 - `--no-cache`: Bypass cache
 - `-i, --interactive`: Enable interactive mode
 
-### `keyup task <task_id>` - Task Details
+### `quickup task <task_id>` - Task Details
 
 Show detailed information about a specific task.
 
 ```bash
 # Show task details
-keyup task <task_id>
+quickup task <task_id>
 
 # With team specification
-keyup task <task_id> --team <team_id>
+quickup task <task_id> --team <team_id>
 ```
 
 **Options:**
@@ -123,16 +123,16 @@ keyup task <task_id> --team <team_id>
 - `--team`: Team ID (required if multiple teams exist)
 - `-i, --interactive`: Enable interactive mode
 
-### `keyup update <task_id>` - Update Task Status
+### `quickup update <task_id>` - Update Task Status
 
 Update the status of a specific task.
 
 ```bash
 # Update task status
-keyup update <task_id> --status "In Progress"
+quickup update <task_id> --status "In Progress"
 
 # With team specification
-keyup update <task_id> --status "Done" --team <team_id>
+quickup update <task_id> --status "Done" --team <team_id>
 ```
 
 **Options:**
@@ -146,7 +146,7 @@ keyup update <task_id> --status "Done" --team <team_id>
 When multiple teams, spaces, projects, or lists exist, use `-i` flag to enable interactive selection:
 
 ```bash
-keyup -i
+quickup -i
 ```
 
 This will prompt you to select:
@@ -168,19 +168,19 @@ Status groups are displayed with color-coded headers matching the ClickUp status
 At the bottom of the output, a suggestion is shown in gray text with the command to repeat the same query:
 
 ```
-Run again: keyup --assignee john --priority high --group-by priority
+Run again: quickup --assignee john --priority high --group-by priority
 ```
 
 This makes it easy to re-run the same filtered/grouped view without typing the full command again.
 
 ## Caching
 
-KeyUp! uses disk-based caching to reduce API calls:
+QuickUp! uses disk-based caching to reduce API calls:
 - Teams: 24 hours TTL
 - Lists: 24 hours TTL
 - Tasks: 5 minutes TTL
 
-Cache location: `~/.keyup/cache/`
+Cache location: `~/.quickup/cache/`
 
 Use `--no-cache` to bypass cache and fetch fresh data from the API.
 

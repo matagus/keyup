@@ -1,46 +1,46 @@
 API Reference
 =============
 
-This section documents the Python API of KeyUp!.
+This section documents the Python API of QuickUp!.
 
 cli.main
 --------
 
-.. automodule:: keyup.cli.main
+.. automodule:: quickup.cli.main
    :members:
    :undoc-members:
 
 cli.api_client
 --------------
 
-.. automodule:: keyup.cli.api_client
+.. automodule:: quickup.cli.api_client
    :members:
    :undoc-members:
 
 cli.renderer
 ------------
 
-.. automodule:: keyup.cli.renderer
+.. automodule:: quickup.cli.renderer
    :members:
    :undoc-members:
 
 cli.config
 ----------
 
-.. automodule:: keyup.cli.config
+.. automodule:: quickup.cli.config
    :members:
    :undoc-members:
 
 cli.cache
 ---------
 
-.. automodule:: keyup.cli.cache
+.. automodule:: quickup.cli.cache
    :members:
    :undoc-members:
 
 cli.exceptions
 --------------
 
-.. automodule:: keyup.cli.exceptions
+.. automodule:: quickup.cli.exceptions
    :members:
    :undoc-members:

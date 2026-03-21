@@ -1,16 +1,16 @@
 Quick Start
 ===========
 
-This guide will help you get started with KeyUp! in just a few minutes.
+This guide will help you get started with QuickUp! in just a few minutes.
 
 Installation
 ------------
 
-Install KeyUp! using pip:
+Install QuickUp! using pip:
 
 .. code-block:: bash
 
-   pip install keyup
+   pip install quickup
 
 Configuration
 -------------
@@ -34,31 +34,31 @@ List all tasks from a specific ClickUp list:
 
 .. code-block:: bash
 
-   keyup --team <team_id> --list <list_id>
+   quickup --team <team_id> --list <list_id>
 
 Use interactive mode to navigate through your workspace hierarchy:
 
 .. code-block:: bash
 
-   keyup -i
+   quickup -i
 
 List tasks from the current sprint:
 
 .. code-block:: bash
 
-   keyup sprint --team <team_id>
+   quickup sprint --team <team_id>
 
 View details of a specific task:
 
 .. code-block:: bash
 
-   keyup task <task_id>
+   quickup task <task_id>
 
 Update a task's status:
 
 .. code-block:: bash
 
-   keyup update <task_id> --status "In Progress"
+   quickup update <task_id> --status "In Progress"
 
 Next Steps
 ----------

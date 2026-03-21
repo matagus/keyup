@@ -1,12 +1,12 @@
-"""Tests for KeyUp! CLI module."""
+"""Tests for QuickUp! CLI module."""
 
 from unittest.mock import Mock, patch
 
 import pytest
 
-from keyup.cli.api_client import get_list_for, get_project_for
-from keyup.cli.exceptions import ClickupyError, TokenError
-from keyup.cli.main import app, list_tasks, run_app, show_task, sprint, update_task
+from quickup.cli.api_client import get_list_for, get_project_for
+from quickup.cli.exceptions import ClickupyError, TokenError
+from quickup.cli.main import app, list_tasks, run_app, show_task, sprint, update_task
 
 
 class TestApp:
@@ -14,7 +14,7 @@ class TestApp:
 
     def test_app_creation(self):
         """Test that app is created with correct name."""
-        assert "keyup" in app.name
+        assert "quickup" in app.name
         assert "console-based client for ClickUp" in app.help
 
     def test_app_help(self, capsys, monkeypatch):
@@ -33,15 +33,15 @@ class TestApp:
 class TestRunApp:
     """Tests for run_app function."""
 
-    @patch("keyup.cli.main.app")
+    @patch("quickup.cli.main.app")
     def test_successful_execution(self, mock_app):
         """Test successful execution mocks app()."""
         run_app()
 
         mock_app.assert_called_once()
 
-    @patch("keyup.cli.main.handle_exception")
-    @patch("keyup.cli.main.app")
+    @patch("quickup.cli.main.handle_exception")
+    @patch("quickup.cli.main.app")
     def test_exception_handling(self, mock_app, mock_handle_exception):
         """Test exception handling mocks ClickupyError and handle_exception."""
         mock_app.side_effect = ClickupyError("Test error")
@@ -54,13 +54,13 @@ class TestRunApp:
 class TestSprintCommand:
     """Tests for the sprint command."""
 
-    @patch("keyup.cli.main.render_list")
-    @patch("keyup.cli.main.get_current_sprint_list")
-    @patch("keyup.cli.main.get_project_for")
-    @patch("keyup.cli.main.get_space_for")
-    @patch("keyup.cli.main.get_team")
-    @patch("keyup.cli.main.ClickUp")
-    @patch("keyup.cli.main.init_environ")
+    @patch("quickup.cli.main.render_list")
+    @patch("quickup.cli.main.get_current_sprint_list")
+    @patch("quickup.cli.main.get_project_for")
+    @patch("quickup.cli.main.get_space_for")
+    @patch("quickup.cli.main.get_team")
+    @patch("quickup.cli.main.ClickUp")
+    @patch("quickup.cli.main.init_environ")
     def test_with_all_params(
         self,
         mock_environ,
@@ -90,8 +90,8 @@ class TestSprintCommand:
         mock_get_sprint_list.assert_called_once_with(mock_team, mock_space)
         mock_render_list.assert_called_once()
 
-    @patch("keyup.cli.main.ClickUp")
-    @patch("keyup.cli.main.init_environ")
+    @patch("quickup.cli.main.ClickUp")
+    @patch("quickup.cli.main.init_environ")
     def test_token_missing_raises(self, mock_environ, mock_clickup_class):
         """Test token missing scenario raises TokenError."""
         mock_environ.return_value = {}  # No TOKEN
@@ -103,7 +103,7 @@ class TestSprintCommand:
 class TestTokenMissingScenarios:
     """Tests for token missing scenarios."""
 
-    @patch("keyup.cli.main.init_environ")
+    @patch("quickup.cli.main.init_environ")
     def test_list_tasks_raises_token_error(self, mock_environ):
         """Test list_tasks raises TokenError when TOKEN not set."""
         mock_environ.return_value = {}  # No TOKEN
@@ -111,7 +111,7 @@ class TestTokenMissingScenarios:
         with pytest.raises(TokenError):
             list_tasks()
 
-    @patch("keyup.cli.main.init_environ")
+    @patch("quickup.cli.main.init_environ")
     def test_show_task_raises_token_error(self, mock_environ):
         """Test show_task raises TokenError when TOKEN not set."""
         mock_environ.return_value = {}  # No TOKEN
@@ -119,7 +119,7 @@ class TestTokenMissingScenarios:
         with pytest.raises(TokenError):
             show_task(task_id="task-123")
 
-    @patch("keyup.cli.main.init_environ")
+    @patch("quickup.cli.main.init_environ")
     def test_update_task_raises_token_error(self, mock_environ):
         """Test update_task raises TokenError when TOKEN not set."""
         mock_environ.return_value = {}  # No TOKEN
@@ -131,13 +131,13 @@ class TestTokenMissingScenarios:
 class TestListTasks:
     """Tests for the list_tasks command."""
 
-    @patch("keyup.cli.main.render_list")
-    @patch("keyup.cli.main.get_list_for")
-    @patch("keyup.cli.main.get_project_for")
-    @patch("keyup.cli.main.get_space_for")
-    @patch("keyup.cli.main.get_team")
-    @patch("keyup.cli.main.ClickUp")
-    @patch("keyup.cli.main.init_environ")
+    @patch("quickup.cli.main.render_list")
+    @patch("quickup.cli.main.get_list_for")
+    @patch("quickup.cli.main.get_project_for")
+    @patch("quickup.cli.main.get_space_for")
+    @patch("quickup.cli.main.get_team")
+    @patch("quickup.cli.main.ClickUp")
+    @patch("quickup.cli.main.init_environ")
     def test_list_tasks_with_all_params(
         self,
         mock_environ,
@@ -185,13 +185,13 @@ class TestListTasks:
             list_id="list-000",
         )
 
-    @patch("keyup.cli.main.render_list")
-    @patch("keyup.cli.main.get_list_for")
-    @patch("keyup.cli.main.get_project_for")
-    @patch("keyup.cli.main.get_space_for")
-    @patch("keyup.cli.main.get_team")
-    @patch("keyup.cli.main.ClickUp")
-    @patch("keyup.cli.main.init_environ")
+    @patch("quickup.cli.main.render_list")
+    @patch("quickup.cli.main.get_list_for")
+    @patch("quickup.cli.main.get_project_for")
+    @patch("quickup.cli.main.get_space_for")
+    @patch("quickup.cli.main.get_team")
+    @patch("quickup.cli.main.ClickUp")
+    @patch("quickup.cli.main.init_environ")
     def test_list_tasks_with_team_only(
         self,
         mock_environ,
@@ -220,13 +220,13 @@ class TestListTasks:
         call_args = mock_render_list.call_args
         assert call_args[1]["team"] == "team-123"
 
-    @patch("keyup.cli.main.render_list")
-    @patch("keyup.cli.main.get_list_for")
-    @patch("keyup.cli.main.get_project_for")
-    @patch("keyup.cli.main.get_space_for")
-    @patch("keyup.cli.main.get_team")
-    @patch("keyup.cli.main.ClickUp")
-    @patch("keyup.cli.main.init_environ")
+    @patch("quickup.cli.main.render_list")
+    @patch("quickup.cli.main.get_list_for")
+    @patch("quickup.cli.main.get_project_for")
+    @patch("quickup.cli.main.get_space_for")
+    @patch("quickup.cli.main.get_team")
+    @patch("quickup.cli.main.ClickUp")
+    @patch("quickup.cli.main.init_environ")
     def test_list_tasks_with_space_only(
         self,
         mock_environ,
@@ -254,13 +254,13 @@ class TestListTasks:
         call_args = mock_render_list.call_args
         assert call_args[1]["space"] == "space-456"
 
-    @patch("keyup.cli.main.render_list")
-    @patch("keyup.cli.main.get_list_for")
-    @patch("keyup.cli.main.get_project_for")
-    @patch("keyup.cli.main.get_space_for")
-    @patch("keyup.cli.main.get_team")
-    @patch("keyup.cli.main.ClickUp")
-    @patch("keyup.cli.main.init_environ")
+    @patch("quickup.cli.main.render_list")
+    @patch("quickup.cli.main.get_list_for")
+    @patch("quickup.cli.main.get_project_for")
+    @patch("quickup.cli.main.get_space_for")
+    @patch("quickup.cli.main.get_team")
+    @patch("quickup.cli.main.ClickUp")
+    @patch("quickup.cli.main.init_environ")
     def test_list_tasks_with_project_only(
         self,
         mock_environ,
@@ -288,13 +288,13 @@ class TestListTasks:
         call_args = mock_render_list.call_args
         assert call_args[1]["project"] == "project-789"
 
-    @patch("keyup.cli.main.render_list")
-    @patch("keyup.cli.main.get_list_for")
-    @patch("keyup.cli.main.get_project_for")
-    @patch("keyup.cli.main.get_space_for")
-    @patch("keyup.cli.main.get_team")
-    @patch("keyup.cli.main.ClickUp")
-    @patch("keyup.cli.main.init_environ")
+    @patch("quickup.cli.main.render_list")
+    @patch("quickup.cli.main.get_list_for")
+    @patch("quickup.cli.main.get_project_for")
+    @patch("quickup.cli.main.get_space_for")
+    @patch("quickup.cli.main.get_team")
+    @patch("quickup.cli.main.ClickUp")
+    @patch("quickup.cli.main.init_environ")
     def test_list_tasks_with_closed_flag(
         self,
         mock_environ,
@@ -322,13 +322,13 @@ class TestListTasks:
         call_args = mock_render_list.call_args
         assert call_args[1]["include_closed"] is True
 
-    @patch("keyup.cli.main.render_list")
-    @patch("keyup.cli.main.get_list_for")
-    @patch("keyup.cli.main.get_project_for")
-    @patch("keyup.cli.main.get_space_for")
-    @patch("keyup.cli.main.get_team")
-    @patch("keyup.cli.main.ClickUp")
-    @patch("keyup.cli.main.init_environ")
+    @patch("quickup.cli.main.render_list")
+    @patch("quickup.cli.main.get_list_for")
+    @patch("quickup.cli.main.get_project_for")
+    @patch("quickup.cli.main.get_space_for")
+    @patch("quickup.cli.main.get_team")
+    @patch("quickup.cli.main.ClickUp")
+    @patch("quickup.cli.main.init_environ")
     def test_list_tasks_with_list_only(
         self,
         mock_environ,
@@ -360,10 +360,10 @@ class TestListTasks:
 class TestUpdateTask:
     """Tests for the update_task command."""
 
-    @patch("keyup.cli.main.render_task_update")
-    @patch("keyup.cli.main.get_team")
-    @patch("keyup.cli.main.ClickUp")
-    @patch("keyup.cli.main.init_environ")
+    @patch("quickup.cli.main.render_task_update")
+    @patch("quickup.cli.main.get_team")
+    @patch("quickup.cli.main.ClickUp")
+    @patch("quickup.cli.main.init_environ")
     def test_update_task_with_team_id(
         self,
         mock_environ,
@@ -391,10 +391,10 @@ class TestUpdateTask:
         mock_get_team.assert_called()
         mock_render_task_update.assert_called_once_with("task-86b8z0dn3", "To Do", "In Progress")
 
-    @patch("keyup.cli.main.render_task_update")
-    @patch("keyup.cli.main.get_team")
-    @patch("keyup.cli.main.ClickUp")
-    @patch("keyup.cli.main.init_environ")
+    @patch("quickup.cli.main.render_task_update")
+    @patch("quickup.cli.main.get_team")
+    @patch("quickup.cli.main.ClickUp")
+    @patch("quickup.cli.main.init_environ")
     def test_update_task_without_team_uses_first_team(
         self,
         mock_environ,
@@ -422,8 +422,8 @@ class TestUpdateTask:
 
         mock_render_task_update.assert_called_once_with("task-123", "To Do", "Done")
 
-    @patch("keyup.cli.main.ClickUp")
-    @patch("keyup.cli.main.init_environ")
+    @patch("quickup.cli.main.ClickUp")
+    @patch("quickup.cli.main.init_environ")
     def test_update_task_not_found(
         self,
         mock_environ,
@@ -431,7 +431,7 @@ class TestUpdateTask:
         capsys,
     ):
         """Test update_task raises error when task not found."""
-        from keyup.cli.exceptions import ClickupyError
+        from quickup.cli.exceptions import ClickupyError
 
         mock_environ.return_value = {"TOKEN": "test-token"}
         mock_clickup = Mock()
@@ -449,11 +449,11 @@ class TestUpdateTask:
 class TestShowTask:
     """Tests for the show_task command."""
 
-    @patch("keyup.cli.main.render_task_detail")
-    @patch("keyup.cli.main.get_task_data")
-    @patch("keyup.cli.main.get_team")
-    @patch("keyup.cli.main.ClickUp")
-    @patch("keyup.cli.main.init_environ")
+    @patch("quickup.cli.main.render_task_detail")
+    @patch("quickup.cli.main.get_task_data")
+    @patch("quickup.cli.main.get_team")
+    @patch("quickup.cli.main.ClickUp")
+    @patch("quickup.cli.main.init_environ")
     def test_show_task_with_team_id(
         self,
         mock_environ,
@@ -478,11 +478,11 @@ class TestShowTask:
         mock_get_team.assert_called()
         mock_render_task_detail.assert_called_once_with(mock_task)
 
-    @patch("keyup.cli.main.render_task_detail")
-    @patch("keyup.cli.main.get_task_data")
-    @patch("keyup.cli.main.get_team")
-    @patch("keyup.cli.main.ClickUp")
-    @patch("keyup.cli.main.init_environ")
+    @patch("quickup.cli.main.render_task_detail")
+    @patch("quickup.cli.main.get_task_data")
+    @patch("quickup.cli.main.get_team")
+    @patch("quickup.cli.main.ClickUp")
+    @patch("quickup.cli.main.init_environ")
     def test_show_task_without_team_uses_first_team(
         self,
         mock_environ,
@@ -508,8 +508,8 @@ class TestShowTask:
 
         mock_render_task_detail.assert_called_once_with(mock_task)
 
-    @patch("keyup.cli.main.ClickUp")
-    @patch("keyup.cli.main.init_environ")
+    @patch("quickup.cli.main.ClickUp")
+    @patch("quickup.cli.main.init_environ")
     def test_show_task_not_found(
         self,
         mock_environ,
@@ -517,7 +517,7 @@ class TestShowTask:
         capsys,
     ):
         """Test show_task raises error when task not found."""
-        from keyup.cli.exceptions import ClickupyError
+        from quickup.cli.exceptions import ClickupyError
 
         mock_environ.return_value = {"TOKEN": "test-token"}
         mock_clickup = Mock()
@@ -535,13 +535,13 @@ class TestShowTask:
 class TestSprint:
     """Tests for the sprint command."""
 
-    @patch("keyup.cli.main.render_list")
-    @patch("keyup.cli.main.get_current_sprint_list")
-    @patch("keyup.cli.main.get_project_for")
-    @patch("keyup.cli.main.get_space_for")
-    @patch("keyup.cli.main.get_team")
-    @patch("keyup.cli.main.ClickUp")
-    @patch("keyup.cli.main.init_environ")
+    @patch("quickup.cli.main.render_list")
+    @patch("quickup.cli.main.get_current_sprint_list")
+    @patch("quickup.cli.main.get_project_for")
+    @patch("quickup.cli.main.get_space_for")
+    @patch("quickup.cli.main.get_team")
+    @patch("quickup.cli.main.ClickUp")
+    @patch("quickup.cli.main.init_environ")
     def test_with_all_params(
         self,
         mock_environ,
@@ -576,13 +576,13 @@ class TestSprint:
         mock_get_sprint_list.assert_called_once_with(mock_team, mock_space)
         mock_render_list.assert_called_once()
 
-    @patch("keyup.cli.main.render_list")
-    @patch("keyup.cli.main.get_current_sprint_list")
-    @patch("keyup.cli.main.get_project_for")
-    @patch("keyup.cli.main.get_space_for")
-    @patch("keyup.cli.main.get_team")
-    @patch("keyup.cli.main.ClickUp")
-    @patch("keyup.cli.main.init_environ")
+    @patch("quickup.cli.main.render_list")
+    @patch("quickup.cli.main.get_current_sprint_list")
+    @patch("quickup.cli.main.get_project_for")
+    @patch("quickup.cli.main.get_space_for")
+    @patch("quickup.cli.main.get_team")
+    @patch("quickup.cli.main.ClickUp")
+    @patch("quickup.cli.main.init_environ")
     def test_sprint_with_team_only(
         self,
         mock_environ,
@@ -610,13 +610,13 @@ class TestSprint:
         call_args = mock_render_list.call_args
         assert call_args[1]["team"] == "team-123"
 
-    @patch("keyup.cli.main.render_list")
-    @patch("keyup.cli.main.get_current_sprint_list")
-    @patch("keyup.cli.main.get_project_for")
-    @patch("keyup.cli.main.get_space_for")
-    @patch("keyup.cli.main.get_team")
-    @patch("keyup.cli.main.ClickUp")
-    @patch("keyup.cli.main.init_environ")
+    @patch("quickup.cli.main.render_list")
+    @patch("quickup.cli.main.get_current_sprint_list")
+    @patch("quickup.cli.main.get_project_for")
+    @patch("quickup.cli.main.get_space_for")
+    @patch("quickup.cli.main.get_team")
+    @patch("quickup.cli.main.ClickUp")
+    @patch("quickup.cli.main.init_environ")
     def test_sprint_with_space_only(
         self,
         mock_environ,
@@ -644,13 +644,13 @@ class TestSprint:
         call_args = mock_render_list.call_args
         assert call_args[1]["space"] == "space-456"
 
-    @patch("keyup.cli.main.render_list")
-    @patch("keyup.cli.main.get_current_sprint_list")
-    @patch("keyup.cli.main.get_project_for")
-    @patch("keyup.cli.main.get_space_for")
-    @patch("keyup.cli.main.get_team")
-    @patch("keyup.cli.main.ClickUp")
-    @patch("keyup.cli.main.init_environ")
+    @patch("quickup.cli.main.render_list")
+    @patch("quickup.cli.main.get_current_sprint_list")
+    @patch("quickup.cli.main.get_project_for")
+    @patch("quickup.cli.main.get_space_for")
+    @patch("quickup.cli.main.get_team")
+    @patch("quickup.cli.main.ClickUp")
+    @patch("quickup.cli.main.init_environ")
     def test_sprint_with_project_only(
         self,
         mock_environ,
@@ -678,13 +678,13 @@ class TestSprint:
         call_args = mock_render_list.call_args
         assert call_args[1]["project"] == "project-789"
 
-    @patch("keyup.cli.main.render_list")
-    @patch("keyup.cli.main.get_current_sprint_list")
-    @patch("keyup.cli.main.get_project_for")
-    @patch("keyup.cli.main.get_space_for")
-    @patch("keyup.cli.main.get_team")
-    @patch("keyup.cli.main.ClickUp")
-    @patch("keyup.cli.main.init_environ")
+    @patch("quickup.cli.main.render_list")
+    @patch("quickup.cli.main.get_current_sprint_list")
+    @patch("quickup.cli.main.get_project_for")
+    @patch("quickup.cli.main.get_space_for")
+    @patch("quickup.cli.main.get_team")
+    @patch("quickup.cli.main.ClickUp")
+    @patch("quickup.cli.main.init_environ")
     def test_sprint_with_closed_flag(
         self,
         mock_environ,
@@ -712,8 +712,8 @@ class TestSprint:
         call_args = mock_render_list.call_args
         assert call_args[1]["include_closed"] is True
 
-    @patch("keyup.cli.main.ClickUp")
-    @patch("keyup.cli.main.init_environ")
+    @patch("quickup.cli.main.ClickUp")
+    @patch("quickup.cli.main.init_environ")
     def test_token_missing_raises_error(self, mock_environ, mock_clickup_class):
         """Test token missing scenario raises TokenError."""
         mock_environ.return_value = {"TOKEN": None}
@@ -732,10 +732,10 @@ class TestGetProjectFor:
         p.hidden = hidden
         return p
 
-    @patch("keyup.cli.api_client.get_projects_data")
+    @patch("quickup.cli.api_client.get_projects_data")
     def test_hidden_project_excluded_from_interactive_choices(self, mock_get_projects, monkeypatch):
         """Hidden projects must not appear in the inquirer choices."""
-        monkeypatch.setattr("sys.argv", ["keyup"])  # no --project arg
+        monkeypatch.setattr("sys.argv", ["quickup"])  # no --project arg
 
         visible = self._make_project("p1", "My Project")
         hidden = self._make_project("p2", "hidden", hidden=True)
@@ -747,31 +747,31 @@ class TestGetProjectFor:
             captured_choices.extend(questions[0].choices)
             return {"project": f"{visible.name} [{visible.id}]"}
 
-        with patch("keyup.cli.api_client.inquirer.prompt", side_effect=fake_prompt):
+        with patch("quickup.cli.api_client.inquirer.prompt", side_effect=fake_prompt):
             result = get_project_for(Mock(), [], interactive=True)
 
         assert result is visible
         assert not any("hidden" in c for c in captured_choices)
 
-    @patch("keyup.cli.api_client.get_projects_data")
+    @patch("quickup.cli.api_client.get_projects_data")
     def test_single_non_hidden_project_returned_without_prompt(self, mock_get_projects, monkeypatch):
         """When only one non-hidden project exists, return it without prompting."""
-        monkeypatch.setattr("sys.argv", ["keyup"])
+        monkeypatch.setattr("sys.argv", ["quickup"])
 
         visible = self._make_project("p1", "My Project")
         hidden = self._make_project("p2", "hidden", hidden=True)
         mock_get_projects.return_value = [visible, hidden]
 
-        with patch("keyup.cli.api_client.inquirer.prompt") as mock_prompt:
+        with patch("quickup.cli.api_client.inquirer.prompt") as mock_prompt:
             result = get_project_for(Mock(), [], interactive=True)
 
         assert result is visible
         mock_prompt.assert_not_called()
 
-    @patch("keyup.cli.api_client.get_projects_data")
+    @patch("quickup.cli.api_client.get_projects_data")
     def test_all_projects_hidden_falls_back_to_showing_all(self, mock_get_projects, monkeypatch):
         """When every project is hidden, fall back to returning the first one."""
-        monkeypatch.setattr("sys.argv", ["keyup"])
+        monkeypatch.setattr("sys.argv", ["quickup"])
 
         h1 = self._make_project("p1", "hidden", hidden=True)
         mock_get_projects.return_value = [h1]
@@ -797,11 +797,11 @@ class TestGetListFor:
         p.lists = lists or []
         return p
 
-    @patch("keyup.cli.api_client.get_projects_data")
-    @patch("keyup.cli.api_client.get_lists_data")
+    @patch("quickup.cli.api_client.get_projects_data")
+    @patch("quickup.cli.api_client.get_lists_data")
     def test_hidden_sibling_lists_merged_in_interactive(self, mock_get_lists, mock_get_projects, monkeypatch):
         """Lists from hidden sibling projects appear in the interactive choices."""
-        monkeypatch.setattr("sys.argv", ["keyup"])  # no --list arg
+        monkeypatch.setattr("sys.argv", ["quickup"])  # no --list arg
 
         list_a = self._make_list("l1", "Sprint 1")
         list_b = self._make_list("l2", "Backlog")  # lives in the hidden folder
@@ -820,21 +820,21 @@ class TestGetListFor:
             captured_choices.extend(questions[0].choices)
             return {"list": f"{list_a.name} [{list_a.id}]"}
 
-        with patch("keyup.cli.api_client.inquirer.prompt", side_effect=fake_prompt):
+        with patch("quickup.cli.api_client.inquirer.prompt", side_effect=fake_prompt):
             result = get_list_for(selected_project, [], interactive=True)
 
         assert result is list_a
         assert any(list_b.name in c for c in captured_choices), "hidden folder lists not merged"
 
-    @patch("keyup.cli.api_client.get_projects_data")
-    @patch("keyup.cli.api_client.get_lists_data")
+    @patch("quickup.cli.api_client.get_projects_data")
+    @patch("quickup.cli.api_client.get_lists_data")
     def test_list_id_from_hidden_project_resolved_via_cli_arg(self, mock_get_lists, mock_get_projects, monkeypatch):
         """A --list ID belonging to a hidden sibling project is resolved correctly."""
         hidden_list = self._make_list("l99", "Folderless List")
         selected_project = self._make_project("p1")
         hidden_project = self._make_project("p2", hidden=True)
 
-        monkeypatch.setattr("sys.argv", ["keyup", "--list", "l99"])
+        monkeypatch.setattr("sys.argv", ["quickup", "--list", "l99"])
 
         mock_space = Mock()
         selected_project.space = mock_space
@@ -845,10 +845,10 @@ class TestGetListFor:
 
         assert result is hidden_list
 
-    @patch("keyup.cli.api_client.get_lists_data")
+    @patch("quickup.cli.api_client.get_lists_data")
     def test_no_space_attribute_does_not_crash(self, mock_get_lists, monkeypatch):
         """If the project has no .space, list fetch completes without merging."""
-        monkeypatch.setattr("sys.argv", ["keyup"])
+        monkeypatch.setattr("sys.argv", ["quickup"])
 
         only_list = self._make_list("l1", "Only List")
         project_no_space = self._make_project("p1")

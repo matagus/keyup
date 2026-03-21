@@ -1,4 +1,4 @@
-"""Main CLI entry point for KeyUp! using cyclopts."""
+"""Main CLI entry point for QuickUp! using cyclopts."""
 
 from typing import Annotated, cast
 
@@ -11,7 +11,7 @@ from .config import init_environ
 from .exceptions import TokenError, handle_exception
 from .renderer import render_list, render_task_detail, render_task_update
 
-app = App(name="keyup", help="A simple and beautiful console-based client for ClickUp.")
+app = App(name="quickup", help="A simple and beautiful console-based client for ClickUp.")
 
 
 @app.default
@@ -89,7 +89,7 @@ def list_tasks(
 
 
 def run_app():
-    """Run the KeyUp! CLI application."""
+    """Run the QuickUp! CLI application."""
     from .cache import maybe_warmup
     from .exceptions import ClickupyError
 

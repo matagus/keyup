@@ -1,8 +1,8 @@
-"""Tests for KeyUp! config module."""
+"""Tests for QuickUp! config module."""
 
 from unittest.mock import patch
 
-from keyup.cli.config import init_environ
+from quickup.cli.config import init_environ
 
 
 class TestInitEnviron:

@@ -1,11 +1,11 @@
-"""Tests for KeyUp! API client module."""
+"""Tests for QuickUp! API client module."""
 
 from unittest.mock import Mock, patch
 
 import pytest
 
-from keyup.cli.api_client import get_current_sprint_list, get_list_for, get_project_for, get_space_for, get_team
-from keyup.cli.exceptions import (
+from quickup.cli.api_client import get_current_sprint_list, get_list_for, get_project_for, get_space_for, get_team
+from quickup.cli.exceptions import (
     ListNotFoundError,
     ProjectNotFoundError,
     SpaceNotFoundError,
@@ -18,13 +18,13 @@ class TestGetTeam:
     """Tests for get_team function."""
 
     def setup_method(self):
-        self.patch_get_teams = patch("keyup.cli.api_client.get_teams_data", side_effect=lambda c: c.teams)
+        self.patch_get_teams = patch("quickup.cli.api_client.get_teams_data", side_effect=lambda c: c.teams)
         self.patch_get_teams.start()
 
     def teardown_method(self):
         self.patch_get_teams.stop()
 
-    @patch("sys.argv", ["keyup", "--team", "team-123"])
+    @patch("sys.argv", ["quickup", "--team", "team-123"])
     def test_with_team_flag(self):
         """Test with --team flag provided."""
         mock_clickup = Mock()
@@ -35,7 +35,7 @@ class TestGetTeam:
 
         assert result is mock_team
 
-    @patch("sys.argv", ["keyup"])
+    @patch("sys.argv", ["quickup"])
     def test_no_teams_raises_error(self):
         """Test with no teams available raises TeamNotFoundError."""
         mock_clickup = Mock()
@@ -44,7 +44,7 @@ class TestGetTeam:
         with pytest.raises(TeamNotFoundError):
             get_team(mock_clickup, [])
 
-    @patch("sys.argv", ["keyup"])
+    @patch("sys.argv", ["quickup"])
     def test_multiple_teams_interactive(self):
         """Test with multiple teams and interactive=True prompts user."""
         mock_clickup = Mock()
@@ -63,7 +63,7 @@ class TestGetTeam:
 
             assert result is mock_team1
 
-    @patch("sys.argv", ["keyup"])
+    @patch("sys.argv", ["quickup"])
     def test_multiple_teams_interactive_no_answer(self):
         """Test with multiple teams and interactive=True but prompt returns None."""
         mock_clickup = Mock()
@@ -82,7 +82,7 @@ class TestGetTeam:
             with pytest.raises(TeamAmbiguousError):
                 get_team(mock_clickup, [], interactive=True)
 
-    @patch("sys.argv", ["keyup"])
+    @patch("sys.argv", ["quickup"])
     def test_multiple_teams_interactive_invalid_answer(self):
         """Test with multiple teams and interactive=True but answer doesn't match any team."""
         mock_clickup = Mock()
@@ -101,7 +101,7 @@ class TestGetTeam:
             with pytest.raises(TeamAmbiguousError):
                 get_team(mock_clickup, [], interactive=True)
 
-    @patch("sys.argv", ["keyup"])
+    @patch("sys.argv", ["quickup"])
     def test_multiple_teams_interactive_no_match(self):
         """Test with multiple teams and interactive=True but answer doesn't match any team."""
         mock_clickup = Mock()
@@ -120,7 +120,7 @@ class TestGetTeam:
             with pytest.raises(TeamAmbiguousError):
                 get_team(mock_clickup, [], interactive=True)
 
-    @patch("sys.argv", ["keyup"])
+    @patch("sys.argv", ["quickup"])
     def test_multiple_teams_non_interactive_raises(self):
         """Test with multiple teams and interactive=False raises TeamAmbiguousError."""
         mock_clickup = Mock()
@@ -138,7 +138,7 @@ class TestGetTeam:
         assert "Team A" in str(exc_info.value)
         assert "Team B" in str(exc_info.value)
 
-    @patch("sys.argv", ["keyup"])
+    @patch("sys.argv", ["quickup"])
     def test_single_team_returns_first(self):
         """Test with single team returns first team."""
         mock_clickup = Mock()
@@ -149,7 +149,7 @@ class TestGetTeam:
 
         assert result is mock_team
 
-    @patch("sys.argv", ["keyup", "--team", "invalid-id"])
+    @patch("sys.argv", ["quickup", "--team", "invalid-id"])
     def test_invalid_team_id_raises_error(self):
         """Test with invalid team ID raises TeamNotFoundError with team_id."""
         mock_clickup = Mock()
@@ -168,13 +168,13 @@ class TestGetSpaceFor:
     def setup_method(self):
         """Set up test fixtures."""
         self.mock_team = Mock()
-        self.patch_get_spaces = patch("keyup.cli.api_client.get_spaces_data", side_effect=lambda t: t.spaces)
+        self.patch_get_spaces = patch("quickup.cli.api_client.get_spaces_data", side_effect=lambda t: t.spaces)
         self.patch_get_spaces.start()
 
     def teardown_method(self):
         self.patch_get_spaces.stop()
 
-    @patch("sys.argv", ["keyup", "--space", "space-456"])
+    @patch("sys.argv", ["quickup", "--space", "space-456"])
     def test_with_space_flag(self):
         """Test with --space flag provided."""
         mock_space = Mock(id="space-456")
@@ -184,7 +184,7 @@ class TestGetSpaceFor:
 
         assert result is mock_space
 
-    @patch("sys.argv", ["keyup"])
+    @patch("sys.argv", ["quickup"])
     def test_no_spaces_raises_error(self):
         """Test with no spaces available raises SpaceNotFoundError."""
         self.mock_team.spaces = []
@@ -192,7 +192,7 @@ class TestGetSpaceFor:
         with pytest.raises(SpaceNotFoundError):
             get_space_for(self.mock_team, [])
 
-    @patch("sys.argv", ["keyup"])
+    @patch("sys.argv", ["quickup"])
     def test_multiple_spaces_interactive(self):
         """Test with multiple spaces and interactive=True."""
         mock_space1 = Mock(id="space-1", name="Space A")
@@ -206,7 +206,7 @@ class TestGetSpaceFor:
 
             assert result is mock_space1
 
-    @patch("sys.argv", ["keyup"])
+    @patch("sys.argv", ["quickup"])
     def test_multiple_spaces_interactive_no_answer(self):
         """Test with multiple spaces and interactive=True but prompt returns None."""
         mock_space1 = Mock(id="space-1", name="Space A")
@@ -220,7 +220,7 @@ class TestGetSpaceFor:
             result = get_space_for(self.mock_team, [], interactive=True)
             assert result is mock_space1
 
-    @patch("sys.argv", ["keyup"])
+    @patch("sys.argv", ["quickup"])
     def test_multiple_spaces_interactive_selects_second(self):
         """Test with multiple spaces and interactive=True selects correct space."""
         mock_space1 = Mock()
@@ -238,7 +238,7 @@ class TestGetSpaceFor:
 
             assert result is mock_space2
 
-    @patch("sys.argv", ["keyup"])
+    @patch("sys.argv", ["quickup"])
     def test_multiple_spaces_interactive_invalid_answer(self):
         """Test with multiple spaces and interactive=True but answer doesn't match."""
         mock_space1 = Mock()
@@ -256,7 +256,7 @@ class TestGetSpaceFor:
             result = get_space_for(self.mock_team, [], interactive=True)
             assert result is mock_space1
 
-    @patch("sys.argv", ["keyup"])
+    @patch("sys.argv", ["quickup"])
     def test_multiple_spaces_non_interactive_returns_first(self):
         """Test with multiple spaces returns first when not interactive."""
         mock_space1 = Mock(id="space-1", name="Space A")
@@ -267,7 +267,7 @@ class TestGetSpaceFor:
 
         assert result is mock_space1
 
-    @patch("sys.argv", ["keyup"])
+    @patch("sys.argv", ["quickup"])
     def test_multiple_spaces_interactive_false_explicit(self):
         """Test with multiple spaces and interactive=False explicitly."""
         mock_space1 = Mock(id="space-1", name="Space A")
@@ -279,7 +279,7 @@ class TestGetSpaceFor:
 
         assert result is mock_space1
 
-    @patch("sys.argv", ["keyup", "--space", "invalid-id"])
+    @patch("sys.argv", ["quickup", "--space", "invalid-id"])
     def test_invalid_space_id_raises_error(self):
         """Test with invalid space ID raises SpaceNotFoundError with space_id."""
         self.mock_team.spaces = [Mock(id="space-1")]
@@ -296,13 +296,13 @@ class TestGetProjectFor:
     def setup_method(self):
         """Set up test fixtures."""
         self.mock_space = Mock()
-        self.patch_get_projects = patch("keyup.cli.api_client.get_projects_data", side_effect=lambda s: s.projects)
+        self.patch_get_projects = patch("quickup.cli.api_client.get_projects_data", side_effect=lambda s: s.projects)
         self.patch_get_projects.start()
 
     def teardown_method(self):
         self.patch_get_projects.stop()
 
-    @patch("sys.argv", ["keyup", "--project", "project-789"])
+    @patch("sys.argv", ["quickup", "--project", "project-789"])
     def test_with_project_flag(self):
         """Test with --project flag provided."""
         mock_project = Mock(id="project-789")
@@ -312,7 +312,7 @@ class TestGetProjectFor:
 
         assert result is mock_project
 
-    @patch("sys.argv", ["keyup"])
+    @patch("sys.argv", ["quickup"])
     def test_no_projects_raises_error(self):
         """Test with no projects available raises ProjectNotFoundError."""
         self.mock_space.projects = []
@@ -320,7 +320,7 @@ class TestGetProjectFor:
         with pytest.raises(ProjectNotFoundError):
             get_project_for(self.mock_space, [])
 
-    @patch("sys.argv", ["keyup"])
+    @patch("sys.argv", ["quickup"])
     def test_multiple_projects_interactive(self):
         """Test with multiple projects and interactive=True."""
         mock_proj1 = Mock(id="proj-1", name="Project A")
@@ -334,7 +334,7 @@ class TestGetProjectFor:
 
             assert result is mock_proj1
 
-    @patch("sys.argv", ["keyup"])
+    @patch("sys.argv", ["quickup"])
     def test_multiple_projects_interactive_no_answer(self):
         """Test with multiple projects and interactive=True but prompt returns None."""
         mock_proj1 = Mock(id="proj-1", name="Project A")
@@ -348,7 +348,7 @@ class TestGetProjectFor:
             result = get_project_for(self.mock_space, [], interactive=True)
             assert result is mock_proj1
 
-    @patch("sys.argv", ["keyup"])
+    @patch("sys.argv", ["quickup"])
     def test_multiple_projects_interactive_selects_second(self):
         """Test with multiple projects and interactive=True selects correct project."""
         mock_proj1 = Mock()
@@ -366,7 +366,7 @@ class TestGetProjectFor:
 
             assert result is mock_proj2
 
-    @patch("sys.argv", ["keyup"])
+    @patch("sys.argv", ["quickup"])
     def test_multiple_projects_interactive_invalid_answer(self):
         """Test with multiple projects and interactive=True but answer doesn't match."""
         mock_proj1 = Mock()
@@ -384,7 +384,7 @@ class TestGetProjectFor:
             result = get_project_for(self.mock_space, [], interactive=True)
             assert result is mock_proj1
 
-    @patch("sys.argv", ["keyup"])
+    @patch("sys.argv", ["quickup"])
     def test_multiple_projects_non_interactive_returns_first(self):
         """Test with multiple projects returns first when not interactive."""
         mock_proj1 = Mock(id="proj-1", name="Project A")
@@ -395,7 +395,7 @@ class TestGetProjectFor:
 
         assert result is mock_proj1
 
-    @patch("sys.argv", ["keyup", "--project", "invalid-id"])
+    @patch("sys.argv", ["quickup", "--project", "invalid-id"])
     def test_invalid_project_id_raises_error(self):
         """Test with invalid project ID raises ProjectNotFoundError with project_id."""
         self.mock_space.projects = [Mock(id="proj-1")]
@@ -412,8 +412,8 @@ class TestGetListFor:
     def setup_method(self):
         """Set up test fixtures."""
         self.mock_space = Mock()
-        self.patch_get_lists = patch("keyup.cli.api_client.get_lists_data", side_effect=lambda p: p.lists)
-        self.patch_get_projects = patch("keyup.cli.api_client.get_projects_data", return_value=[])
+        self.patch_get_lists = patch("quickup.cli.api_client.get_lists_data", side_effect=lambda p: p.lists)
+        self.patch_get_projects = patch("quickup.cli.api_client.get_projects_data", return_value=[])
         self.patch_get_lists.start()
         self.patch_get_projects.start()
 
@@ -421,7 +421,7 @@ class TestGetListFor:
         self.patch_get_lists.stop()
         self.patch_get_projects.stop()
 
-    @patch("sys.argv", ["keyup", "--list", "list-000"])
+    @patch("sys.argv", ["quickup", "--list", "list-000"])
     def test_with_list_flag(self):
         """Test with --list flag provided."""
         mock_list = Mock(id="list-000")
@@ -431,7 +431,7 @@ class TestGetListFor:
 
         assert result is mock_list
 
-    @patch("sys.argv", ["keyup"])
+    @patch("sys.argv", ["quickup"])
     def test_no_lists_raises_error(self):
         """Test with no lists available raises ListNotFoundError."""
         self.mock_space.lists = []
@@ -439,7 +439,7 @@ class TestGetListFor:
         with pytest.raises(ListNotFoundError):
             get_list_for(self.mock_space, [])
 
-    @patch("sys.argv", ["keyup"])
+    @patch("sys.argv", ["quickup"])
     def test_multiple_lists_interactive(self):
         """Test with multiple lists and interactive=True."""
         mock_list1 = Mock(id="list-1", name="List A")
@@ -453,7 +453,7 @@ class TestGetListFor:
 
             assert result is mock_list1
 
-    @patch("sys.argv", ["keyup"])
+    @patch("sys.argv", ["quickup"])
     def test_multiple_lists_interactive_no_answer(self):
         """Test with multiple lists and interactive=True but prompt returns None."""
         mock_list1 = Mock(id="list-1", name="List A")
@@ -467,7 +467,7 @@ class TestGetListFor:
             result = get_list_for(self.mock_space, [], interactive=True)
             assert result is mock_list1
 
-    @patch("sys.argv", ["keyup"])
+    @patch("sys.argv", ["quickup"])
     def test_multiple_lists_interactive_selects_second(self):
         """Test with multiple lists and interactive=True selects correct list."""
         mock_list1 = Mock()
@@ -485,7 +485,7 @@ class TestGetListFor:
 
             assert result is mock_list2
 
-    @patch("sys.argv", ["keyup"])
+    @patch("sys.argv", ["quickup"])
     def test_multiple_lists_non_interactive_returns_first(self):
         """Test with multiple lists returns first when not interactive."""
         mock_list1 = Mock(id="list-1", name="List A")
@@ -496,7 +496,7 @@ class TestGetListFor:
 
         assert result is mock_list1
 
-    @patch("sys.argv", ["keyup", "--list", "invalid-id"])
+    @patch("sys.argv", ["quickup", "--list", "invalid-id"])
     def test_invalid_list_id_raises_error(self):
         """Test with invalid list ID raises ListNotFoundError with list_id."""
         self.mock_space.lists = [Mock(id="list-1")]
@@ -514,9 +514,9 @@ class TestGetCurrentSprintList:
         """Set up test fixtures."""
         self.mock_team = Mock()
         self.mock_space = Mock()
-        self.patch_get_spaces = patch("keyup.cli.api_client.get_spaces_data", side_effect=lambda t: t.spaces)
-        self.patch_get_projects = patch("keyup.cli.api_client.get_projects_data", side_effect=lambda s: s.projects)
-        self.patch_get_lists = patch("keyup.cli.api_client.get_lists_data", side_effect=lambda p: p.lists)
+        self.patch_get_spaces = patch("quickup.cli.api_client.get_spaces_data", side_effect=lambda t: t.spaces)
+        self.patch_get_projects = patch("quickup.cli.api_client.get_projects_data", side_effect=lambda s: s.projects)
+        self.patch_get_lists = patch("quickup.cli.api_client.get_lists_data", side_effect=lambda p: p.lists)
         self.patch_get_spaces.start()
         self.patch_get_projects.start()
         self.patch_get_lists.start()

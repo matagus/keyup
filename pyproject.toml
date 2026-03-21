@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "KeyUp"
+name = "QuickUp"
 dynamic = ["version"]
 requires-python = ">=3.10"
 description = " A colorful command-line client for Clickup written in Python 3.10+."
@@ -46,13 +46,13 @@ docs = [
 ]
 
 [project.scripts]
-keyup = "keyup.cli.main:run_app"
+quickup = "quickup.cli.main:run_app"
 
 [project.urls]
-Homepage = "https://github.com/matagus/keyup"
-Issues = "https://github.com/matagus/keyup/issues"
-Changelog = "https://github.com/matagus/keyup/releases"
-Repository = "https://github.com/matagus/keyup"
+Homepage = "https://github.com/matagus/quickup"
+Issues = "https://github.com/matagus/quickup/issues"
+Changelog = "https://github.com/matagus/quickup/releases"
+Repository = "https://github.com/matagus/quickup"
 
 [tool.hatch.version]
 path = "__about__.py"
@@ -68,7 +68,7 @@ dependencies = [
 ]
 
 [tool.hatch.envs.default.scripts]
-app = "python keyup.py"
+app = "python quickup.py"
 install = "pip install -e .[dev]"
 
 [tool.hatch.envs.docs]
@@ -94,7 +94,7 @@ test = "pytest {args:tests}"
 test-cov = "coverage run -m pytest {args:tests}"
 cov-report = ["coverage json", "coverage report"]
 cov = ["test-cov", "cov-report"]
-app = "python keyup.py"
+app = "python quickup.py"
 
 [tool.ruff]
 line-length = 120
@@ -105,12 +105,12 @@ line-length = 120
 [tool.isort]
 profile = "black"
 line_length = 120
-known_first_party = ["keyup"]
+known_first_party = ["quickup"]
 src_paths = ["."]
 force_sort_within_sections = true
 
 [tool.pyright]
-include = ["keyup", "docs/source/conf.py"]
+include = ["quickup", "docs/source/conf.py"]
 exclude = ["**/__pycache__"]
 
 [tool.pytest.ini_options]
@@ -119,7 +119,7 @@ testpaths = ["tests"]
 
 [tool.coverage.run]
 branch = true
-source = ["keyup"]
+source = ["quickup"]
 omit = ["*/tests/*", "*/__pycache__/*"]
 
 [tool.coverage.report]

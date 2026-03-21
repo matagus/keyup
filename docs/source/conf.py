@@ -21,7 +21,7 @@ except ImportError:
     git_repo = None
 
 # -- Project information
-project = "KeyUp!"
+project = "QuickUp!"
 copyright = f"{date.today().year}, Matias Agustin Mendez"
 author = "Matias Agustin Mendez"
 
@@ -67,7 +67,7 @@ autodoc_default_options = {
 autoclass_content = "init"
 
 # LinkCode — links API docs to GitHub source
-code_url = f"https://github.com/matagus/keyup/blob/{git_commit}"
+code_url = f"https://github.com/matagus/quickup/blob/{git_commit}"
 
 
 def linkcode_resolve(domain, info):
@@ -98,7 +98,7 @@ def linkcode_resolve(domain, info):
     if file is None or git_repo is None:
         return None
     file = Path(file).resolve().relative_to(git_repo.working_dir)
-    if file.parts[0] != "keyup":
+    if file.parts[0] != "quickup":
         return None
     start, end = lines[1], lines[1] + len(lines[0]) - 1
     return f"{code_url}/{file}#L{start}-L{end}"
@@ -128,7 +128,7 @@ html_theme_options = {
 html_context = {
     "display_github": True,
     "github_user": "matagus",
-    "github_repo": "keyup",
+    "github_repo": "quickup",
     "github_version": "main",
     "conf_py_path": "/docs/source/",
 }

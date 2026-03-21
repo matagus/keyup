@@ -41,13 +41,13 @@ Solution: Specify the team ID explicitly:
 
 .. code-block:: bash
 
-   keyup --team <team_id> --list <list_id>
+   quickup --team <team_id> --list <list_id>
 
 Or use interactive mode to select a team:
 
 .. code-block:: bash
 
-   keyup -i
+   quickup -i
 
 List Errors
 -----------
@@ -61,7 +61,7 @@ Solution: Verify the list ID is correct and exists in the specified space/projec
 
 .. code-block:: bash
 
-   keyup --team <team_id> --space <space_id> --list <list_id>
+   quickup --team <team_id> --space <space_id> --list <list_id>
 
 Network Errors
 --------------
@@ -101,16 +101,16 @@ Solution: Use ``--no-cache`` to fetch fresh data:
 
 .. code-block:: bash
 
-   keyup --team <team_id> --list <list_id> --no-cache
+   quickup --team <team_id> --list <list_id> --no-cache
 
 Problem: Cache directory permission errors
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Solution: Check permissions on ``~/.keyup/cache/``:
+Solution: Check permissions on ``~/.quickup/cache/``:
 
 .. code-block:: bash
 
-   chmod 755 ~/.keyup/cache
+   chmod 755 ~/.quickup/cache
 
 Exit Codes Reference
 --------------------
@@ -136,6 +136,6 @@ Getting Help
 
 For additional support:
 
-- Check the `GitHub Issues <https://github.com/matagus/keyup/issues>`_
+- Check the `GitHub Issues <https://github.com/matagus/quickup/issues>`_
 - Review the `ClickUp API documentation <https://clickup.com/api>`_
-- Verify your environment with ``keyup --help``
+- Verify your environment with ``quickup --help``

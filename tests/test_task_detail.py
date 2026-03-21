@@ -1,8 +1,8 @@
-"""Tests for KeyUp! task detail command."""
+"""Tests for QuickUp! task detail command."""
 
 from unittest.mock import Mock, patch
 
-from keyup.cli.renderer import render_task_detail
+from quickup.cli.renderer import render_task_detail
 
 
 class TestRenderTaskDetail:

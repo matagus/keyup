@@ -1,1 +1,1 @@
-"""Tests for KeyUp! CLI."""
+"""Tests for QuickUp! CLI."""

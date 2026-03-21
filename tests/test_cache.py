@@ -1,9 +1,9 @@
-"""Tests for KeyUp! cache module."""
+"""Tests for QuickUp! cache module."""
 
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-from keyup.cli.cache import (
+from quickup.cli.cache import (
     LISTS_TTL,
     PROJECTS_TTL,
     SPACES_TTL,
@@ -31,8 +31,8 @@ class TestGetCache:
         """Test that get_cache creates the cache directory."""
         import shutil
 
-        cache_dir = Path.home() / ".keyup" / "cache"
-        backup_path = tmp_path / "keyup_cache_backup"
+        cache_dir = Path.home() / ".quickup" / "cache"
+        backup_path = tmp_path / "quickup_cache_backup"
 
         # Backup existing cache dir if present
         if cache_dir.exists():
@@ -49,8 +49,8 @@ class TestGetCache:
                     shutil.rmtree(str(cache_dir))
                 shutil.move(str(backup_path), str(cache_dir))
 
-    @patch("keyup.cli.cache.SQLiteCache")
-    @patch("keyup.cli.cache.Path")
+    @patch("quickup.cli.cache.SQLiteCache")
+    @patch("quickup.cli.cache.Path")
     def test_get_cache_returns_cache_instance(self, mock_path_class, mock_sqlite_cache):
         """Test that get_cache returns a SQLiteCache instance."""
         mock_path_class.return_value = Mock()
@@ -61,7 +61,7 @@ class TestGetCache:
 class TestGetTeamsData:
     """Tests for get_teams_data function."""
 
-    @patch("keyup.cli.cache.get_cache")
+    @patch("quickup.cli.cache.get_cache")
     def test_cache_hit(self, mock_get_cache):
         """Test cache hit returns cached data."""
         mock_cache = Mock()
@@ -74,7 +74,7 @@ class TestGetTeamsData:
         assert result == ["cached_team"]
         mock_cache.get.assert_called_once_with("teams")
 
-    @patch("keyup.cli.cache.get_cache")
+    @patch("quickup.cli.cache.get_cache")
     def test_cache_miss(self, mock_get_cache):
         """Test cache miss fetches from API and caches."""
         mock_cache = Mock()
@@ -93,7 +93,7 @@ class TestGetTeamsData:
 class TestGetSpacesData:
     """Tests for get_spaces_data function."""
 
-    @patch("keyup.cli.cache.get_cache")
+    @patch("quickup.cli.cache.get_cache")
     def test_cache_hit(self, mock_get_cache):
         """Test cache hit returns cached data."""
         mock_cache = Mock()
@@ -106,7 +106,7 @@ class TestGetSpacesData:
         assert result == ["cached_space"]
         mock_cache.get.assert_called_once_with("spaces:team-123")
 
-    @patch("keyup.cli.cache.get_cache")
+    @patch("quickup.cli.cache.get_cache")
     def test_cache_miss(self, mock_get_cache):
         """Test cache miss fetches from API and caches."""
         mock_cache = Mock()
@@ -125,7 +125,7 @@ class TestGetSpacesData:
 class TestGetProjectsData:
     """Tests for get_projects_data function."""
 
-    @patch("keyup.cli.cache.get_cache")
+    @patch("quickup.cli.cache.get_cache")
     def test_cache_hit(self, mock_get_cache):
         """Test cache hit returns cached data."""
         mock_cache = Mock()
@@ -138,7 +138,7 @@ class TestGetProjectsData:
         assert result == ["cached_project"]
         mock_cache.get.assert_called_once_with("projects:space-123")
 
-    @patch("keyup.cli.cache.get_cache")
+    @patch("quickup.cli.cache.get_cache")
     def test_cache_miss(self, mock_get_cache):
         """Test cache miss fetches from API and caches."""
         mock_cache = Mock()
@@ -157,7 +157,7 @@ class TestGetProjectsData:
 class TestGetListsData:
     """Tests for get_lists_data function."""
 
-    @patch("keyup.cli.cache.get_cache")
+    @patch("quickup.cli.cache.get_cache")
     def test_cache_hit(self, mock_get_cache):
         """Test cache hit returns cached data."""
         mock_cache = Mock()
@@ -170,7 +170,7 @@ class TestGetListsData:
         assert result == ["cached_list"]
         mock_cache.get.assert_called_once_with("lists:project-123")
 
-    @patch("keyup.cli.cache.get_cache")
+    @patch("quickup.cli.cache.get_cache")
     def test_cache_miss(self, mock_get_cache):
         """Test cache miss fetches from API and caches."""
         mock_cache = Mock()
@@ -189,7 +189,7 @@ class TestGetListsData:
 class TestGetTasksData:
     """Tests for get_tasks_data function."""
 
-    @patch("keyup.cli.cache.get_cache")
+    @patch("quickup.cli.cache.get_cache")
     def test_cache_hit(self, mock_get_cache):
         """Test cache hit returns cached data."""
         mock_cache = Mock()
@@ -203,7 +203,7 @@ class TestGetTasksData:
         assert result == ["cached_task"]
         mock_cache.get.assert_called_once_with("tasks:list-000")
 
-    @patch("keyup.cli.cache.get_cache")
+    @patch("quickup.cli.cache.get_cache")
     def test_cache_miss(self, mock_get_cache):
         """Test cache miss fetches from API and caches."""
         mock_cache = Mock()
@@ -220,7 +220,7 @@ class TestGetTasksData:
         mock_cache.set.assert_any_call("tasks:list-000", ["api_task"], expire=TASKS_TTL)
         mock_cache.set.assert_any_call("team_for_list:list-000", mock_team.id, expire=TEAMS_TTL)
 
-    @patch("keyup.cli.cache.get_cache")
+    @patch("quickup.cli.cache.get_cache")
     def test_cache_miss_with_include_closed(self, mock_get_cache):
         """Test cache miss with include_closed uses separate cache key."""
         mock_cache = Mock()
@@ -240,7 +240,7 @@ class TestGetTasksData:
 class TestFindTaskInCache:
     """Tests for find_task_in_cache function."""
 
-    @patch("keyup.cli.cache.get_cache")
+    @patch("quickup.cli.cache.get_cache")
     def test_found_via_task_key(self, mock_get_cache):
         """Test task found via direct task cache key."""
         mock_task = Mock(id="task-abc")
@@ -254,7 +254,7 @@ class TestFindTaskInCache:
         assert result is mock_task
         mock_cache.get.assert_called_once_with("task:task-abc")
 
-    @patch("keyup.cli.cache.get_cache")
+    @patch("quickup.cli.cache.get_cache")
     def test_found_in_list_cache(self, mock_get_cache):
         """Test task found by searching cached task lists."""
         mock_task = Mock(id="task-abc")
@@ -268,7 +268,7 @@ class TestFindTaskInCache:
         assert result is mock_task
         mock_cache.get_all_by_prefix.assert_called_once_with("tasks:")
 
-    @patch("keyup.cli.cache.get_cache")
+    @patch("quickup.cli.cache.get_cache")
     def test_not_found_in_cache(self, mock_get_cache):
         """Test returns None when task not in any cached list."""
         mock_cache = Mock()
@@ -280,7 +280,7 @@ class TestFindTaskInCache:
 
         assert result is None
 
-    @patch("keyup.cli.cache.get_cache")
+    @patch("quickup.cli.cache.get_cache")
     def test_empty_cache(self, mock_get_cache):
         """Test returns None when cache is empty."""
         mock_cache = Mock()
@@ -296,8 +296,8 @@ class TestFindTaskInCache:
 class TestGetTaskData:
     """Tests for get_task_data function."""
 
-    @patch("keyup.cli.cache.find_task_in_cache")
-    @patch("keyup.cli.cache.get_cache")
+    @patch("quickup.cli.cache.find_task_in_cache")
+    @patch("quickup.cli.cache.get_cache")
     def test_cache_hit(self, mock_get_cache, mock_find):
         """Test returns cached task without calling API."""
         mock_task = Mock(id="task-abc")
@@ -310,8 +310,8 @@ class TestGetTaskData:
         assert result is mock_task
         mock_cache.set.assert_called_once_with("task:task-abc", mock_task, expire=TASKS_TTL)
 
-    @patch("keyup.cli.cache.find_task_in_cache")
-    @patch("keyup.cli.cache.get_cache")
+    @patch("quickup.cli.cache.find_task_in_cache")
+    @patch("quickup.cli.cache.get_cache")
     def test_cache_miss_fetches_from_api(self, mock_get_cache, mock_find):
         """Test falls back to API and caches the result."""
         mock_task = Mock(id="task-abc")
@@ -328,8 +328,8 @@ class TestGetTaskData:
         mock_clickup._get_all_tasks.assert_called_once_with("team-123")
         mock_cache.set.assert_called_once_with("task:task-abc", mock_task, expire=TASKS_TTL)
 
-    @patch("keyup.cli.cache.find_task_in_cache")
-    @patch("keyup.cli.cache.get_cache")
+    @patch("quickup.cli.cache.find_task_in_cache")
+    @patch("quickup.cli.cache.get_cache")
     def test_not_found_returns_none(self, mock_get_cache, mock_find):
         """Test returns None when task not found anywhere."""
         mock_find.return_value = None
@@ -348,7 +348,7 @@ class TestGetTaskData:
 class TestForceRefreshTasks:
     """Tests for force_refresh_tasks function."""
 
-    @patch("keyup.cli.cache.get_cache")
+    @patch("quickup.cli.cache.get_cache")
     def test_fetches_from_api_and_overwrites_cache(self, mock_get_cache):
         mock_cache = Mock()
         mock_get_cache.return_value = mock_cache
@@ -365,7 +365,7 @@ class TestForceRefreshTasks:
 class TestMaybeWarmup:
     """Tests for maybe_warmup function."""
 
-    @patch("keyup.cli.cache.get_cache")
+    @patch("quickup.cli.cache.get_cache")
     def test_skipped_when_disabled(self, mock_get_cache, monkeypatch):
         monkeypatch.setenv("KEYUP_WARMUP", "false")
 
@@ -373,7 +373,7 @@ class TestMaybeWarmup:
 
         mock_get_cache.assert_not_called()
 
-    @patch("keyup.cli.cache.get_cache")
+    @patch("quickup.cli.cache.get_cache")
     def test_skipped_when_no_stale_keys(self, mock_get_cache):
         mock_cache = Mock()
         mock_cache.get_stale_keys.return_value = []
@@ -383,7 +383,7 @@ class TestMaybeWarmup:
 
         mock_cache.get.assert_not_called()
 
-    @patch("keyup.cli.cache.get_cache")
+    @patch("quickup.cli.cache.get_cache")
     def test_skipped_when_no_team_mapping(self, mock_get_cache):
         """Stale task keys with no team_for_list mapping → skip warmup."""
         mock_cache = Mock()
@@ -396,9 +396,9 @@ class TestMaybeWarmup:
         mock_cache.get.assert_called_once_with("team_for_list:list-000")
         mock_cache.clear.assert_not_called()
 
-    @patch("keyup.cli.cache.force_refresh_tasks")
-    @patch("keyup.cli.cache.get_teams_data")
-    @patch("keyup.cli.cache.get_cache")
+    @patch("quickup.cli.cache.force_refresh_tasks")
+    @patch("quickup.cli.cache.get_teams_data")
+    @patch("quickup.cli.cache.get_cache")
     def test_warms_stale_lists(self, mock_get_cache, mock_get_teams, mock_refresh, monkeypatch):
         monkeypatch.delenv("KEYUP_WARMUP", raising=False)
         mock_cache = Mock()
@@ -420,9 +420,9 @@ class TestMaybeWarmup:
         mock_refresh.assert_any_call(mock_team, "list-000")
         mock_refresh.assert_any_call(mock_team, "list-111")
 
-    @patch("keyup.cli.cache.force_refresh_tasks")
-    @patch("keyup.cli.cache.get_teams_data")
-    @patch("keyup.cli.cache.get_cache")
+    @patch("quickup.cli.cache.force_refresh_tasks")
+    @patch("quickup.cli.cache.get_teams_data")
+    @patch("quickup.cli.cache.get_cache")
     def test_skips_unknown_team(self, mock_get_cache, mock_get_teams, mock_refresh, monkeypatch):
         """List mapped to a team_id not returned by API is silently skipped."""
         monkeypatch.delenv("KEYUP_WARMUP", raising=False)
@@ -443,7 +443,7 @@ class TestMaybeWarmup:
 class TestInvalidateTasksCache:
     """Tests for invalidate_tasks_cache function."""
 
-    @patch("keyup.cli.cache.get_cache")
+    @patch("quickup.cli.cache.get_cache")
     def test_invalidate(self, mock_get_cache):
         """Test cache invalidation."""
         mock_cache = Mock()
@@ -457,7 +457,7 @@ class TestInvalidateTasksCache:
 class TestClearCache:
     """Tests for clear_cache function."""
 
-    @patch("keyup.cli.cache.get_cache")
+    @patch("quickup.cli.cache.get_cache")
     def test_clear(self, mock_get_cache):
         """Test cache clear."""
         mock_cache = Mock()

@@ -1,9 +1,9 @@
 Commands Reference
 ==================
 
-This page documents all available KeyUp! CLI commands and their options.
+This page documents all available QuickUp! CLI commands and their options.
 
-``keyup`` (default) - List Tasks
+``quickup`` (default) - List Tasks
 --------------------------------
 
 List all tasks from a ClickUp list, grouped by status.
@@ -13,7 +13,7 @@ Synopsis
 
 .. code-block:: bash
 
-   keyup [OPTIONS]
+   quickup [OPTIONS]
 
 Options
 ~~~~~~~
@@ -65,33 +65,33 @@ Basic usage:
 
 .. code-block:: bash
 
-   keyup --team 12345 --list 67890
+   quickup --team 12345 --list 67890
 
 Filter by assignee and priority:
 
 .. code-block:: bash
 
-   keyup --team 12345 --list 67890 --assignee john --priority high
+   quickup --team 12345 --list 67890 --assignee john --priority high
 
 Group by assignee:
 
 .. code-block:: bash
 
-   keyup --team 12345 --list 67890 --group-by assignee
+   quickup --team 12345 --list 67890 --group-by assignee
 
 Interactive mode:
 
 .. code-block:: bash
 
-   keyup -i
+   quickup -i
 
 Bypass cache:
 
 .. code-block:: bash
 
-   keyup --team 12345 --list 67890 --no-cache
+   quickup --team 12345 --list 67890 --no-cache
 
-``keyup sprint`` - Current Sprint Tasks
+``quickup sprint`` - Current Sprint Tasks
 ---------------------------------------
 
 Auto-detects the current sprint list by searching for lists containing "sprint" or "iteration" in the name.
@@ -101,12 +101,12 @@ Synopsis
 
 .. code-block:: bash
 
-   keyup sprint [OPTIONS]
+   quickup sprint [OPTIONS]
 
 Options
 ~~~~~~~
 
-Same options as ``keyup`` command, except ``--list`` is not needed (auto-detected).
+Same options as ``quickup`` command, except ``--list`` is not needed (auto-detected).
 
 Examples
 ~~~~~~~~
@@ -115,21 +115,21 @@ List tasks from current sprint:
 
 .. code-block:: bash
 
-   keyup sprint --team 12345
+   quickup sprint --team 12345
 
 Filter sprint tasks by assignee:
 
 .. code-block:: bash
 
-   keyup sprint --team 12345 --assignee jane
+   quickup sprint --team 12345 --assignee jane
 
 Group sprint tasks by priority:
 
 .. code-block:: bash
 
-   keyup sprint --team 12345 --group-by priority
+   quickup sprint --team 12345 --group-by priority
 
-``keyup task`` - Task Details
+``quickup task`` - Task Details
 -----------------------------
 
 Show detailed information about a specific task.
@@ -139,7 +139,7 @@ Synopsis
 
 .. code-block:: bash
 
-   keyup task <task_id> [OPTIONS]
+   quickup task <task_id> [OPTIONS]
 
 Arguments
 ~~~~~~~~~
@@ -166,15 +166,15 @@ Show task details:
 
 .. code-block:: bash
 
-   keyup task 123456
+   quickup task 123456
 
 With team specification:
 
 .. code-block:: bash
 
-   keyup task 123456 --team 12345
+   quickup task 123456 --team 12345
 
-``keyup update`` - Update Task Status
+``quickup update`` - Update Task Status
 -------------------------------------
 
 Update the status of a specific task.
@@ -184,7 +184,7 @@ Synopsis
 
 .. code-block:: bash
 
-   keyup update <task_id> [OPTIONS]
+   quickup update <task_id> [OPTIONS]
 
 Arguments
 ~~~~~~~~~
@@ -215,10 +215,10 @@ Update task status:
 
 .. code-block:: bash
 
-   keyup update 123456 --status "In Progress"
+   quickup update 123456 --status "In Progress"
 
 With team specification:
 
 .. code-block:: bash
 
-   keyup update 123456 --status "Done" --team 12345
+   quickup update 123456 --status "Done" --team 12345
