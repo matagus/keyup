@@ -7,6 +7,11 @@ repos:
         name: ruff
         args: [--fix, --exit-non-zero-on-fix]
 
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+
   - repo: https://github.com/psf/black
     rev: 26.3.1
     hooks:
