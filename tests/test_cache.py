@@ -367,7 +367,7 @@ class TestMaybeWarmup:
 
     @patch("quickup.cli.cache.get_cache")
     def test_skipped_when_disabled(self, mock_get_cache, monkeypatch):
-        monkeypatch.setenv("KEYUP_WARMUP", "false")
+        monkeypatch.setenv("QUICKUP_WARMUP", "false")
 
         maybe_warmup("token-xyz")
 
@@ -400,7 +400,7 @@ class TestMaybeWarmup:
     @patch("quickup.cli.cache.get_teams_data")
     @patch("quickup.cli.cache.get_cache")
     def test_warms_stale_lists(self, mock_get_cache, mock_get_teams, mock_refresh, monkeypatch):
-        monkeypatch.delenv("KEYUP_WARMUP", raising=False)
+        monkeypatch.delenv("QUICKUP_WARMUP", raising=False)
         mock_cache = Mock()
         mock_cache.get_stale_keys.return_value = ["tasks:list-000", "tasks:list-111"]
         mock_cache.get.side_effect = lambda key: {
@@ -425,7 +425,7 @@ class TestMaybeWarmup:
     @patch("quickup.cli.cache.get_cache")
     def test_skips_unknown_team(self, mock_get_cache, mock_get_teams, mock_refresh, monkeypatch):
         """List mapped to a team_id not returned by API is silently skipped."""
-        monkeypatch.delenv("KEYUP_WARMUP", raising=False)
+        monkeypatch.delenv("QUICKUP_WARMUP", raising=False)
         mock_cache = Mock()
         mock_cache.get_stale_keys.return_value = ["tasks:list-000"]
         mock_cache.get.return_value = "team-unknown"

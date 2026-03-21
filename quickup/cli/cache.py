@@ -257,7 +257,7 @@ def force_refresh_tasks(team, list_id: str) -> list:
 
 def maybe_warmup(token: str) -> None:
     """Refresh any expired task cache entries before the command runs."""
-    if os.environ.get("KEYUP_WARMUP", "true").lower() == "false":
+    if os.environ.get("QUICKUP_WARMUP", "true").lower() == "false":
         return
 
     cache = get_cache()
